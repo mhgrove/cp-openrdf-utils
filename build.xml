@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project name="OpenRdfUtils" default="dist" basedir=".">
+    <description>
+        Clark &amp; Parsia OpenRdf Utility Classes
+    </description>
+
+    <!-- Global Properties -->
+    <property name="core.src" location="core/src" />
+    <property name="core.lib" location="core/lib" />
+    
+    <property name="build" location="build" />
+    <property name="dist" location="dist" />
+
+    <property name="project.name" value="cp-common-openrdf" />
+    <property name="project.version" value="0.1" />
+
+    <path id="project.class.path">
+        <pathelement location="${core.lib}" />
+        <pathelement location="${build}" />
+        <fileset dir="${core.lib}">
+            <include name="**/*.jar"/>
+            <exclude name="**/${project.name}*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init">
+        <pathconvert targetos="unix" property="classpath" refid="project.class.path" />
+        <echo>CLASSPATH=${classpath}</echo>
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="compile" depends="init"
+            description="Compile source files." >
+        <javac source="1.5" target="1.5" srcdir="${core.src}" destdir="${build}" debug="yes" deprecation="yes">
+            <classpath refid="project.class.path"/>
+        </javac>
+    </target>
+
+    <target name="build" depends="compile"
+            description="Compile sources and copy data files into build directory.">
+        <copy todir="${build}">
+            <fileset dir="${core.src}">
+                <exclude name="**/*.java" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="distfiles">
+       <!-- Copy in lib files -->
+        <mkdir dir="${dist}/lib" />
+
+        <copy todir="${dist}/src">
+            <fileset dir="${core.src}">
+                <include name="**/*.java" />
+            </fileset>
+        </copy>
+
+        <copy todir="${dist}/lib">
+            <fileset dir="${core.lib}">
+                <include name="**/*.jar" />
+                <exclude name="**/${project.name}*.jar"/>
+            </fileset>
+        </copy>
+
+    </target>
+
+    <target name="dist" depends="build,distfiles"
+            description="Generate a distribution" >
+        <!-- Generate relative classpath for jar file -->
+        <property name="rlib" location="${core.lib}"/>
+        <pathconvert dirsep="/" pathsep=" " property="Class-Path">
+            <map from="${rlib}/" to=""/>
+                <map from="${rlib}\" to=""/>
+            <path>
+                <fileset dir="${rlib}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </path>
+        </pathconvert>
+
+        <echo>${Class-Path}</echo>
+        <!-- Make Jar file. -->
+        <jar jarfile="${dist}/lib/${project.name}-${project.version}.jar"
+             basedir="${build}">
+        </jar>
+    </target>
+
+    <target name="clean" description="Clean up build files">
+        <delete dir="${build}" />
+        <delete dir="${dist}" />
+    </target>
+
+    <target name="dist-zip" depends="dist">
+        <zip destfile="${dist}/${project.name}-${DSTAMP}.zip">
+	    <zipfileset dir="${dist}">
+	    <include name="**/*"/>
+	    <exclude name="**/src/**"/>
+	    <exclude name="**/*.zip"/>
+	        </zipfileset>
+		</zip>
+    </target>
+</project>
