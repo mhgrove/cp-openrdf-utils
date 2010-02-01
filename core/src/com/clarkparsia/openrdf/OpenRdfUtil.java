@@ -18,6 +18,7 @@ package com.clarkparsia.openrdf;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryResult;
 
 import org.openrdf.repository.sail.SailRepository;
 
@@ -41,6 +42,8 @@ import java.util.Iterator;
 import java.util.Arrays;
 
 import com.clarkparsia.openrdf.util.IterationIterator;
+import com.clarkparsia.utils.Function;
+import static com.clarkparsia.utils.collections.CollectionUtil.transform;
 
 /**
  * <p>Utility methods for working with the OpenRDF API</p>
@@ -69,6 +72,18 @@ public class OpenRdfUtil {
 			// impossible?
 			throw new RuntimeException(e);
 		}
+	}
+	/**
+	 * Return the RepositoryResult as an {@link Iterable}.
+	 * @param theResult the RepositoryResult to wrap
+	 * @return the RepositoryResult as an Iterable
+	 */
+	public static <T> Iterable<T> iterable(final RepositoryResult<T> theResult) {
+		return new Iterable<T>() {
+			public Iterator<T> iterator() {
+				return toIterator(theResult);
+			}
+		};
 	}
 
 	/**

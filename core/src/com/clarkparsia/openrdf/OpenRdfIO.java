@@ -26,6 +26,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.repository.Repository;
 
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.util.RDFInserter;
 
 import org.apache.log4j.Logger;
@@ -38,6 +39,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
 
 import com.clarkparsia.openrdf.util.GraphBuildingRDFHandler;
 import static com.clarkparsia.openrdf.OpenRdfUtil.close;
@@ -127,6 +131,57 @@ public class OpenRdfIO {
 		}
 		finally {
 			close(aConn);
+		}
+	}
+
+	/**
+	 * Write the contents of the repository to the given file in the specified format
+	 * @param theRepo the repository to write
+	 * @param theFile the file to write to
+	 * @param theFormat the format to write the RDF in
+	 * @throws RepositoryException if there is an error getting the data from the repository
+	 * @throws IOException if there is an error writing to the file
+	 */
+	public static void writeRepository(Repository theRepo, File theFile, RDFFormat theFormat) throws RepositoryException, IOException {
+		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(new FileOutputStream(theFile))));
+	}
+
+	/**
+	 * Write the contents of the repository to the given stream in the specified format
+	 * @param theRepo the repository to write
+	 * @param theStream the stream to write to
+	 * @param theFormat the format to write the RDF in
+	 * @throws RepositoryException if there is an error getting the data from the repository
+	 * @throws IOException if there is an error writing to the stream
+	 */
+	public static void writeRepository(Repository theRepo, OutputStream theStream, RDFFormat theFormat) throws RepositoryException, IOException {
+		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(theStream)));
+	}
+
+	/**
+	 * Write the contents of the repository to the given writer in the specified format
+	 * @param theRepo the repository to write
+	 * @param theWriter the writer to write to
+	 * @param theFormat the format to write the RDF in
+	 * @throws RepositoryException if there is an error getting the data from the repository
+	 * @throws IOException if there is an error writing to the writer
+	 */
+	public static void writeRepository(Repository theRepo, Writer theWriter, RDFFormat theFormat) throws RepositoryException, IOException {
+		writeRepository(theRepo, Rio.createWriter(theFormat, theWriter));
+	}
+
+	private static void writeRepository(Repository theRepo, RDFWriter theWriter) throws IOException, RepositoryException {
+		try {
+			RepositoryConnection aConn = theRepo.getConnection();
+
+			theWriter.startRDF();
+
+			aConn.exportStatements(null, null, null, true, theWriter);
+
+			theWriter.endRDF();
+		}
+		catch (RDFHandlerException e) {
+			throw new IOException(e);
 		}
 	}
 

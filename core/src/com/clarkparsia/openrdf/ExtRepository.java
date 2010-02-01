@@ -109,7 +109,16 @@ public class ExtRepository extends RepositoryWrapper {
 	}
 
 	/**
-	 * Return an Iterable over the statements in this Repository which match the given spo pattern.
+	 * Return a RepositoryResult over all the statements in the repository.
+	 * @return an iteration of all statements
+	 */
+	public RepositoryResult<Statement> getStatements() {
+		return getStatements(null, null, null);
+	}
+
+
+	/**
+	 * Return a RepositoryResult over the statements in this Repository which match the given spo pattern.
 	 * @param theSubj the subject to search for, or null for any
 	 * @param thePred the predicate to search for, or null for any
 	 * @param theObj the object to search for, or null for any
