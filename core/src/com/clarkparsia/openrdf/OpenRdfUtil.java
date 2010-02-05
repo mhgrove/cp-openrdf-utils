@@ -46,7 +46,7 @@ import com.clarkparsia.utils.Function;
 import static com.clarkparsia.utils.collections.CollectionUtil.transform;
 
 /**
- * <p>Utility methods for working with the OpenRDF API</p>
+ * <p>Utility methods for working with the OpenRDF Sesame API.</p>
  *
  * @author Michael Grove
  */
@@ -109,6 +109,11 @@ public class OpenRdfUtil {
 		return new IterationIterator<T>(theIteration);
 	}
 
+	/**
+	 * Return the list of Statements as a Graph
+	 * @param theStatements the statements that will make up the Graph
+	 * @return a Graph containing all the provided statements
+	 */
 	public static ExtGraph asGraph(final Statement... theStatements) {
 		ExtGraph aGraph = new ExtGraph();
 
@@ -133,31 +138,4 @@ public class OpenRdfUtil {
 			}
 		}
 	}
-
-	//////////////////////////////////////////////////////////////
-	/////////////////// Query Util Functions /////////////////////
-	//////////////////////////////////////////////////////////////
-
-    public static String getQueryString(Value theValue) {
-        String aStr = theValue.toString();
-
-        if (theValue instanceof URI)
-            aStr = "<"+theValue.toString()+">";
-        else if (theValue instanceof BNode)
-            aStr = "_:"+((BNode)theValue).getID();
-        else if (theValue instanceof Literal) {
-            Literal aLit = (Literal)theValue;
-            aStr = "\"" + escape(aLit.getLabel()) + "\"" + (aLit.getLanguage() != null ? "@"+aLit.getLanguage() : "") ;
-            if (aLit.getDatatype() != null)
-                aStr += "^^<"+aLit.getDatatype().toString()+">";
-        }
-
-        return aStr;
-    }
-
-	private static String escape(String theString) {
-        theString = theString.replaceAll("\"", "\\\\\"");
-
-        return theString;
-    }
 }

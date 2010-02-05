@@ -61,9 +61,9 @@ import com.clarkparsia.utils.FunctionUtil;
 import static com.clarkparsia.utils.FunctionUtil.compose;
 
 import static com.clarkparsia.openrdf.OpenRdfUtil.close;
-import static com.clarkparsia.openrdf.OpenRdfUtil.getQueryString;
 import static com.clarkparsia.openrdf.OpenRdfUtil.asGraph;
 import com.clarkparsia.openrdf.util.IterationIterator;
+import com.clarkparsia.openrdf.query.SesameQueryUtils;
 
 import info.aduna.iteration.EmptyIteration;
 import info.aduna.iteration.CloseableIteration;
@@ -209,7 +209,7 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @return the list of subjects who have properties matching the po pattern.
 	 */
 	public Collection<Resource> getSubjects(URI thePredicate, Value theObject) {
-		String aQuery = "select uri from {uri} " + (thePredicate == null ? "p" : getQueryString(thePredicate)) + " {" + (theObject == null ? "o" : getQueryString(theObject)) + "}";
+		String aQuery = "select uri from {uri} " + (thePredicate == null ? "p" : SesameQueryUtils.getQueryString(thePredicate)) + " {" + (theObject == null ? "o" : SesameQueryUtils.getQueryString(theObject)) + "}";
 
 		RepositoryConnection aConn = null;
 
@@ -278,7 +278,7 @@ public class ExtRepository extends RepositoryWrapper {
 		}
 
         try {
-            String aQuery = "select value from {"+ getQueryString(theSubj)+"} <"+thePred+"> {value}";
+            String aQuery = "select value from {"+ SesameQueryUtils.getQueryString(theSubj)+"} <"+thePred+"> {value}";
 
             TupleQueryResult aTable = selectQuery(QueryLanguage.SERQL, aQuery);
 

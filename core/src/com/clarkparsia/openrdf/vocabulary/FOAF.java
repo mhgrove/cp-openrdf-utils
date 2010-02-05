@@ -45,6 +45,7 @@ public class FOAF extends Vocabulary {
 
     public final URI firstName = term("firstName");
     public final URI surname = term("surname");
+	public final URI name = term("name");
     public final URI mbox = term("mbox");
     public final URI depicts = term("depicts");
     public final URI depiction = term("depiction");
