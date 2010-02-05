@@ -19,7 +19,12 @@ import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.ValueConstant;
 import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.Lang;
+import org.openrdf.query.algebra.LangMatches;
+import org.openrdf.query.algebra.Bound;
+import org.openrdf.query.algebra.Not;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.ValueFactoryImpl;
 
 /**
  * <p></p>
@@ -27,6 +32,18 @@ import org.openrdf.model.Value;
  * @author Michael Grove
  */
 public class ValueExprFactory {
+	public static LangMatches langMatches(String theVar, String theLang) {
+		return new LangMatches(new Lang(new Var(theVar)), new ValueConstant(ValueFactoryImpl.getInstance().createLiteral(theLang)));
+	}
+
+	public static Bound bound(String theVar) {
+		return new Bound(new Var(theVar));
+	}
+
+	public static Not not(ValueExpr theExpr) {
+		return new Not(theExpr);
+	}
+
 	public static Compare lt(String theVar, String theOtherVar) {
 		return compare(theVar, theOtherVar, Compare.CompareOp.LT);
 	}

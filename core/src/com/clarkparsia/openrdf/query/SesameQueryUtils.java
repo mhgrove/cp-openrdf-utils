@@ -83,7 +83,7 @@ public class SesameQueryUtils {
 
 		aBuilder.addProjectionVar("name", "mbox")
 				.group().atom("x", FOAF.ontology().name, "name")
-						.atom("x", FOAF.ontology().mbox, "mbox").closeGroup();
+						.atom("x", FOAF.ontology().mbox, "mbox");
 
 
 		ParsedQuery pq = aBuilder.query();
@@ -104,10 +104,13 @@ public class SesameQueryUtils {
 
 		aBuilder.reset();
 
-		aBuilder.addProjectionVar("name", "mbox", "fn", "ln")
+		aBuilder.distinct().limit(100)
+			.addProjectionVar("name", "mbox", "fn", "ln")
 			.group().atom("x", FOAF.ontology().name, "name")
-					.atom("x", FOAF.ontology().mbox, "mbox").optional()
-							.atom("x",FOAF.ontology().firstName,"fn").atom("x",FOAF.ontology().surname,"ln").closeGroup().limit(100).distinct();
+					.atom("x", FOAF.ontology().mbox, "mbox")
+					.optional()
+						.atom("x",FOAF.ontology().firstName,"fn")
+						.atom("x",FOAF.ontology().surname,"ln");
 
 		pq = aBuilder.query();
 

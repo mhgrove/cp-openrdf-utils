@@ -35,6 +35,8 @@ import org.openrdf.model.Value;
  * @author Michael Grove
  */
 public class FilterFactory {
+	// TODO: merge this somehow with ValueExprFactory
+	
 	private GroupFactory mGroup;
 
 	FilterFactory(final GroupFactory theGroup) {

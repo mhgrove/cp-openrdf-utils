@@ -28,6 +28,7 @@ import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.BinaryTupleOperator;
 import org.openrdf.query.algebra.Join;
 import org.openrdf.query.algebra.LeftJoin;
+import org.openrdf.query.algebra.QueryModelNode;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.ParsedGraphQuery;
@@ -66,7 +67,7 @@ public class QueryBuilder {
 		mProjectionPatterns.clear();
 	}
 
-	public ParsedQuery query() {
+	private TupleExpr query() {
 		UnaryTupleOperator aRoot = null;
 		UnaryTupleOperator aCurr = null;
 
@@ -112,6 +113,8 @@ public class QueryBuilder {
 			}
 		}
 
+		TupleExpr aJoin = join();
+
 		UnaryTupleOperator aProjection = projection();
 
 		if (aRoot == null) {
@@ -129,19 +132,17 @@ public class QueryBuilder {
 			aCurr = (UnaryTupleOperator) aProjection.getArg();
 		}
 
-		aCurr.setArg(join());
+		aCurr.setArg(aJoin);
 
-		if (isSelect()) {
-			return new ParsedTupleQuery(aRoot);
-		}
-		else {
-			return new ParsedGraphQuery(aRoot);
-		}
+		return aRoot;
 	}
 
-	private boolean isSelect() {
-		// TODO: implement me
-		return true;
+	public ParsedTupleQuery tupleQuery() {
+		return new ParsedTupleQuery(query());
+	}
+
+	public ParsedGraphQuery graphQuery() {
+		return new ParsedGraphQuery(query());
 	}
 
 	private TupleExpr join() {
