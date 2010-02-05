@@ -23,7 +23,7 @@ import com.clarkparsia.openrdf.ExtGraph;
 /**
  * <p>Implementation of an RDFHandler which collects statements from the handler events and puts them into a Graph object.</p>
  * @author Michael Grove
- * @since 1.0
+ * @since 0.1
  */
 public class GraphBuildingRDFHandler extends RDFHandlerBase {
 

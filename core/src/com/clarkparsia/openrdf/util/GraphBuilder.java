@@ -25,7 +25,7 @@ import com.clarkparsia.openrdf.ExtGraph;
  * <p>Utility class for creating a set of statements using {@link ResourceBuilder ResourceBuilders}.</p>
  *
  * @author Michael Grove
- * @since 1.0
+ * @since 0.1
  */
 public class GraphBuilder {
     private ExtGraph mGraph;

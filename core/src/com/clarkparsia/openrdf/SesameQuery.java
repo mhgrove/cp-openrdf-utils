@@ -21,7 +21,7 @@ import org.openrdf.query.QueryLanguage;
  * <p>Utility query object which encapsulates both the query string and the query language.</p>
  *
  * @author Michael Grove
- * @since 1.0
+ * @since 0.1
  */
 public class SesameQuery {
 	private QueryLanguage mLang;

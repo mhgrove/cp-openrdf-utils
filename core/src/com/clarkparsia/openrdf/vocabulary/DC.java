@@ -21,7 +21,7 @@ import org.openrdf.model.URI;
  * <p>Term constants for the DC ontology</p>
  *
  * @author Michael Grove
- * @since 1.0
+ * @since 0.1
  */
 public class DC extends Vocabulary {
 	private static final DC VOCAB = new DC();

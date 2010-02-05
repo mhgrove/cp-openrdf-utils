@@ -34,7 +34,7 @@ import com.clarkparsia.openrdf.ExtGraph;
  * <p>Utility class for creating statements about a particular resource.</p>
  *
  * @author Michael Grove
- * @since 1.0
+ * @since 0.1
  */
 public class ResourceBuilder {
     private ExtGraph mGraph;

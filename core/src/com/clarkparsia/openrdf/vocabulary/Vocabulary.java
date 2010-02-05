@@ -23,7 +23,7 @@ import org.openrdf.model.impl.ValueFactoryImpl;
  * <p>Base class for creating a term factory for an ontology or schema.</p>
  *
  * @author Michael Grove
- * @since 1.0
+ * @since 0.1
  */
 public abstract class Vocabulary {
     protected static final ValueFactory FACTORY = new ValueFactoryImpl();
