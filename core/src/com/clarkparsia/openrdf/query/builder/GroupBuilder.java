@@ -16,33 +16,38 @@
 package com.clarkparsia.openrdf.query.builder;
 
 import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.ValueConstant;
 import org.openrdf.model.Value;
 import com.clarkparsia.utils.BasicUtils;
+import org.openrdf.query.parser.ParsedQuery;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * <p></p>
  *
  * @author Michael Grove
  */
-public class GroupFactory {
-	private QueryBuilder mBuilder;
+public class GroupBuilder<T extends ParsedQuery> {
+	private QueryBuilder<T> mBuilder;
 	private Group mGroup;
 
 	private StatementPattern.Scope mScope = StatementPattern.Scope.DEFAULT_CONTEXTS;
 	private Var mContext = null;
 
-	GroupFactory(final QueryBuilder theBuilder) {
+	GroupBuilder(final QueryBuilder<T> theBuilder) {
 		this(theBuilder, false, null);
 	}
 
-	GroupFactory(final QueryBuilder theBuilder, boolean theOptional) {
+	GroupBuilder(final QueryBuilder<T> theBuilder, boolean theOptional) {
 		this(theBuilder, theOptional, null);
 	}
 
-	GroupFactory(final QueryBuilder theBuilder, boolean theOptional, Group theParent) {
+	GroupBuilder(final QueryBuilder<T> theBuilder, boolean theOptional, Group theParent) {
 		mBuilder = theBuilder;
 		mGroup = new Group(theOptional);
 
@@ -54,77 +59,96 @@ public class GroupFactory {
 		}
 	}
 
-	Group getGroup() {
+    Group getGroup() {
 		return mGroup;
 	}
 
-	public GroupFactory group() {
-		return new GroupFactory(mBuilder, false, mGroup);
+	public GroupBuilder<T> group() {
+		return new GroupBuilder<T>(mBuilder, false, mGroup);
 	}
 
-	public GroupFactory optional() {
-		return new GroupFactory(mBuilder, true, mGroup);
+	public GroupBuilder<T> optional() {
+		return new GroupBuilder<T>(mBuilder, true, mGroup);
 	}
 
-	public QueryBuilder closeGroup() {
+	public QueryBuilder<T> closeGroup() {
 		return mBuilder;
 	}
 
-	public GroupFactory setScope(StatementPattern.Scope theScope) {
+	public GroupBuilder setScope(StatementPattern.Scope theScope) {
 		mScope = theScope;
 		return this;
 	}
 
-	public GroupFactory setContext(String theContextVar) {
+	public GroupBuilder setContext(String theContextVar) {
 		mContext = new Var(theContextVar);
 		return this;
 	}
 
-	public GroupFactory setContext(Value theContextValue) {
+	public GroupBuilder setContext(Value theContextValue) {
 		mContext = valueToVar(theContextValue);
 		return this;
 	}
 
-	public FilterFactory filter() {
-		return new FilterFactory(this);
+	public FilterBuilder<T> filter() {
+		return new FilterBuilder<T>(this);
 	}
 
-	public GroupFactory filter(String theVar, Compare.CompareOp theOp, Value theValue) {
+    public GroupBuilder<T> filter(ValueExpr theExpr) {
+        mGroup.addFilter(theExpr);
+
+        return this;
+    }
+
+	public GroupBuilder<T> filter(String theVar, Compare.CompareOp theOp, Value theValue) {
 		Compare aComp = new Compare(new Var(theVar), new ValueConstant(theValue), theOp);
 		mGroup.addFilter(aComp);
 
 		return this;
 	}
 
-	public GroupFactory atom(String theSubjVar, String thePredVar, String theObjVar) {
+    public GroupBuilder<T> atom(StatementPattern thePattern) {
+        return addPattern(thePattern);
+    }
+
+    public GroupBuilder<T> atom(StatementPattern... thePatterns) {
+        return atoms(Arrays.asList(thePatterns));
+    }
+
+    public GroupBuilder<T> atoms(Collection<StatementPattern> thePatterns) {
+        mGroup.addAll(thePatterns);
+        return this;
+    }
+
+	public GroupBuilder<T> atom(String theSubjVar, String thePredVar, String theObjVar) {
 		return addPattern(newPattern(new Var(theSubjVar), new Var(thePredVar), new Var(theObjVar)));
 	}
 
-	public GroupFactory atom(String theSubjVar, String thePredVar, Value theObj) {
+	public GroupBuilder<T> atom(String theSubjVar, String thePredVar, Value theObj) {
 		return addPattern(newPattern(new Var(theSubjVar), new Var(thePredVar), valueToVar(theObj)));
 	}
 
-	public GroupFactory atom(String theSubjVar, Value thePredVar, String theObj) {
+	public GroupBuilder<T> atom(String theSubjVar, Value thePredVar, String theObj) {
 		return addPattern(newPattern(new Var(theSubjVar), valueToVar(thePredVar), new Var(theObj)));
 	}
 
-	public GroupFactory atom(String theSubjVar, Value thePred, Value theObj) {
+	public GroupBuilder<T> atom(String theSubjVar, Value thePred, Value theObj) {
 		return addPattern(newPattern(new Var(theSubjVar), valueToVar(thePred), valueToVar(theObj)));
 	}
 
-	public GroupFactory atom(Value theSubjVar, Value thePredVar, Value theObj) {
+	public GroupBuilder<T> atom(Value theSubjVar, Value thePredVar, Value theObj) {
 		return addPattern(newPattern(valueToVar(theSubjVar), valueToVar(thePredVar), valueToVar(theObj)));
 	}
 
-	public GroupFactory atom(Value theSubjVar, Value thePredVar, String theObj) {
+	public GroupBuilder<T> atom(Value theSubjVar, Value thePredVar, String theObj) {
 		return addPattern(newPattern(valueToVar(theSubjVar), valueToVar(thePredVar), new Var(theObj)));
 	}
 
-	public GroupFactory atom(Value theSubjVar, String thePredVar, String theObj) {
+	public GroupBuilder<T> atom(Value theSubjVar, String thePredVar, String theObj) {
 		return addPattern(newPattern(valueToVar(theSubjVar), new Var(thePredVar), new Var(theObj)));
 	}
 
-	private GroupFactory addPattern(StatementPattern thePattern) {
+	private GroupBuilder<T> addPattern(StatementPattern thePattern) {
 		mGroup.add(thePattern);
 		return this;
 	}
@@ -133,7 +157,7 @@ public class GroupFactory {
 		return new StatementPattern(mScope, theSubj, thePred, theObj, mContext);
 	}
 
-	private Var valueToVar(Value theValue) {
+	public static Var valueToVar(Value theValue) {
 		Var aVar = new Var(BasicUtils.getRandomString(4), theValue);
 		aVar.setAnonymous(true);
 

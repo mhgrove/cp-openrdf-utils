@@ -28,104 +28,105 @@ import org.openrdf.query.algebra.Var;
 
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.Value;
+import org.openrdf.query.parser.ParsedQuery;
 
 /**
  * <p></p>
  *
  * @author Michael Grove
  */
-public class FilterFactory {
+public class FilterBuilder<T extends ParsedQuery> {
 	// TODO: merge this somehow with ValueExprFactory
 	
-	private GroupFactory mGroup;
+	private GroupBuilder<T> mGroup;
 
-	FilterFactory(final GroupFactory theGroup) {
+	FilterBuilder(final GroupBuilder<T> theGroup) {
 		mGroup = theGroup;
 	}
 
-	public GroupFactory filter(ValueExpr theExpr) {
+    public GroupBuilder<T> filter(ValueExpr theExpr) {
 		mGroup.getGroup().addFilter(theExpr);
 
 		return mGroup;
 	}
 
-	public GroupFactory bound(String theVar) {
+	public GroupBuilder<T> bound(String theVar) {
 		return filter(new Bound(new Var(theVar)));
 	}
 
-	public GroupFactory not(ValueExpr theExpr) {
+	public GroupBuilder<T> not(ValueExpr theExpr) {
 		return filter(new Not(theExpr));
 	}
 
-	public GroupFactory and(ValueExpr theLeft, ValueExpr theRight) {
+	public GroupBuilder<T> and(ValueExpr theLeft, ValueExpr theRight) {
 		return filter(new And(theLeft, theRight));
 	}
 
-	public GroupFactory or(ValueExpr theLeft, ValueExpr theRight) {
+	public GroupBuilder<T> or(ValueExpr theLeft, ValueExpr theRight) {
 		return filter(new Or(theLeft, theRight));
 	}
 
-	public GroupFactory sameTerm(ValueExpr theLeft, ValueExpr theRight) {
+	public GroupBuilder<T> sameTerm(ValueExpr theLeft, ValueExpr theRight) {
 		return filter(new SameTerm(theLeft, theRight));
 	}
 
-	public GroupFactory regex(ValueExpr theExpr, String thePattern) {
+	public GroupBuilder<T> regex(ValueExpr theExpr, String thePattern) {
 		return regex(theExpr, thePattern, null);
 	}
 
-	public GroupFactory langMatches(ValueExpr theLeft, ValueExpr theRight) {
+	public GroupBuilder<T> langMatches(ValueExpr theLeft, ValueExpr theRight) {
 		return filter(new LangMatches(theLeft, theRight));
 	}
 
-	public GroupFactory lt(String theVar, String theOtherVar) {
+	public GroupBuilder<T> lt(String theVar, String theOtherVar) {
 		return filter(ValueExprFactory.lt(theVar, theOtherVar));
 	}
 
-	public GroupFactory lt(String theVar, Value theValue) {
+	public GroupBuilder<T> lt(String theVar, Value theValue) {
 		return filter(ValueExprFactory.lt(theVar, theValue));
 	}
 
-	public GroupFactory gt(String theVar, String theOtherVar) {
+	public GroupBuilder<T> gt(String theVar, String theOtherVar) {
 		return filter(ValueExprFactory.gt(theVar, theOtherVar));
 	}
 
-	public GroupFactory gt(String theVar, Value theValue) {
+	public GroupBuilder<T> gt(String theVar, Value theValue) {
 		return filter(ValueExprFactory.gt(theVar, theValue));
 	}
 
-	public GroupFactory eq(String theVar, String theOtherVar) {
+	public GroupBuilder<T> eq(String theVar, String theOtherVar) {
 		return filter(ValueExprFactory.eq(theVar, theOtherVar));
 	}
 
-	public GroupFactory eq(String theVar, Value theValue) {
+	public GroupBuilder<T> eq(String theVar, Value theValue) {
 		return filter(ValueExprFactory.eq(theVar, theValue));
 	}
 
-	public GroupFactory ne(String theVar, String theOtherVar) {
+	public GroupBuilder<T> ne(String theVar, String theOtherVar) {
 		return filter(ValueExprFactory.ne(theVar, theOtherVar));
 	}
 
-	public GroupFactory ne(String theVar, Value theValue) {
+	public GroupBuilder<T> ne(String theVar, Value theValue) {
 		return filter(ValueExprFactory.ne(theVar, theValue));
 	}
 
-	public GroupFactory le(String theVar, String theOtherVar) {
+	public GroupBuilder<T> le(String theVar, String theOtherVar) {
 		return filter(ValueExprFactory.le(theVar, theOtherVar));
 	}
 
-	public GroupFactory le(String theVar, Value theValue) {
+	public GroupBuilder<T> le(String theVar, Value theValue) {
 		return filter(ValueExprFactory.le(theVar, theValue));
 	}
 
-	public GroupFactory ge(String theVar, String theOtherVar) {
+	public GroupBuilder<T> ge(String theVar, String theOtherVar) {
 		return filter(ValueExprFactory.ge(theVar, theOtherVar));
 	}
 
-	public GroupFactory ge(String theVar, Value theValue) {
+	public GroupBuilder<T> ge(String theVar, Value theValue) {
 		return filter(ValueExprFactory.ge(theVar, theValue));
 	}
 
-	public GroupFactory regex(ValueExpr theExpr, String thePattern, String theFlags) {
+	public GroupBuilder<T> regex(ValueExpr theExpr, String thePattern, String theFlags) {
 		Regex aRegex = new Regex();
 		aRegex.setArg(theExpr);
 		aRegex.setPatternArg(new ValueConstant(ValueFactoryImpl.getInstance().createLiteral(thePattern)));

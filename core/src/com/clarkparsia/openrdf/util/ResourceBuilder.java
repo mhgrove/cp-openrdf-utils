@@ -30,6 +30,8 @@ import java.util.Iterator;
 import com.clarkparsia.utils.BasicUtils;
 import com.clarkparsia.openrdf.ExtGraph;
 
+import static com.clarkparsia.utils.collections.CollectionUtil.list;
+
 /**
  * <p>Utility class for creating statements about a particular resource.</p>
  *
@@ -94,7 +96,7 @@ public class ResourceBuilder {
         if (theBuilder != null) {
             addProperty(theProperty, theBuilder.getResource());
 
-            mGraph.addAll(theBuilder.mGraph);
+            mGraph.addAll(list(theBuilder.mGraph));
         }
 
         return this;

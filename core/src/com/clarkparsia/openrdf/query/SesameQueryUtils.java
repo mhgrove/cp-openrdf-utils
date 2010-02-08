@@ -15,20 +15,25 @@
 
 package com.clarkparsia.openrdf.query;
 
+import com.clarkparsia.openrdf.query.builder.QueryBuilder;
+import com.clarkparsia.openrdf.query.builder.QueryBuilderFactory;
 import org.openrdf.model.Value;
 import org.openrdf.model.URI;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.RDFS;
+import org.openrdf.query.algebra.Slice;
+import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
+import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
+import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
-import org.openrdf.query.algebra.ValueConstant;
 import org.openrdf.query.algebra.Compare;
-import org.openrdf.query.algebra.Var;
 
 import com.clarkparsia.openrdf.vocabulary.FOAF;
 import com.clarkparsia.openrdf.vocabulary.DC;
-import com.clarkparsia.openrdf.query.builder.QueryBuilder;
 import com.clarkparsia.openrdf.query.builder.ValueExprFactory;
 
 /**
@@ -71,6 +76,36 @@ public class SesameQueryUtils {
 		return theString;
 	}
 
+    public static void setLimit(final ParsedQuery theQuery, final int theLimit) {
+        try {
+            SetLimit aLimitSetter = new SetLimit(theLimit);
+            theQuery.getTupleExpr().visit(aLimitSetter);
+            if (!aLimitSetter.mLimitWasSet) {
+                Slice aSlice = new Slice();
+                aSlice.setLimit(theLimit);
+                aSlice.setArg(theQuery.getTupleExpr());
+                theQuery.getTupleExpr().setParentNode(aSlice);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static class SetLimit extends QueryModelVisitorBase<Exception> {
+        boolean mLimitWasSet = false;
+        int mNewLimit;
+
+        private SetLimit(final int theNewLimit) {
+            mNewLimit = theNewLimit;
+        }
+
+        public void meet(Slice theSlice) {
+            mLimitWasSet = true;
+            theSlice.setLimit(mNewLimit);
+        }
+    }
+
 	public static void main(String[] args) throws Exception {
 
 		String aGroupedQuery = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n" +
@@ -79,7 +114,7 @@ public class SesameQueryUtils {
 							   "         { ?x foaf:mbox ?mbox . }\n" +
 							   "       }";
 
-		QueryBuilder aBuilder = new QueryBuilder();
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
 
 		aBuilder.addProjectionVar("name", "mbox")
 				.group().atom("x", FOAF.ontology().name, "name")
@@ -151,5 +186,43 @@ public class SesameQueryUtils {
 		System.err.println("---------------------------");
 		System.err.println(new SPARQLParser().parseQuery(aOptionalWithFilter, "http://example.org"));
 
+
+		aBuilder.reset();
+
+        String aSelectStar = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n" +
+                               "SELECT *\n" +
+                               "WHERE  { { ?x foaf:name ?name . }\n" +
+                               "         { ?x foaf:mbox ?mbox . }\n" +
+                               "       }";
+
+        aBuilder.group().atom("x", FOAF.ontology().name, "name")
+                        .atom("x", FOAF.ontology().mbox, "mbox");
+
+		pq = aBuilder.query();
+
+		System.err.println("---------------------------");
+		System.err.println(pq);
+		System.err.println("---------------------------");
+		System.err.println(new SPARQLParser().parseQuery(aSelectStar, "http://example.org"));
+
+        QueryBuilder<ParsedGraphQuery> aConstructBuilder = QueryBuilderFactory.construct();
+
+        ParsedGraphQuery gq = aConstructBuilder
+                .group().atom("s", "p", "o").closeGroup().query();
+
+        System.err.println("---------------------------");
+        System.err.println(gq);
+        System.err.println("---------------------------");
+        System.err.println(new SPARQLParser().parseQuery("construct {?s ?p ?o} where {?s ?p ?o } ", "http://example.org"));
+
+        aConstructBuilder.reset();
+
+        gq = aConstructBuilder.addProjectionStatement("s", RDF.TYPE, RDFS.RESOURCE)
+                .group().atom("s", "p", "o").closeGroup().query();
+
+        System.err.println("---------------------------");
+        System.err.println(gq);
+        System.err.println("---------------------------");
+        System.err.println(new SPARQLParser().parseQuery("construct {?s <"+RDF.TYPE+"> <"+RDFS.RESOURCE+">} where {?s ?p ?o } ", "http://example.org"));
 	}
 }

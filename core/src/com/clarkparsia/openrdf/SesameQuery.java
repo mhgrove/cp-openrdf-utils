@@ -15,7 +15,10 @@
 
 package com.clarkparsia.openrdf;
 
+import com.clarkparsia.openrdf.query.serql.SeRQLQueryRenderer;
+import com.clarkparsia.openrdf.query.sparql.SPARQLQueryRenderer;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.parser.ParsedQuery;
 
 /**
  * <p>Utility query object which encapsulates both the query string and the query language.</p>
@@ -47,6 +50,27 @@ public class SesameQuery {
 	public void setQueryString(String theQuery) {
 		mQuery = theQuery;
 	}
+
+
+    public static SesameQuery sparql(ParsedQuery theQuery) {
+        try {
+            return new SesameQuery(QueryLanguage.SPARQL,
+                                   new SPARQLQueryRenderer().render(theQuery));
+        }
+        catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static SesameQuery serql(ParsedQuery theQuery) {
+        try {
+            return new SesameQuery(QueryLanguage.SERQL,
+                                   new SeRQLQueryRenderer().render(theQuery));
+        }
+        catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
 	public static SesameQuery serql(String theQuery) {
 		return new SesameQuery(QueryLanguage.SERQL, theQuery);

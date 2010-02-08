@@ -21,12 +21,21 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
+import org.openrdf.model.impl.GraphImpl;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.util.GraphUtil;
+import org.openrdf.model.vocabulary.RDFS;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.RDFParseException;
 
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.ArrayList;
@@ -108,6 +117,41 @@ public class ExtGraph extends DelegatingGraph {
 	}
 
 	/**
+	 * Returns all the instances of the specified type
+	 * @param theType the type for instances to return
+	 * @return all instances in the graph rdf:type'd to the given type.
+	 */
+    public Collection<Resource> instancesOf(URI theType) {
+        return GraphUtil.getSubjects(this, RDF.TYPE, theType);
+    }
+
+    /**
+     * Return a collection of all the individuals in the graph
+     * @return all individuals
+     */
+    public Collection<Resource> listIndividuals() {
+        return GraphUtil.getSubjects(this, RDF.TYPE, null);
+    }
+
+	/**
+	 * Returns the value of the property on the given resource as a boolean.
+	 * @param theSubj the resource
+	 * @param thePred the property
+	 * @return the value of the property as a boolean, or null if it doesnt have a value, or if the value is not a boolean.
+	 */
+    public Boolean getBooleanValue(Resource theSubj, URI thePred) {
+        Literal aLiteral = getLiteral(theSubj, thePred);
+
+        if (aLiteral != null && ((aLiteral.getDatatype() != null && aLiteral.getDatatype().equals(XMLSchema.BOOLEAN))
+            || (aLiteral.getLabel().equalsIgnoreCase("true") || aLiteral.getLabel().equalsIgnoreCase("false")))) {
+            return Boolean.valueOf(aLiteral.getLabel());
+        }
+        else {
+            return null;
+        }
+    }
+
+	/**
 	 * Returns whether or not the given resource is a rdf:List
 	 * @param theRes the resource to check
 	 * @return true if its a list, false otherwise
@@ -161,6 +205,33 @@ public class ExtGraph extends DelegatingGraph {
 		read(new FileInputStream(theFile), Rio.getParserFormatForFileName(theFile.getName()));
 	}
 
+    public void read(final InputStream theStream) throws IOException, RDFParseException {
+        read(new InputStreamReader(theStream));
+    }
+
+    public void read(final Reader theReader) throws IOException, RDFParseException {
+        Graph aGraph = new GraphImpl();
+
+        try {
+            aGraph = OpenRdfIO.readGraph(theReader, RDFFormat.TURTLE);
+        }
+        catch (Exception ex) {
+            try {
+                aGraph = OpenRdfIO.readGraph(theReader, RDFFormat.RDFXML);
+            }
+            catch (Exception e) {
+                try {
+                    aGraph = OpenRdfIO.readGraph(theReader, RDFFormat.NTRIPLES);
+                }
+                catch (Exception exc) {
+                    throw new RDFParseException("Cannot read data from stream.");
+                }
+            }
+        }
+
+        addAll(aGraph);
+    }
+
 	public void read(final InputStream theStream, RDFFormat theFormat) throws IOException, RDFParseException {
 		addAll(OpenRdfIO.readGraph(theStream, theFormat));
 	}
@@ -168,4 +239,47 @@ public class ExtGraph extends DelegatingGraph {
 	public void add(Graph theGraph) {
 		addAll(theGraph);
 	}
+
+    public boolean contains(Resource theSubj, URI thePred, Value theObj) {
+        return getStatements(theSubj, thePred, theObj).hasNext();
+    }
+
+	/**
+	 * Return whether or not the resource has the specified property
+	 * @param theSubj the resource
+	 * @param thePred the property
+	 * @return true if the resource has at least one assertion of the given property.
+	 */
+    public boolean hasProperty(Resource theSubj, URI thePred) {
+        return !getValues(theSubj, thePred).isEmpty();
+    }
+    
+	/**
+	 * Return the rdfs:label of the given resource
+	 * @param theRes the resource to get a label for
+	 * @return the rdfs:label of the resource, or null if it does not have one
+	 */
+    public Literal label(Resource theRes) {
+        return getLiteral(theRes, RDFS.LABEL);
+    }
+
+    /**
+     * Write the contents of this graph in the specified format to the output stream
+     * @param theStream the stream to write to
+     * @param theFormat the format to write the data in
+     * @throws IOException if there is an error while writing to the stream
+     */
+    public void write(OutputStream theStream, RDFFormat theFormat) throws IOException {
+        write(new OutputStreamWriter(theStream), theFormat);
+    }
+
+	/**
+	 * Write the contents of this graph in the specified format to the output
+	 * @param theWriter the output to write to
+	 * @param theFormat the format to write the graph data in
+	 * @throws IOException thrown if there is an error while writing the data
+	 */
+    public void write(Writer theWriter, RDFFormat theFormat) throws IOException {
+        OpenRdfIO.writeGraph(this, theWriter, theFormat);
+    }
 }

@@ -15,7 +15,9 @@
 
 package com.clarkparsia.openrdf.query.builder;
 
+import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.Compare;
+import org.openrdf.query.algebra.Or;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.ValueConstant;
 import org.openrdf.query.algebra.Var;
@@ -43,6 +45,14 @@ public class ValueExprFactory {
 	public static Not not(ValueExpr theExpr) {
 		return new Not(theExpr);
 	}
+
+    public static Or or(ValueExpr theLeft, ValueExpr theRight) {
+        return new Or(theLeft, theRight);
+    }
+
+    public static And and(ValueExpr theLeft, ValueExpr theRight) {
+        return new And(theLeft, theRight);
+    }
 
 	public static Compare lt(String theVar, String theOtherVar) {
 		return compare(theVar, theOtherVar, Compare.CompareOp.LT);

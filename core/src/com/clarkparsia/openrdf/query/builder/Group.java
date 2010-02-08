@@ -23,6 +23,7 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.And;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -57,7 +58,7 @@ class Group {
 		return expr(true);
 	}
 
-	public TupleExpr expr(boolean filterExpr) {
+	private TupleExpr expr(boolean filterExpr) {
 		TupleExpr aExpr = asJoin(mExpressions);
 
 		if (filterExpr) {
@@ -85,44 +86,6 @@ class Group {
 		
 		return aExpr;
 	}
-
-//	private TupleExpr exprNoFilters(boolean filters) {
-//		if (!children.isEmpty()) {
-//			TupleExpr aExpr = asJoin(mExpressions);
-//
-//			for (Group aGroup : children) {
-//				BinaryTupleOperator aJoin = aGroup.isOptional() ? new LeftJoin() : new Join();
-//
-//				aJoin.setLeftArg(aExpr);
-//
-//				if (!aGroup.mFilters.isEmpty() && aGroup.isOptional()) {
-//					aJoin.setRightArg(aGroup.exprNoFilters());
-//
-//					((LeftJoin)aJoin).setCondition(aGroup.filtersAsAnd());
-//				}
-//				else {
-//					aJoin.setRightArg(aGroup.expr());
-//				}
-//
-//				aExpr = aJoin;
-//			}
-//
-//			if (!mFilters.isEmpty()) {
-//				if (aExpr instanceof LeftJoin) {
-//					LeftJoin aLeftJoin = (LeftJoin) aExpr;
-//					aLeftJoin.setCondition(filtersAsAnd());
-//				}
-//				else {
-//					aExpr = filteredTuple(aExpr);
-//				}
-//			}
-//
-//			return aExpr;
-//		}
-//		else {
-//			return asJoin(mExpressions);
-//		}
-//	}
 
 	private TupleExpr filteredTuple(TupleExpr theExpr) {
 		TupleExpr aExpr = theExpr ;
@@ -158,6 +121,10 @@ class Group {
 	public void add(final TupleExpr theExpr) {
 		mExpressions.add(theExpr);
 	}
+
+    public void addAll(final Collection<? extends TupleExpr> theTupleExprs) {
+        mExpressions.addAll(theTupleExprs);
+    }
 
 	private TupleExpr asJoin(List<TupleExpr> theList) {
 		Join aJoin = new Join();

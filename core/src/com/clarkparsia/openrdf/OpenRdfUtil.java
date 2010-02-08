@@ -15,6 +15,8 @@
 
 package com.clarkparsia.openrdf;
 
+import org.openrdf.model.util.GraphUtil;
+import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryConnection;
@@ -138,4 +140,8 @@ public class OpenRdfUtil {
 			}
 		}
 	}
+
+    public static boolean isType(final ExtGraph theGraph, final URI theSubj, final URI theType) {
+        return theGraph.getValues(theSubj, RDF.TYPE).contains(theType);
+    }
 }
