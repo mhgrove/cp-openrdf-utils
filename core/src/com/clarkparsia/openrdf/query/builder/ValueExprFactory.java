@@ -29,9 +29,10 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
 /**
- * <p></p>
+ * <p>Collection of utility methods for building the various ValueExpr objects in the Sesame query API.</p>
  *
  * @author Michael Grove
+ * @since 0.2
  */
 public class ValueExprFactory {
 	public static LangMatches langMatches(String theVar, String theLang) {

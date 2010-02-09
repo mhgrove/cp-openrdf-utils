@@ -31,9 +31,10 @@ import org.openrdf.model.Value;
 import org.openrdf.query.parser.ParsedQuery;
 
 /**
- * <p></p>
+ * <p>Builder class for creating a filter expression in a query.</p>
  *
  * @author Michael Grove
+ * @since 0.2
  */
 public class FilterBuilder<T extends ParsedQuery> {
 	// TODO: merge this somehow with ValueExprFactory

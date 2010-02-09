@@ -28,9 +28,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * <p></p>
+ * <p>Builder for creating a grouped set of query atoms and filters in a query.</p>
  *
  * @author Michael Grove
+ * @since 0.2
  */
 public class GroupBuilder<T extends ParsedQuery> {
 	private QueryBuilder<T> mBuilder;

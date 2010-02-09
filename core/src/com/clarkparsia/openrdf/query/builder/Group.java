@@ -28,9 +28,10 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * <p></p>
+ * <p>Internal class for representing a group within a query.</p>
  *
  * @author Michael Grove
+ * @since 0.2
  */
 class Group {
 	private boolean optional = false;

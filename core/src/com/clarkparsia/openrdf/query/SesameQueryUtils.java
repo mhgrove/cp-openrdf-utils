@@ -17,29 +17,55 @@ package com.clarkparsia.openrdf.query;
 
 import com.clarkparsia.openrdf.query.builder.QueryBuilder;
 import com.clarkparsia.openrdf.query.builder.QueryBuilderFactory;
+
 import org.openrdf.model.Value;
 import org.openrdf.model.URI;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
+
 import org.openrdf.model.impl.ValueFactoryImpl;
+
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
+
 import org.openrdf.query.algebra.Slice;
+
+import org.openrdf.query.algebra.TupleExpr;
+
+import org.openrdf.query.algebra.evaluation.impl.BindingAssigner;
+import org.openrdf.query.algebra.evaluation.impl.CompareOptimizer;
+import org.openrdf.query.algebra.evaluation.impl.ConjunctiveConstraintSplitter;
+import org.openrdf.query.algebra.evaluation.impl.DisjunctiveConstraintOptimizer;
+import org.openrdf.query.algebra.evaluation.impl.FilterOptimizer;
+import org.openrdf.query.algebra.evaluation.impl.IterativeEvaluationOptimizer;
+import org.openrdf.query.algebra.evaluation.impl.OrderLimitOptimizer;
+import org.openrdf.query.algebra.evaluation.impl.QueryModelNormalizer;
+import org.openrdf.query.algebra.evaluation.impl.SameTermFilterOptimizer;
+
+import org.openrdf.query.algebra.evaluation.util.QueryOptimizerList;
+
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
+
+import org.openrdf.query.impl.MapBindingSet;
+
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
+
 import org.openrdf.query.parser.sparql.SPARQLParser;
+
 import org.openrdf.query.algebra.Compare;
 
 import com.clarkparsia.openrdf.vocabulary.FOAF;
 import com.clarkparsia.openrdf.vocabulary.DC;
+
 import com.clarkparsia.openrdf.query.builder.ValueExprFactory;
 
 /**
  * <p>Collection of utility methods for working with the OpenRdf Sesame Query API.</p>
  *
  * @author Michael Grove
+ * @since 0.2
  */
 public class SesameQueryUtils {
 
@@ -76,14 +102,22 @@ public class SesameQueryUtils {
 		return theString;
 	}
 
+    /**
+     * Set the value of the limit on the query object to a new value, or specify a limit if one is not specified.
+     * @param theQuery the query to alter
+     * @param theLimit the new limit
+     */
     public static void setLimit(final ParsedQuery theQuery, final int theLimit) {
         try {
             SetLimit aLimitSetter = new SetLimit(theLimit);
             theQuery.getTupleExpr().visit(aLimitSetter);
-            if (!aLimitSetter.mLimitWasSet) {
+
+            if (!aLimitSetter.limitWasSet()) {
                 Slice aSlice = new Slice();
+
                 aSlice.setLimit(theLimit);
                 aSlice.setArg(theQuery.getTupleExpr());
+
                 theQuery.getTupleExpr().setParentNode(aSlice);
             }
         }
@@ -92,18 +126,77 @@ public class SesameQueryUtils {
         }
     }
 
+    /**
+     * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit of a query
+     * object to the provided value.  If there is no limit specified, {@link #limitWasSet} will return false.
+     */
     private static class SetLimit extends QueryModelVisitorBase<Exception> {
-        boolean mLimitWasSet = false;
-        int mNewLimit;
+        /**
+         * Whether or not the limit was set on the query object
+         */
+        private boolean mLimitWasSet = false;
 
+        /**
+         * The new limit for the query
+         */
+        private int mNewLimit;
+
+        /**
+         * Create a new SetLimit object
+         * @param theNewLimit the new limit to use for the query
+         */
         private SetLimit(final int theNewLimit) {
             mNewLimit = theNewLimit;
         }
 
+        /**
+         * Resets the state of this visitor so it can be re-used.
+         */
+        public void reset() {
+            mLimitWasSet = false;
+        }
+
+        /**
+         * Return whether or not the limit was set by this visitor
+         * @return true if the limit was set, false otherwse
+         */
+        public boolean limitWasSet() {
+            return mLimitWasSet;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        @Override
         public void meet(Slice theSlice) {
             mLimitWasSet = true;
             theSlice.setLimit(mNewLimit);
         }
+    }
+
+    /**
+     * Apply a set of built-in sesame query optimizers to the given Query object.  This reflects most of the
+     * optimizations applied to queries by the standard Sesame MemoryStore.
+     * @param theQuery the query to optimize
+     */
+    public static void optimize(ParsedQuery theQuery) {
+        QueryOptimizerList aList = new QueryOptimizerList();
+
+        aList.add(new BindingAssigner());
+        aList.add(new CompareOptimizer());
+        aList.add(new ConjunctiveConstraintSplitter());
+        aList.add(new DisjunctiveConstraintOptimizer());
+        aList.add(new SameTermFilterOptimizer());
+        aList.add(new QueryModelNormalizer());
+        aList.add(new IterativeEvaluationOptimizer());
+        aList.add(new FilterOptimizer());
+        aList.add(new OrderLimitOptimizer());
+
+        TupleExpr aExpr = theQuery.getTupleExpr().clone();
+
+        aList.optimize(aExpr, theQuery.getDataset(), new MapBindingSet());
+
+        theQuery.setTupleExpr(aExpr);
     }
 
 	public static void main(String[] args) throws Exception {
@@ -122,6 +215,7 @@ public class SesameQueryUtils {
 
 
 		ParsedQuery pq = aBuilder.query();
+        optimize(pq);
 
 		System.err.println("---------------------------");
 		System.err.println(pq);
@@ -148,6 +242,7 @@ public class SesameQueryUtils {
 						.atom("x",FOAF.ontology().surname,"ln");
 
 		pq = aBuilder.query();
+        optimize(pq);
 
 		System.err.println("---------------------------");
 		System.err.println(pq);
@@ -180,6 +275,7 @@ public class SesameQueryUtils {
 						.filter().bound("d");
 
 		pq = aBuilder.query();
+        optimize(pq);
 
 		System.err.println("---------------------------");
 		System.err.println(pq);
@@ -199,6 +295,7 @@ public class SesameQueryUtils {
                         .atom("x", FOAF.ontology().mbox, "mbox");
 
 		pq = aBuilder.query();
+        optimize(pq);
 
 		System.err.println("---------------------------");
 		System.err.println(pq);

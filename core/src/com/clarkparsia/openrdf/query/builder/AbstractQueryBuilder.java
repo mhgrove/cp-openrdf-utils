@@ -45,14 +45,14 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * <p></p>
+ * <p>Base implementation of a QueryBuilder.</p>
  *
  * @author Michael Grove
+ * @since 0.2
  */
 public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder<T> {
 
 	// TODO: extensions/aliases
-	// TODO: multi projections
 	// TODO: describe & ask support
 	// TODO: support for set operations
 	// TODO: fluent api for ValueExpr construction

@@ -19,23 +19,53 @@ import org.openrdf.model.Value;
 import org.openrdf.query.parser.ParsedQuery;
 
 /**
- * <p></p>
+ * <p>Interface for a QueryBuilder which provides a simple fluent API for constructing Sesame query
+ * object programmatically.</p>
  *
  * @author Michael Grove
+ * @since 0.2
  */
 public interface QueryBuilder<T extends ParsedQuery> {
+    /**
+     * Return the query constructed by this query builder
+     * @return the query
+     */
     public T query();
 
+    /**
+     * Specify an offset for the query
+     * @param theOffset the new offset
+     * @return this query builder
+     */
     public QueryBuilder<T> offset(int theOffset);
-    public QueryBuilder<T> limit(int theOffset);
 
+    /**
+     * Specify a limit for the query
+     * @param theLimit the new limit for the query
+     * @return this query builder
+     */
+    public QueryBuilder<T> limit(int theLimit);
+
+    /**
+     * Specify that this query should use the "distinct" keyword
+     * @return this query builder
+     */
     public QueryBuilder<T> distinct();
+
+    /**
+     * Specify that this query should use the "reduced" keyword
+     * @return this query builder
+     */
     public QueryBuilder<T> reduced();
+
     public GroupBuilder<T> optional();
     public GroupBuilder<T> group();
 
     public QueryBuilder<T> addProjectionVar(String... theNames);
 
+    /**
+     * Reset the state of the query builder
+     */
     public void reset();
 
     public QueryBuilder<T> addGroup(Group theGroup);
