@@ -178,8 +178,9 @@ public class SesameQueryUtils {
      * Apply a set of built-in sesame query optimizers to the given Query object.  This reflects most of the
      * optimizations applied to queries by the standard Sesame MemoryStore.
      * @param theQuery the query to optimize
+     * @return the query after optimization
      */
-    public static void optimize(ParsedQuery theQuery) {
+    public static <T extends ParsedQuery> T optimize(T theQuery) {
         QueryOptimizerList aList = new QueryOptimizerList();
 
         aList.add(new BindingAssigner());
@@ -197,6 +198,8 @@ public class SesameQueryUtils {
         aList.optimize(aExpr, theQuery.getDataset(), new MapBindingSet());
 
         theQuery.setTupleExpr(aExpr);
+
+        return theQuery;
     }
 
 	public static void main(String[] args) throws Exception {

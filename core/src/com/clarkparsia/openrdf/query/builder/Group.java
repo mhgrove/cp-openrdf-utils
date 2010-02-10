@@ -147,8 +147,8 @@ class Group {
 			else {
 				Join aNewJoin = new Join();
 
-				aJoin.setLeftArg(aJoin);
-				aJoin.setRightArg(aExpr);
+				aNewJoin.setLeftArg(aJoin);
+				aNewJoin.setRightArg(aExpr);
 
 				aJoin = aNewJoin;
 			}

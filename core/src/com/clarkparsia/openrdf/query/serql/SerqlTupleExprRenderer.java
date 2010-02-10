@@ -265,9 +265,9 @@ class SerqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 */
 	@Override
 	public void meet(Join theJoin) throws Exception {
-		theJoin.getLeftArg().visit(this);
+        theJoin.getLeftArg().visit(this);
 
-		theJoin.getRightArg().visit(this);
+        theJoin.getRightArg().visit(this);
 	}
 
 	/**
