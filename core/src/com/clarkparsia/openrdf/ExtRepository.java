@@ -21,6 +21,7 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
+import org.openrdf.repository.sail.SailRepository;
 
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
@@ -44,6 +45,7 @@ import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.impl.TupleQueryResultImpl;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.sail.memory.MemoryStore;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
@@ -69,14 +71,16 @@ import info.aduna.iteration.EmptyIteration;
 import info.aduna.iteration.CloseableIteration;
 
 /**
- * <p></p>
+ * <p>Extends the normal Sesame Repository, via RepositoryWrapper, with some additional utility functions.</p>
  *
  * @author Michael Grove
+ * @since 0.1
  */
 public class ExtRepository extends RepositoryWrapper {
 	private static Logger LOGGER = LogManager.getLogger("com.clarkparsia.openrdf");
 	
 	public ExtRepository() {
+		super(new SailRepository(new MemoryStore()));
 	}
 
 	public ExtRepository(final Repository theRepository) {
