@@ -22,10 +22,16 @@ import org.openrdf.query.algebra.Join;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.And;
+import org.openrdf.query.algebra.StatementPattern;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
+
+import com.clarkparsia.utils.Predicate;
+import com.clarkparsia.utils.FunctionUtil;
+import static com.clarkparsia.utils.collections.CollectionUtil.filter;
+import static com.clarkparsia.utils.collections.CollectionUtil.transform;
 
 /**
  * <p>Internal class for representing a group within a query.</p>
@@ -155,5 +161,10 @@ class Group {
 		}
 
 		return aJoin;
+	}
+
+	Collection<StatementPattern> getPatterns() {
+		return transform(filter(mExpressions, new Predicate<TupleExpr>() { public boolean accept(TupleExpr theExpr) { return theExpr instanceof StatementPattern; } }),
+						 new FunctionUtil.Cast<TupleExpr, StatementPattern>(StatementPattern.class));
 	}
 }

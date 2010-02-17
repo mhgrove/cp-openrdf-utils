@@ -78,6 +78,11 @@ public class GroupBuilder<T extends ParsedQuery> {
 
 	public GroupBuilder setScope(StatementPattern.Scope theScope) {
 		mScope = theScope;
+
+		for (StatementPattern aPattern : mGroup.getPatterns()) {
+			aPattern.setScope(mScope);
+		}
+
 		return this;
 	}
 
@@ -88,6 +93,11 @@ public class GroupBuilder<T extends ParsedQuery> {
 
 	public GroupBuilder setContext(Value theContextValue) {
 		mContext = valueToVar(theContextValue);
+
+		for (StatementPattern aPattern : mGroup.getPatterns()) {
+			aPattern.setContextVar(mContext);
+		}
+
 		return this;
 	}
 
@@ -117,7 +127,13 @@ public class GroupBuilder<T extends ParsedQuery> {
     }
 
     public GroupBuilder<T> atoms(Collection<StatementPattern> thePatterns) {
+		for (StatementPattern aPattern : thePatterns) {
+			aPattern.setContextVar(mContext);
+			aPattern.setScope(mScope);
+		}
+
         mGroup.addAll(thePatterns);
+
         return this;
     }
 

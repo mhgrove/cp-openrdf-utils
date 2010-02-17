@@ -324,5 +324,9 @@ public class SesameQueryUtils {
         System.err.println(gq);
         System.err.println("---------------------------");
         System.err.println(new SPARQLParser().parseQuery("construct {?s <"+RDF.TYPE+"> <"+RDFS.RESOURCE+">} where {?s ?p ?o } ", "http://example.org"));
+
+		System.err.println(new SPARQLParser().parseQuery("construct {?s ?p ?o}\n" +
+														 "from <http://lurch.hq.nasa.gov/2006/09/26/ldap/210195930>\n" +
+														 "where {?s ?p ?o. filter(?s = <http://lurch.hq.nasa.gov/2006/09/26/ldap/210195930>) }", "http://example.org"));
 	}
 }
