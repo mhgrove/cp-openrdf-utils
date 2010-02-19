@@ -45,6 +45,7 @@ import java.io.FileOutputStream;
 
 import com.clarkparsia.openrdf.util.GraphBuildingRDFHandler;
 import static com.clarkparsia.openrdf.OpenRdfUtil.close;
+import com.clarkparsia.utils.io.Encoder;
 
 /**
  * <p>Collection of utility methods for doing IO operations with RIO and the OpenRdf API</p>
@@ -107,15 +108,17 @@ public class OpenRdfIO {
 	}
 
 	public static void addData(Repository theRepo, File theFile) throws RDFParseException, IOException {
-		addData(theRepo, new FileInputStream(theFile),Rio.getParserFormatForFileName(theFile.getName()));
+		addData(theRepo, new FileInputStream(theFile), Rio.getParserFormatForFileName(theFile.getName()));
 	}
 
 	public static void addData(Repository theRepo, InputStream theStream, RDFFormat theFormat) throws RDFParseException, IOException {
-		addData(theRepo, new InputStreamReader(theStream), theFormat);
+		addData(theRepo, new InputStreamReader(theStream, Encoder.UTF8.name()), theFormat);
 	}
 
 	public static void addData(Repository theRepo, Reader theStream, RDFFormat theFormat) throws RDFParseException, IOException {
 		RDFParser aParser = Rio.createParser(theFormat);
+
+		aParser.setVerifyData(false);
 
 		RepositoryConnection aConn = null;
 
@@ -174,11 +177,7 @@ public class OpenRdfIO {
 		try {
 			RepositoryConnection aConn = theRepo.getConnection();
 
-			theWriter.startRDF();
-
 			aConn.exportStatements(null, null, null, true, theWriter);
-
-			theWriter.endRDF();
 		}
 		catch (RDFHandlerException e) {
 			throw new IOException(e);

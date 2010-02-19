@@ -342,4 +342,17 @@ public class ExtRepository extends RepositoryWrapper {
 			close(aConn);
 		}
 	}
+
+	public long size() throws RepositoryException {
+		RepositoryConnection aConn = null;
+
+		try {
+			aConn = getConnection();
+
+			return aConn.size();
+		}
+		finally {
+			close(aConn);
+		}
+	}
 }

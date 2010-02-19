@@ -52,11 +52,6 @@ import java.util.List;
  */
 public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder<T> {
 
-	// TODO: extensions/aliases
-	// TODO: describe & ask support
-	// TODO: support for set operations
-	// TODO: fluent api for ValueExpr construction
-
 	private List<String> mProjectionVars = new ArrayList<String>();
 	private List<StatementPattern> mProjectionPatterns = new ArrayList<StatementPattern>();
 
