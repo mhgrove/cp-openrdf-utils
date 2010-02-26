@@ -146,7 +146,7 @@ public class OpenRdfIO {
 	 * @throws IOException if there is an error writing to the file
 	 */
 	public static void writeRepository(Repository theRepo, File theFile, RDFFormat theFormat) throws RepositoryException, IOException {
-		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(new FileOutputStream(theFile))));
+		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(new FileOutputStream(theFile), Encoder.UTF8)));
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class OpenRdfIO {
 	 * @throws IOException if there is an error writing to the stream
 	 */
 	public static void writeRepository(Repository theRepo, OutputStream theStream, RDFFormat theFormat) throws RepositoryException, IOException {
-		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(theStream)));
+		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(theStream, Encoder.UTF8)));
 	}
 
 	/**
