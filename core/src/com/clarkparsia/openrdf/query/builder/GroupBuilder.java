@@ -20,18 +20,25 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.ValueConstant;
+
 import org.openrdf.model.Value;
+
 import com.clarkparsia.utils.BasicUtils;
+
+import static com.clarkparsia.utils.collections.CollectionUtil.set;
+
 import org.openrdf.query.parser.ParsedQuery;
 
 import java.util.Arrays;
-import java.util.Collection;
+
+import java.util.Set;
 
 /**
  * <p>Builder for creating a grouped set of query atoms and filters in a query.</p>
  *
  * @author Michael Grove
  * @since 0.2
+ * @version 0.2.1
  */
 public class GroupBuilder<T extends ParsedQuery> {
 	private QueryBuilder<T> mBuilder;
@@ -123,10 +130,10 @@ public class GroupBuilder<T extends ParsedQuery> {
     }
 
     public GroupBuilder<T> atom(StatementPattern... thePatterns) {
-        return atoms(Arrays.asList(thePatterns));
+        return atoms(set(Arrays.asList(thePatterns)));
     }
 
-    public GroupBuilder<T> atoms(Collection<StatementPattern> thePatterns) {
+    public GroupBuilder<T> atoms(Set<StatementPattern> thePatterns) {
 		for (StatementPattern aPattern : thePatterns) {
 			aPattern.setContextVar(mContext);
 			aPattern.setScope(mScope);
@@ -166,7 +173,11 @@ public class GroupBuilder<T extends ParsedQuery> {
 	}
 
 	private GroupBuilder<T> addPattern(StatementPattern thePattern) {
+		thePattern.setContextVar(mContext);
+		thePattern.setScope(mScope);
+
 		mGroup.add(thePattern);
+
 		return this;
 	}
 

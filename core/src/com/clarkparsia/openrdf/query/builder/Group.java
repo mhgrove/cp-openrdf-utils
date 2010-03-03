@@ -23,10 +23,15 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.ValueConstant;
+import org.openrdf.model.impl.ValueFactoryImpl;
+import org.omg.CORBA.portable.ValueFactory;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.clarkparsia.utils.Predicate;
 import com.clarkparsia.utils.FunctionUtil;
@@ -38,12 +43,13 @@ import static com.clarkparsia.utils.collections.CollectionUtil.transform;
  *
  * @author Michael Grove
  * @since 0.2
+ * @version 0.2.1
  */
 class Group {
 	private boolean optional = false;
-	private List<TupleExpr> mExpressions = new ArrayList<TupleExpr>();
+	private Collection<TupleExpr> mExpressions = new HashSet<TupleExpr>();
 	private List<Group> children = new ArrayList<Group>();
-	private List<ValueExpr> mFilters = new ArrayList<ValueExpr>();
+	private Collection<ValueExpr> mFilters = new HashSet<ValueExpr>();
 
 	public Group(final boolean theOptional) {
 		optional = theOptional;
@@ -133,14 +139,14 @@ class Group {
         mExpressions.addAll(theTupleExprs);
     }
 
-	private TupleExpr asJoin(List<TupleExpr> theList) {
+	private TupleExpr asJoin(Collection<TupleExpr> theList) {
 		Join aJoin = new Join();
 
 		if (theList.isEmpty()) {
 			throw new RuntimeException("Can't have an empty or missing join.");
 		}
 		else if (theList.size() == 1) {
-			return theList.get(0);
+			return theList.iterator().next();
 		}
 
 		for (TupleExpr aExpr : theList) {
