@@ -29,11 +29,15 @@ import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.OrderElem;
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
- * <p></p>
+ * <p>Extends the BaseTupleExprRenderer to provide support for rendering tuple expressions as SPARQL queries.</p>
  *
  * @author Michael Grove
  * @since 0.2
+ * @version 0.2.1
  */
 class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 
@@ -53,7 +57,7 @@ class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 * @inheritDoc
 	 */
 	public String render(final TupleExpr theExpr) throws Exception {
-		reset();
+//		reset();
 
 		theExpr.visit(this);
 
@@ -214,6 +218,15 @@ class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 */
 	private String renderTupleExpr(TupleExpr theExpr) throws Exception {
 		SparqlTupleExprRenderer aRenderer = new SparqlTupleExprRenderer();
+
+//		aRenderer.mProjection = new ArrayList<ProjectionElemList>(mProjection);
+//		aRenderer.mDistinct = mDistinct;
+//		aRenderer.mReduced = mReduced;
+//		aRenderer.mExtensions = new HashMap<String, ValueExpr>(mExtensions);
+//		aRenderer.mOrdering = new ArrayList<OrderElem>(mOrdering);
+//		aRenderer.mLimit = mLimit;
+//		aRenderer.mOffset = mOffset;
+
 		return aRenderer.render(theExpr);
 	}
 

@@ -66,6 +66,7 @@ import com.clarkparsia.openrdf.query.builder.ValueExprFactory;
  *
  * @author Michael Grove
  * @since 0.2
+ * @version 0.2.1
  */
 public class SesameQueryUtils {
 
@@ -185,8 +186,13 @@ public class SesameQueryUtils {
 
         aList.add(new BindingAssigner());
         aList.add(new CompareOptimizer());
-        aList.add(new ConjunctiveConstraintSplitter());
-        aList.add(new DisjunctiveConstraintOptimizer());
+		// we're not currently using these since they don't seem to make sense from a client's perspective.  for example,
+		// they split OR value expressions into unioned queries.  this might make sense for the eval of the sesame query
+		// algebra internally, but the point of this method is to apply general purpose optimizations that make sense
+		// for everyone.  i dont think unioned queries is a way to achieve that.  so we'll disable them here and
+		// use the other "standard" optimizers.
+//        aList.add(new ConjunctiveConstraintSplitter());
+//        aList.add(new DisjunctiveConstraintOptimizer());
         aList.add(new SameTermFilterOptimizer());
         aList.add(new QueryModelNormalizer());
         aList.add(new IterativeEvaluationOptimizer());

@@ -33,11 +33,15 @@ import static com.clarkparsia.utils.collections.CollectionUtil.each;
 import static com.clarkparsia.utils.collections.CollectionUtil.transform;
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * <p>Renders a Sesame {@link TupleExpr} into SeRQL Syntax</p>
  *
  * @author Michael Grove
  * @since 0.2
+ * @version 0.2.1
  */
 class SerqlTupleExprRenderer extends BaseTupleExprRenderer {
 
@@ -65,8 +69,6 @@ class SerqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 * @inheritDoc
 	 */
 	public String render(TupleExpr theExpr) throws Exception {
-		reset();
-
 		theExpr.visit(this);
 
 		if (mBuffer.length() > 0) {
@@ -204,6 +206,15 @@ class SerqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 */
 	private String renderTupleExpr(TupleExpr theExpr) throws Exception {
 		SerqlTupleExprRenderer aRenderer = new SerqlTupleExprRenderer();
+
+		aRenderer.mProjection = new ArrayList<ProjectionElemList>(mProjection);
+		aRenderer.mDistinct = mDistinct;
+		aRenderer.mReduced = mReduced;
+		aRenderer.mExtensions = new HashMap<String, ValueExpr>(mExtensions);
+		aRenderer.mOrdering = new ArrayList<OrderElem>(mOrdering);
+		aRenderer.mLimit = mLimit;
+		aRenderer.mOffset = mOffset;
+		
 		return aRenderer.render(theExpr);
 	}
 
