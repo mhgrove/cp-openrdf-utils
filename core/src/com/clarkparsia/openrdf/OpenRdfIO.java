@@ -21,6 +21,7 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFHandler;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.Repository;
@@ -87,13 +88,34 @@ public class OpenRdfIO {
 		aParser.setRDFHandler(aHandler);
 
 		try {
-			aParser.parse(theInput, "");
+			aParser.parse(theInput, "http://openrdf.clarkparsia.com/");
 		}
 		catch (RDFHandlerException e) {
 			throw new RDFParseException(e);
 		}
 
 		return aHandler.getGraph();
+	}
+
+	/**
+	 * Iterate over the RDF Graph contained in the input stream, notifying the RDF handler for each statement
+	 * @param theHandler the RDFHandler to receive notifications of statmements in the graph
+	 * @param theInput the input to read the RDF from
+	 * @param theFormat the format of the RDF
+	 * @throws IOException if there is an error reading the RDF
+	 * @throws RDFParseException if it is not valid RDF
+	 */
+	public static void iterateGraph(RDFHandler theHandler, InputStream theInput, RDFFormat theFormat) throws IOException, RDFParseException {
+		RDFParser aParser = Rio.createParser(theFormat);
+
+		aParser.setRDFHandler(theHandler);
+
+		try {
+			aParser.parse(theInput, "http://openrdf.clarkparsia.com/");
+		}
+		catch (RDFHandlerException e) {
+			throw new RDFParseException(e);
+		}
 	}
 	
 	/**

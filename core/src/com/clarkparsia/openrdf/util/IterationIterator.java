@@ -82,6 +82,7 @@ public class IterationIterator<T> implements Iterator<T> {
 			return aObj;
 		}
 		catch (Exception e) {
+			// TODO: get better behavior for iterations throwing their native exception type
 			throw new RuntimeException(e);
 		}
 	}

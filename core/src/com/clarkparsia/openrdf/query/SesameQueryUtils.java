@@ -76,20 +76,24 @@ public class SesameQueryUtils {
 	 * @return the value rendered in its query string representation
 	 */
 	public static String getQueryString(Value theValue) {
-		String aStr = theValue.toString();
+        StringBuffer aBuffer = new StringBuffer();
 
-		if (theValue instanceof URI)
-			aStr = "<"+theValue.toString()+">";
-		else if (theValue instanceof BNode)
-			aStr = "_:"+((BNode)theValue).getID();
-		else if (theValue instanceof Literal) {
-			Literal aLit = (Literal)theValue;
-			aStr = "\"" + escape(aLit.getLabel()) + "\"" + (aLit.getLanguage() != null ? "@"+aLit.getLanguage() : "") ;
-			if (aLit.getDatatype() != null)
-				aStr += "^^<"+aLit.getDatatype().toString()+">";
-		}
+        if (theValue instanceof URI) {
+            URI aURI = (URI) theValue;
+            aBuffer.append("<").append(aURI.toString()).append(">");
+        }
+        else if (theValue instanceof BNode) {
+            aBuffer.append("_:").append(((BNode)theValue).getID());
+        }
+        else if (theValue instanceof Literal) {
+            Literal aLit = (Literal)theValue;
+            aBuffer.append("\"").append(escape(aLit.getLabel())).append("\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
+            if (aLit.getDatatype() != null) {
+                aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
+            }
+        }
 
-		return aStr;
+        return aBuffer.toString();
 	}
 
 	/**

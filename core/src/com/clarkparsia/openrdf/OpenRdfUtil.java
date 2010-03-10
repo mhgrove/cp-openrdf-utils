@@ -80,7 +80,7 @@ public class OpenRdfUtil {
 	 * @param theResult the RepositoryResult to wrap
 	 * @return the RepositoryResult as an Iterable
 	 */
-	public static <T> Iterable<T> iterable(final RepositoryResult<T> theResult) {
+	public static <T, E extends Exception> Iterable<T> iterable(final Iteration<T, E> theResult) {
 		return new Iterable<T>() {
 			public Iterator<T> iterator() {
 				return toIterator(theResult);

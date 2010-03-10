@@ -39,7 +39,7 @@ import java.util.HashMap;
  * @since 0.2
  * @version 0.2.1
  */
-class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
+public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 
 	private StringBuffer mJoinBuffer = new StringBuffer();
 
