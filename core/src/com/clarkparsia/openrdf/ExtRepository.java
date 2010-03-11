@@ -293,7 +293,7 @@ public class ExtRepository extends RepositoryWrapper {
 			});
         }
         catch (Exception ex) {
-            //System.err.println("Error getting value for "+theSubj+", "+thePred);
+            ex.printStackTrace();
         }
 
         return new HashSet<Value>();

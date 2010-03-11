@@ -89,13 +89,7 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 				aSlice.setOffset(mOffset);
 			}
 
-			if (aRoot == null) {
-				aRoot = aCurr = aSlice;
-			}
-			else {
-				aCurr.setArg(aSlice);
-				aCurr = aSlice;
-			}
+			aRoot = aCurr = aSlice;
 		}
 
 		if (mDistinct) {
