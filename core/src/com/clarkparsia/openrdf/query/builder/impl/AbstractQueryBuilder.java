@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-package com.clarkparsia.openrdf.query.builder;
+package com.clarkparsia.openrdf.query.builder.impl;
 
 import org.openrdf.model.Value;
 import org.openrdf.query.algebra.BinaryTupleOperator;
-import org.openrdf.query.algebra.Distinct;
 import org.openrdf.query.algebra.Extension;
 import org.openrdf.query.algebra.ExtensionElem;
 import org.openrdf.query.algebra.Join;
@@ -26,7 +25,6 @@ import org.openrdf.query.algebra.MultiProjection;
 import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.ProjectionElemList;
-import org.openrdf.query.algebra.Reduced;
 import org.openrdf.query.algebra.Slice;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.TupleExpr;
@@ -44,21 +42,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.clarkparsia.openrdf.query.builder.QueryBuilder;
+import com.clarkparsia.openrdf.query.builder.Group;
+import com.clarkparsia.openrdf.query.builder.GroupBuilder;
+
 /**
  * <p>Base implementation of a QueryBuilder.</p>
  *
  * @author Michael Grove
  * @since 0.2
+ * @version 0.2.1
  */
 public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder<T> {
 
 	private List<String> mProjectionVars = new ArrayList<String>();
-	private List<StatementPattern> mProjectionPatterns = new ArrayList<StatementPattern>();
+
+	// this is a bit of a hack making this protected so the construct query impl can access it.
+	// would be better to encapsulate building the projection element up so the subclasses just handle it.
+	protected List<StatementPattern> mProjectionPatterns = new ArrayList<StatementPattern>();
 
 	private List<Group> mQueryAtoms = new ArrayList<Group>();
 
-	private boolean mDistinct = false;
-	private boolean mReduced = false;
 	private int mLimit = -1;
 	private int mOffset = -1;
 
@@ -68,14 +72,19 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
         mQuery = theQuery;
     }
 
+	/**
+	 * @inheritDoc
+	 */
 	public void reset() {
 		mLimit = mOffset = -1;
-		mDistinct = mReduced = false;
 		mProjectionVars.clear();
 		mQueryAtoms.clear();
 		mProjectionPatterns.clear();
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public T query() {
 		UnaryTupleOperator aRoot = null;
 		UnaryTupleOperator aCurr = null;
@@ -90,30 +99,6 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 			}
 
 			aRoot = aCurr = aSlice;
-		}
-
-		if (mDistinct) {
-			Distinct aDistinct = new Distinct();
-
-			if (aRoot == null) {
-				aRoot = aCurr = aDistinct;
-			}
-			else {
-				aCurr.setArg(aDistinct);
-				aCurr = aDistinct;
-			}
-		}
-
-		if (mReduced) {
-			Reduced aReduced = new Reduced();
-
-			if (aRoot == null) {
-				aRoot = aCurr = aReduced;
-			}
-			else {
-				aCurr.setArg(aReduced);
-				aCurr = aReduced;
-			}
 		}
 
 		TupleExpr aJoin = join();
@@ -242,61 +227,52 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
         return aProjection;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public QueryBuilder<T> addProjectionVar(String... theNames) {
 		mProjectionVars.addAll(Arrays.asList(theNames));
 		return this;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public GroupBuilder<T> group() {
 		return new GroupBuilder<T>(this, false, null);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public GroupBuilder<T> optional() {
 		return new GroupBuilder<T>(this, true, null);
 	}
 
-	public QueryBuilder<T> distinct() {
-		mDistinct = true;
-		return this;
-	}
-
-	public QueryBuilder<T> reduced() {
-		mReduced = true;
-		return this;
-	}
-
+	/**
+	 * @inheritDoc
+	 */
 	public QueryBuilder<T> limit(int theLimit) {
 		mLimit = theLimit;
 		return this;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public QueryBuilder<T> offset(int theOffset) {
 		mOffset = theOffset;
 		return this;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public QueryBuilder<T> addGroup(Group theGroup) {
 		mQueryAtoms.add(theGroup);
         return this;
 	}
 
-    public QueryBuilder<T> addProjectionStatement(final String theSubj, final String thePred, final String theObj) {
-        mProjectionPatterns.add(new StatementPattern(new Var(theSubj), new Var(thePred), new Var(theObj)));
-
-        return this;
-    }
-
-    public QueryBuilder<T> addProjectionStatement(final String theSubj, final Value thePred, final Value theObj) {
-        mProjectionPatterns.add(new StatementPattern(new Var(theSubj), GroupBuilder.valueToVar(thePred), GroupBuilder.valueToVar(theObj)));
-
-        return this;
-    }
-
-    public QueryBuilder<T> addProjectionStatement(final String theSubj, final String thePred, final Value theObj) {
-        mProjectionPatterns.add(new StatementPattern(new Var(theSubj), new Var(thePred), GroupBuilder.valueToVar(theObj)));
-
-        return this;
-    }
 
     private TupleExpr groupAsJoin(List<Group> theList) {
 		BinaryTupleOperator aJoin = new Join();

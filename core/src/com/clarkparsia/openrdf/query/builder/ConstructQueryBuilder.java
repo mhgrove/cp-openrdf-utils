@@ -13,31 +13,20 @@
  * limitations under the License.
  */
 
-package com.clarkparsia.openrdf.vocabulary;
+package com.clarkparsia.openrdf.query.builder;
 
-import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.query.parser.ParsedGraphQuery;
 
 /**
- * <p>Term constants for the WGS ontology</p>
+ * <p>Extends the QueryBuilder interface to provide construct specific functions.</p>
  *
  * @author Michael Grove
- * @since 0.1
+ * @version 0.2.1
+ * @since 0.2.1
  */
-public class WGS extends Vocabulary {
-    private static WGS VOCAB = new WGS("http://www.w3.org/2003/01/geo/wgs84_pos#");
-
-    private WGS(String theURI) {
-        super(theURI);
-    }
-
-    public static WGS ontology() {
-        return VOCAB;
-    }
-
-    public final URI lat = term("lat");
-    public final URI _long = term("long");
-    public final URI alt = term("alt");
-    public final URI lat_long = term("lat_long");
-    public final URI Point = term("Point");
-    public final URI SpatialThing = term("SpatialThing");
+public interface ConstructQueryBuilder extends QueryBuilder<ParsedGraphQuery> {
+    public ConstructQueryBuilder addProjectionStatement(String theSubj, String thePred, String theObj);
+    public ConstructQueryBuilder addProjectionStatement(String theSubj, String thePred, Value theObj);
+    public ConstructQueryBuilder addProjectionStatement(String theSubj, Value thePred, Value theObj);
 }

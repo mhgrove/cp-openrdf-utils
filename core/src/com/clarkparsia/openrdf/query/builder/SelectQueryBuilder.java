@@ -13,31 +13,28 @@
  * limitations under the License.
  */
 
-package com.clarkparsia.openrdf.vocabulary;
+package com.clarkparsia.openrdf.query.builder;
 
-import org.openrdf.model.URI;
+import org.openrdf.query.parser.ParsedTupleQuery;
 
 /**
- * <p>Term constants for the WGS ontology</p>
+ * <p>Extends the QueryBuilder interface to provide Select query specific functions.</p>
  *
  * @author Michael Grove
- * @since 0.1
+ * @version 0.2.1
+ * @since 0.2.1
  */
-public class WGS extends Vocabulary {
-    private static WGS VOCAB = new WGS("http://www.w3.org/2003/01/geo/wgs84_pos#");
+public interface SelectQueryBuilder extends QueryBuilder<ParsedTupleQuery> {
+    /**
+     * Specify that this query should use the "distinct" keyword
+     * @return this query builder
+     */
+    public SelectQueryBuilder distinct();
 
-    private WGS(String theURI) {
-        super(theURI);
-    }
+    /**
+     * Specify that this query should use the "reduced" keyword
+     * @return this query builder
+     */
+    public SelectQueryBuilder reduced();
 
-    public static WGS ontology() {
-        return VOCAB;
-    }
-
-    public final URI lat = term("lat");
-    public final URI _long = term("long");
-    public final URI alt = term("alt");
-    public final URI lat_long = term("lat_long");
-    public final URI Point = term("Point");
-    public final URI SpatialThing = term("SpatialThing");
 }

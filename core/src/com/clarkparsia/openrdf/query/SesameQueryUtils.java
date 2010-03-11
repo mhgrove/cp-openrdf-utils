@@ -15,7 +15,6 @@
 
 package com.clarkparsia.openrdf.query;
 
-import com.clarkparsia.openrdf.query.builder.QueryBuilder;
 import com.clarkparsia.openrdf.query.builder.QueryBuilderFactory;
 
 import org.openrdf.model.Value;
@@ -34,8 +33,7 @@ import org.openrdf.query.algebra.TupleExpr;
 
 import org.openrdf.query.algebra.evaluation.impl.BindingAssigner;
 import org.openrdf.query.algebra.evaluation.impl.CompareOptimizer;
-import org.openrdf.query.algebra.evaluation.impl.ConjunctiveConstraintSplitter;
-import org.openrdf.query.algebra.evaluation.impl.DisjunctiveConstraintOptimizer;
+
 import org.openrdf.query.algebra.evaluation.impl.FilterOptimizer;
 import org.openrdf.query.algebra.evaluation.impl.IterativeEvaluationOptimizer;
 import org.openrdf.query.algebra.evaluation.impl.OrderLimitOptimizer;
@@ -50,7 +48,6 @@ import org.openrdf.query.impl.MapBindingSet;
 
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
-import org.openrdf.query.parser.ParsedTupleQuery;
 
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
@@ -60,6 +57,8 @@ import com.clarkparsia.openrdf.vocabulary.FOAF;
 import com.clarkparsia.openrdf.vocabulary.DC;
 
 import com.clarkparsia.openrdf.query.builder.ValueExprFactory;
+import com.clarkparsia.openrdf.query.builder.SelectQueryBuilder;
+import com.clarkparsia.openrdf.query.builder.ConstructQueryBuilder;
 
 /**
  * <p>Collection of utility methods for working with the OpenRdf Sesame Query API.</p>
@@ -220,7 +219,7 @@ public class SesameQueryUtils {
 							   "         { ?x foaf:mbox ?mbox . }\n" +
 							   "       }";
 
-		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+		SelectQueryBuilder aBuilder = QueryBuilderFactory.select();
 
 		aBuilder.addProjectionVar("name", "mbox")
 				.group().atom("x", FOAF.ontology().name, "name")
@@ -315,7 +314,7 @@ public class SesameQueryUtils {
 		System.err.println("---------------------------");
 		System.err.println(new SPARQLParser().parseQuery(aSelectStar, "http://example.org"));
 
-        QueryBuilder<ParsedGraphQuery> aConstructBuilder = QueryBuilderFactory.construct();
+        ConstructQueryBuilder aConstructBuilder = QueryBuilderFactory.construct();
 
         ParsedGraphQuery gq = aConstructBuilder
                 .group().atom("s", "p", "o").closeGroup().query();

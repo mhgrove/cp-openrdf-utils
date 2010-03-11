@@ -23,10 +23,6 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.algebra.Var;
-import org.openrdf.query.algebra.ValueConstant;
-import org.openrdf.model.impl.ValueFactoryImpl;
-import org.omg.CORBA.portable.ValueFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,7 +41,7 @@ import static com.clarkparsia.utils.collections.CollectionUtil.transform;
  * @since 0.2
  * @version 0.2.1
  */
-class Group {
+public class Group {
 	private boolean optional = false;
 	private Collection<TupleExpr> mExpressions = new HashSet<TupleExpr>();
 	private List<Group> children = new ArrayList<Group>();
@@ -85,7 +81,7 @@ class Group {
 
 				aJoin.setLeftArg(aExpr);
 
-				if (!aGroup.mFilters.isEmpty() && aGroup.isOptional()) {
+				if (!aGroup.mFilters.isEmpty() && aGroup.isOptional() && aJoin instanceof LeftJoin) {
 					aJoin.setRightArg(aGroup.expr(false));
 					((LeftJoin)aJoin).setCondition(aGroup.filtersAsAnd());
 				}

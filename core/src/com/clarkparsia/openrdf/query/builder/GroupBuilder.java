@@ -47,15 +47,15 @@ public class GroupBuilder<T extends ParsedQuery> {
 	private StatementPattern.Scope mScope = StatementPattern.Scope.DEFAULT_CONTEXTS;
 	private Var mContext = null;
 
-	GroupBuilder(final QueryBuilder<T> theBuilder) {
+	public GroupBuilder(final QueryBuilder<T> theBuilder) {
 		this(theBuilder, false, null);
 	}
 
-	GroupBuilder(final QueryBuilder<T> theBuilder, boolean theOptional) {
+	public GroupBuilder(final QueryBuilder<T> theBuilder, boolean theOptional) {
 		this(theBuilder, theOptional, null);
 	}
 
-	GroupBuilder(final QueryBuilder<T> theBuilder, boolean theOptional, Group theParent) {
+	public GroupBuilder(final QueryBuilder<T> theBuilder, boolean theOptional, Group theParent) {
 		mBuilder = theBuilder;
 		mGroup = new Group(theOptional);
 

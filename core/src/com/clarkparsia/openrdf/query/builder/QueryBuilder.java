@@ -15,7 +15,6 @@
 
 package com.clarkparsia.openrdf.query.builder;
 
-import org.openrdf.model.Value;
 import org.openrdf.query.parser.ParsedQuery;
 
 /**
@@ -24,6 +23,7 @@ import org.openrdf.query.parser.ParsedQuery;
  *
  * @author Michael Grove
  * @since 0.2
+ * @version 0.2.1
  */
 public interface QueryBuilder<T extends ParsedQuery> {
     /**
@@ -46,18 +46,6 @@ public interface QueryBuilder<T extends ParsedQuery> {
      */
     public QueryBuilder<T> limit(int theLimit);
 
-    /**
-     * Specify that this query should use the "distinct" keyword
-     * @return this query builder
-     */
-    public QueryBuilder<T> distinct();
-
-    /**
-     * Specify that this query should use the "reduced" keyword
-     * @return this query builder
-     */
-    public QueryBuilder<T> reduced();
-
     public GroupBuilder<T> optional();
     public GroupBuilder<T> group();
 
@@ -69,8 +57,4 @@ public interface QueryBuilder<T extends ParsedQuery> {
     public void reset();
 
     public QueryBuilder<T> addGroup(Group theGroup);
-
-    public QueryBuilder<T> addProjectionStatement(String theSubj, String thePred, String theObj);
-    public QueryBuilder<T> addProjectionStatement(String theSubj, String thePred, Value theObj);
-    public QueryBuilder<T> addProjectionStatement(String theSubj, Value thePred, Value theObj);
 }
