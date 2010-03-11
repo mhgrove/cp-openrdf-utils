@@ -280,7 +280,7 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(And theAnd) throws Exception {
-		binaryMeet("and", theAnd);
+		binaryMeet("&&", theAnd);
 	}
 
 	/**
@@ -288,7 +288,7 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(Or theOr) throws Exception {
-		binaryMeet("or", theOr);
+		binaryMeet("||", theOr);
 	}
 
 	/**
@@ -296,7 +296,7 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(Not theNot) throws Exception {
-		unaryMeet("not", theNot);
+		unaryMeet("!", theNot);
 	}
 
 	/**
