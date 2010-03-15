@@ -18,10 +18,6 @@ package com.clarkparsia.openrdf.query.builder;
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.ParsedGraphQuery;
 
-import com.clarkparsia.openrdf.query.builder.AbstractQueryBuilder;
-import com.clarkparsia.openrdf.query.builder.impl.SelectQueryBuilderImpl;
-import com.clarkparsia.openrdf.query.builder.impl.ConstructQueryBuilderImpl;
-
 /**
  * <p>Factory class for obtaining instances of {@link QueryBuilder} objects for the various types of queries.</p>
  *
