@@ -48,6 +48,7 @@ import org.openrdf.query.impl.MapBindingSet;
 
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
+import org.openrdf.query.parser.ParsedTupleQuery;
 
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
@@ -57,8 +58,10 @@ import com.clarkparsia.openrdf.vocabulary.FOAF;
 import com.clarkparsia.openrdf.vocabulary.DC;
 
 import com.clarkparsia.openrdf.query.builder.ValueExprFactory;
-import com.clarkparsia.openrdf.query.builder.SelectQueryBuilder;
-import com.clarkparsia.openrdf.query.builder.ConstructQueryBuilder;
+import com.clarkparsia.openrdf.query.builder.QueryBuilder;
+
+import com.clarkparsia.openrdf.query.sparql.SPARQLQueryRenderer;
+import com.clarkparsia.openrdf.query.serql.SeRQLQueryRenderer;
 
 /**
  * <p>Collection of utility methods for working with the OpenRdf Sesame Query API.</p>
@@ -219,7 +222,7 @@ public class SesameQueryUtils {
 							   "         { ?x foaf:mbox ?mbox . }\n" +
 							   "       }";
 
-		SelectQueryBuilder aBuilder = QueryBuilderFactory.select();
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
 
 		aBuilder.addProjectionVar("name", "mbox")
 				.group().atom("x", FOAF.ontology().name, "name")
@@ -245,8 +248,8 @@ public class SesameQueryUtils {
 
 		aBuilder.reset();
 
-		aBuilder.distinct().limit(100)
-			.addProjectionVar("name", "mbox", "fn", "ln")
+		aBuilder.addProjectionVar("name", "mbox", "fn", "ln")
+			.distinct().limit(100)
 			.group().atom("x", FOAF.ontology().name, "name")
 					.atom("x", FOAF.ontology().mbox, "mbox")
 					.optional()
@@ -314,7 +317,7 @@ public class SesameQueryUtils {
 		System.err.println("---------------------------");
 		System.err.println(new SPARQLParser().parseQuery(aSelectStar, "http://example.org"));
 
-        ConstructQueryBuilder aConstructBuilder = QueryBuilderFactory.construct();
+        QueryBuilder<ParsedGraphQuery> aConstructBuilder = QueryBuilderFactory.construct();
 
         ParsedGraphQuery gq = aConstructBuilder
                 .group().atom("s", "p", "o").closeGroup().query();
@@ -337,5 +340,80 @@ public class SesameQueryUtils {
 		System.err.println(new SPARQLParser().parseQuery("construct {?s ?p ?o}\n" +
 														 "from <http://lurch.hq.nasa.gov/2006/09/26/ldap/210195930>\n" +
 														 "where {?s ?p ?o. filter(?s = <http://lurch.hq.nasa.gov/2006/09/26/ldap/210195930>) }", "http://example.org"));
+
+		System.err.println("---------------------------");
+		System.err.println("---------------------------");
+
+		String aUnionQuery = "select distinct ?uri ?aLabel\n" +
+							 "where {\n" +
+							 "{\n" +
+							 "?var4 <http://www.clarkparsia.com/baseball/team> ?uri . \n" +
+							 "?var4 <http://www.clarkparsia.com/baseball/player> ?goal_base.\n" +
+							 "{\n" +
+							 "?var4 <http://www.clarkparsia.com/baseball/position> ?var0_1 .\n" +
+							 "filter  (?var0_1 = <http://www.clarkparsia.com/baseball/position/FirstBase>).\n" +
+							 "}\n" +
+							 "union {\n" +
+							 "?var4 <http://www.clarkparsia.com/baseball/position> ?var0_0 .\n" +
+							 "filter  (?var0_0 = <http://www.clarkparsia.com/baseball/position/ThirdBase>).\n" +
+							 "}\n" +
+							 "}.  \n" +
+							 "OPTIONAL {?uri <http://www.w3.org/2000/01/rdf-schema#label> ?aLabel.  }.}";
+
+		System.err.println(new SPARQLParser().parseQuery(aUnionQuery, "http://example.org"));
+
+		aBuilder.reset();
+		aBuilder.addProjectionVar("uri", "aLabel")
+				.distinct()
+				.group().atom("var4", ValueFactoryImpl.getInstance().createURI("http://www.clarkparsia.com/baseball/team"), "uri")
+						.atom("var4", ValueFactoryImpl.getInstance().createURI("http://www.clarkparsia.com/baseball/player"), "goal_base")
+						.union().left()
+									.atom("var4", ValueFactoryImpl.getInstance().createURI("http://www.clarkparsia.com/baseball/position"), "var0_0")
+									.filter().eq("var0_0", ValueFactoryImpl.getInstance().createURI("http://www.clarkparsia.com/baseball/FirstBase")).closeGroup()
+								.right()
+									.atom("var4", ValueFactoryImpl.getInstance().createURI("http://www.clarkparsia.com/baseball/position"), "var0_1")
+									.filter().eq("var0_1", ValueFactoryImpl.getInstance().createURI("http://www.clarkparsia.com/baseball/ThirdBase")).closeGroup()
+						.closeUnion()
+						.optional().atom("uri", RDFS.LABEL, "aLabel");
+
+		System.err.println(aBuilder.query());
+		System.err.println(new SPARQLQueryRenderer().render(aBuilder.query()));
+
+
+
+		String aUnionQuery2 = "select distinct ?uri ?aLabel\n" +
+							 "where {\n" +
+							 "{\n" +
+							 "?var4 <http://www.clarkparsia.com/baseball/team> ?uri . \n" +
+							 "?var4 <http://www.clarkparsia.com/baseball/player> ?goal_base.\n" +
+							 "{\n" +
+							 "?var4 <http://www.clarkparsia.com/baseball/position> ?var0_1 .\n" +
+							 "filter  (?var0_1 = <http://www.clarkparsia.com/baseball/position/FirstBase>).\n" +
+							 "}\n" +
+							 "union {\n" +
+							 "?var4 <http://www.clarkparsia.com/baseball/position> ?var0_0 .\n" +
+							 "filter  (?var0_0 = <http://www.clarkparsia.com/baseball/position/ThirdBase>).\n" +
+							 "}\n" +
+							 "union {\n" +
+							 "?var4 <http://www.clarkparsia.com/baseball/position> ?var0_2 .\n" +
+							 "filter  (?var0_2 = <http://www.clarkparsia.com/baseball/position/SecondBase>).\n" +
+							 "}\n" +
+
+							 "}.  \n" +
+							 "OPTIONAL {?uri <http://www.w3.org/2000/01/rdf-schema#label> ?aLabel.  }.}";
+
+		System.err.println("---------------------------");
+
+		System.err.println(new SPARQLParser().parseQuery(aUnionQuery2, "http://example.org"));
+
+		String q = "select distinct ?uri\n" +
+				   "where {\n" +
+				   "?var6 <http://www.clarkparsia.com/baseball/battingAverage> ?uri.  ?var5 <http://www.clarkparsia.com/baseball/team> ?var2.  ?var5 <http://www.clarkparsia.com/baseball/player> ?goal_base.  ?goal_base <http://www.clarkparsia.com/baseball/careerBatting> ?var6.   {?var5 <http://www.clarkparsia.com/baseball/position> <http://www.clarkparsia.com/baseball/position/FirstBase>.  }\n" +
+				   "union\n" +
+				   "{?var5 <http://www.clarkparsia.com/baseball/position> <http://www.clarkparsia.com/baseball/position/ThirdBase>.  }.\n" +
+				   "}\n" +
+				   "limit 10000";
+
+		System.err.println(new SeRQLQueryRenderer().render(new SPARQLParser().parseQuery(q, "http://example.org")));
 	}
 }

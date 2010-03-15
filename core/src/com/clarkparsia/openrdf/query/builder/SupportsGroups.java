@@ -15,18 +15,19 @@
 
 package com.clarkparsia.openrdf.query.builder;
 
-import org.openrdf.model.Value;
-import org.openrdf.query.parser.ParsedGraphQuery;
-
 /**
- * <p>Extends the QueryBuilder interface to provide construct specific functions.</p>
+ * <p>Interface for anything that supports having a collection of groups or sub-groups.</p>
  *
  * @author Michael Grove
- * @version 0.2.1
- * @since 0.2.1
+ * @version 0.2.2
+ * @since 0.2.2
  */
-public interface ConstructQueryBuilder extends QueryBuilder<ParsedGraphQuery> {
-    public ConstructQueryBuilder addProjectionStatement(String theSubj, String thePred, String theObj);
-    public ConstructQueryBuilder addProjectionStatement(String theSubj, String thePred, Value theObj);
-    public ConstructQueryBuilder addProjectionStatement(String theSubj, Value thePred, Value theObj);
+public interface SupportsGroups<T> {
+
+	/**
+	 * Add this group the the query
+	 * @param theGroup the group to add
+	 * @return this builder
+	 */
+	public T addGroup(Group theGroup);
 }

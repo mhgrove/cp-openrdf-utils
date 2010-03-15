@@ -26,6 +26,8 @@ import org.openrdf.model.Value;
 import com.clarkparsia.utils.BasicUtils;
 
 import static com.clarkparsia.utils.collections.CollectionUtil.set;
+import com.clarkparsia.openrdf.query.builder.UnionBuilder;
+import com.clarkparsia.openrdf.query.builder.BasicGroup;
 
 import org.openrdf.query.parser.ParsedQuery;
 
@@ -38,49 +40,59 @@ import java.util.Set;
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.1
+ * @version 0.2.2
  */
-public class GroupBuilder<T extends ParsedQuery> {
-	private QueryBuilder<T> mBuilder;
-	private Group mGroup;
+public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
+	private E mBuilder;
+	private BasicGroup mGroup;
 
 	private StatementPattern.Scope mScope = StatementPattern.Scope.DEFAULT_CONTEXTS;
 	private Var mContext = null;
 
-	public GroupBuilder(final QueryBuilder<T> theBuilder) {
+	public GroupBuilder(final E theBuilder) {
 		this(theBuilder, false, null);
 	}
 
-	public GroupBuilder(final QueryBuilder<T> theBuilder, boolean theOptional) {
+	public GroupBuilder(final E theBuilder, boolean theOptional) {
 		this(theBuilder, theOptional, null);
 	}
 
-	public GroupBuilder(final QueryBuilder<T> theBuilder, boolean theOptional, Group theParent) {
+	public GroupBuilder(final E theBuilder, boolean theOptional, BasicGroup theParent) {
 		mBuilder = theBuilder;
-		mGroup = new Group(theOptional);
+		mGroup = new BasicGroup(theOptional);
 
 		if (theParent == null) {
-			mBuilder.addGroup(mGroup);
+			if (mBuilder != null) {
+				mBuilder.addGroup(mGroup);
+			}
 		}
 		else {
 			theParent.addChild(mGroup);
 		}
 	}
 
-    Group getGroup() {
+    public Group getGroup() {
 		return mGroup;
 	}
 
-	public GroupBuilder<T> group() {
-		return new GroupBuilder<T>(mBuilder, false, mGroup);
+	public GroupBuilder<T,E> group() {
+		return new GroupBuilder<T,E>(mBuilder, false, mGroup);
 	}
 
-	public GroupBuilder<T> optional() {
-		return new GroupBuilder<T>(mBuilder, true, mGroup);
+	public GroupBuilder<T,E> optional() {
+		return new GroupBuilder<T,E>(mBuilder, true, mGroup);
 	}
 
-	public QueryBuilder<T> closeGroup() {
+	public E closeGroup() {
 		return mBuilder;
+	}
+
+	public UnionBuilder<T> union() {
+		UnionBuilder<T> aBuilder = new UnionBuilder<T>(this);
+		
+		mGroup.addChild(aBuilder);
+
+		return aBuilder;
 	}
 
 	public GroupBuilder setScope(StatementPattern.Scope theScope) {
@@ -108,32 +120,32 @@ public class GroupBuilder<T extends ParsedQuery> {
 		return this;
 	}
 
-	public FilterBuilder<T> filter() {
-		return new FilterBuilder<T>(this);
+	public FilterBuilder<T, E> filter() {
+		return new FilterBuilder<T, E>(this);
 	}
 
-    public GroupBuilder<T> filter(ValueExpr theExpr) {
+    public GroupBuilder<T,E> filter(ValueExpr theExpr) {
         mGroup.addFilter(theExpr);
 
         return this;
     }
 
-	public GroupBuilder<T> filter(String theVar, Compare.CompareOp theOp, Value theValue) {
+	public GroupBuilder<T,E> filter(String theVar, Compare.CompareOp theOp, Value theValue) {
 		Compare aComp = new Compare(new Var(theVar), new ValueConstant(theValue), theOp);
 		mGroup.addFilter(aComp);
 
 		return this;
 	}
 
-    public GroupBuilder<T> atom(StatementPattern thePattern) {
+    public GroupBuilder<T,E> atom(StatementPattern thePattern) {
         return addPattern(thePattern);
     }
 
-    public GroupBuilder<T> atom(StatementPattern... thePatterns) {
+    public GroupBuilder<T,E> atom(StatementPattern... thePatterns) {
         return atoms(set(Arrays.asList(thePatterns)));
     }
 
-    public GroupBuilder<T> atoms(Set<StatementPattern> thePatterns) {
+    public GroupBuilder<T,E> atoms(Set<StatementPattern> thePatterns) {
 		for (StatementPattern aPattern : thePatterns) {
 			aPattern.setContextVar(mContext);
 			aPattern.setScope(mScope);
@@ -144,35 +156,35 @@ public class GroupBuilder<T extends ParsedQuery> {
         return this;
     }
 
-	public GroupBuilder<T> atom(String theSubjVar, String thePredVar, String theObjVar) {
+	public GroupBuilder<T,E> atom(String theSubjVar, String thePredVar, String theObjVar) {
 		return addPattern(newPattern(new Var(theSubjVar), new Var(thePredVar), new Var(theObjVar)));
 	}
 
-	public GroupBuilder<T> atom(String theSubjVar, String thePredVar, Value theObj) {
+	public GroupBuilder<T,E> atom(String theSubjVar, String thePredVar, Value theObj) {
 		return addPattern(newPattern(new Var(theSubjVar), new Var(thePredVar), valueToVar(theObj)));
 	}
 
-	public GroupBuilder<T> atom(String theSubjVar, Value thePredVar, String theObj) {
+	public GroupBuilder<T,E> atom(String theSubjVar, Value thePredVar, String theObj) {
 		return addPattern(newPattern(new Var(theSubjVar), valueToVar(thePredVar), new Var(theObj)));
 	}
 
-	public GroupBuilder<T> atom(String theSubjVar, Value thePred, Value theObj) {
+	public GroupBuilder<T,E> atom(String theSubjVar, Value thePred, Value theObj) {
 		return addPattern(newPattern(new Var(theSubjVar), valueToVar(thePred), valueToVar(theObj)));
 	}
 
-	public GroupBuilder<T> atom(Value theSubjVar, Value thePredVar, Value theObj) {
+	public GroupBuilder<T,E> atom(Value theSubjVar, Value thePredVar, Value theObj) {
 		return addPattern(newPattern(valueToVar(theSubjVar), valueToVar(thePredVar), valueToVar(theObj)));
 	}
 
-	public GroupBuilder<T> atom(Value theSubjVar, Value thePredVar, String theObj) {
+	public GroupBuilder<T,E> atom(Value theSubjVar, Value thePredVar, String theObj) {
 		return addPattern(newPattern(valueToVar(theSubjVar), valueToVar(thePredVar), new Var(theObj)));
 	}
 
-	public GroupBuilder<T> atom(Value theSubjVar, String thePredVar, String theObj) {
+	public GroupBuilder<T,E> atom(Value theSubjVar, String thePredVar, String theObj) {
 		return addPattern(newPattern(valueToVar(theSubjVar), new Var(thePredVar), new Var(theObj)));
 	}
 
-	private GroupBuilder<T> addPattern(StatementPattern thePattern) {
+	private GroupBuilder<T,E> addPattern(StatementPattern thePattern) {
 		thePattern.setContextVar(mContext);
 		thePattern.setScope(mScope);
 

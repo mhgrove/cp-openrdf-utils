@@ -27,10 +27,9 @@ import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.ProjectionElemList;
 import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.OrderElem;
+
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * <p>Extends the BaseTupleExprRenderer to provide support for rendering tuple expressions as SPARQL queries.</p>
@@ -129,7 +128,11 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 		}
 
 		if (mJoinBuffer.length() > 0) {
-			if (mJoinBuffer.lastIndexOf(",") != -1) {
+
+			// this removes any superflous trailing commas, i think this is just an artifact of this code's history
+			// from initially being a serql renderer.  i'll leave it for now, but i think this is to be removed.
+			// test cases to prove these things work would be lovely.
+			if (mJoinBuffer.toString().trim().lastIndexOf(",") == mJoinBuffer.length()-1) {
 				mJoinBuffer.setCharAt(mJoinBuffer.lastIndexOf(","), ' ');
 			}
 			

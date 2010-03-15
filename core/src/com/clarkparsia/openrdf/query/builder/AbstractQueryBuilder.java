@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-package com.clarkparsia.openrdf.query.builder.impl;
+package com.clarkparsia.openrdf.query.builder;
 
-import org.openrdf.model.Value;
 import org.openrdf.query.algebra.BinaryTupleOperator;
 import org.openrdf.query.algebra.Extension;
 import org.openrdf.query.algebra.ExtensionElem;
@@ -31,40 +30,42 @@ import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.UnaryTupleOperator;
 
 import org.openrdf.query.algebra.ValueConstant;
+import org.openrdf.query.algebra.Distinct;
+import org.openrdf.query.algebra.Reduced;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
 import org.openrdf.query.algebra.helpers.VarNameCollector;
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
+import org.openrdf.model.Value;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import com.clarkparsia.openrdf.query.builder.QueryBuilder;
-import com.clarkparsia.openrdf.query.builder.Group;
-import com.clarkparsia.openrdf.query.builder.GroupBuilder;
+import java.util.Arrays;
 
 /**
  * <p>Base implementation of a QueryBuilder.</p>
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.1
+ * @version 0.2.2
  */
 public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder<T> {
 
-	private List<String> mProjectionVars = new ArrayList<String>();
-
-	// this is a bit of a hack making this protected so the construct query impl can access it.
+	// this is a bit of a hack making these protected so the select/construct query impl can access it.
 	// would be better to encapsulate building the projection element up so the subclasses just handle it.
 	protected List<StatementPattern> mProjectionPatterns = new ArrayList<StatementPattern>();
+	protected List<String> mProjectionVars = new ArrayList<String>();
 
 	private List<Group> mQueryAtoms = new ArrayList<Group>();
 
 	private int mLimit = -1;
+
 	private int mOffset = -1;
+
+	private boolean mDistinct = false;
+	private boolean mReduced = false;
 
     private T mQuery;
 
@@ -76,6 +77,7 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 	 * @inheritDoc
 	 */
 	public void reset() {
+		mDistinct = mReduced = false;
 		mLimit = mOffset = -1;
 		mProjectionVars.clear();
 		mQueryAtoms.clear();
@@ -91,6 +93,7 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 
 		if (mLimit != -1 || mOffset != -1) {
 			Slice aSlice = new Slice();
+			
 			if (mLimit != -1) {
 				aSlice.setLimit(mLimit);
 			}
@@ -99,6 +102,31 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 			}
 
 			aRoot = aCurr = aSlice;
+		}
+
+		if (mDistinct) {
+			Distinct aDistinct = new Distinct();
+
+			if (aRoot == null) {
+				aRoot = aCurr = aDistinct;
+			}
+			else {
+				aCurr.setArg(aDistinct);
+				aCurr = aDistinct;
+			}
+		}
+
+		if (mReduced) {
+			Reduced aReduced = new Reduced();
+
+			if (aRoot == null) {
+				aRoot = aCurr = aReduced;
+			}
+
+			else {
+				aCurr.setArg(aReduced);
+				aCurr = aReduced;
+			}
 		}
 
 		TupleExpr aJoin = join();
@@ -141,6 +169,80 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 
         return mQuery;
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public QueryBuilder<T> distinct() {
+		// crappy way to only let this be set for select queries
+		if (isSelect()) {
+			mDistinct = true;
+		}
+
+		return this;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public QueryBuilder<T> reduced() {
+		mReduced = true;
+		return this;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public QueryBuilder<T> addProjectionVar(String... theNames) {
+		if (isSelect()) {
+			mProjectionVars.addAll(Arrays.asList(theNames));
+		}
+
+		return this;
+	}
+
+	private boolean isConstruct() {
+		// crappy way to only let this be set for select queries
+		return (mQuery instanceof ParsedGraphQuery);
+	}
+
+	private boolean isSelect() {
+		// crappy way to only let this be set for select queries
+		return (mQuery instanceof ParsedTupleQuery);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+    public QueryBuilder<T> addProjectionStatement(final String theSubj, final String thePred, final String theObj) {
+		if (isConstruct()) {
+        	mProjectionPatterns.add(new StatementPattern(new Var(theSubj), new Var(thePred), new Var(theObj)));
+		}
+
+        return this;
+    }
+
+	/**
+	 * @inheritDoc
+	 */
+    public QueryBuilder<T> addProjectionStatement(final String theSubj, final Value thePred, final Value theObj) {
+		if (isConstruct()) {
+        	mProjectionPatterns.add(new StatementPattern(new Var(theSubj), GroupBuilder.valueToVar(thePred), GroupBuilder.valueToVar(theObj)));
+		}
+
+        return this;
+    }
+
+	/**
+	 * @inheritDoc
+	 */
+    public QueryBuilder<T> addProjectionStatement(final String theSubj, final String thePred, final Value theObj) {
+		if (isConstruct()) {
+        	mProjectionPatterns.add(new StatementPattern(new Var(theSubj), new Var(thePred), GroupBuilder.valueToVar(theObj)));
+		}
+
+        return this;
+    }
 
 	private TupleExpr join() {
 		if (mQueryAtoms.isEmpty()) {
@@ -230,23 +332,15 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 	/**
 	 * @inheritDoc
 	 */
-	public QueryBuilder<T> addProjectionVar(String... theNames) {
-		mProjectionVars.addAll(Arrays.asList(theNames));
-		return this;
+	public GroupBuilder<T, QueryBuilder<T>> group() {
+		return new GroupBuilder<T, QueryBuilder<T>>(this, false, null);
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public GroupBuilder<T> group() {
-		return new GroupBuilder<T>(this, false, null);
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public GroupBuilder<T> optional() {
-		return new GroupBuilder<T>(this, true, null);
+	public GroupBuilder<T, QueryBuilder<T>> optional() {
+		return new GroupBuilder<T, QueryBuilder<T>>(this, true, null);
 	}
 
 	/**

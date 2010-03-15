@@ -18,7 +18,7 @@ package com.clarkparsia.openrdf.query.builder;
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.ParsedGraphQuery;
 
-import com.clarkparsia.openrdf.query.builder.impl.AbstractQueryBuilder;
+import com.clarkparsia.openrdf.query.builder.AbstractQueryBuilder;
 import com.clarkparsia.openrdf.query.builder.impl.SelectQueryBuilderImpl;
 import com.clarkparsia.openrdf.query.builder.impl.ConstructQueryBuilderImpl;
 
@@ -34,8 +34,8 @@ public class QueryBuilderFactory {
      * Create a QueryBuilder for creating a select query
      * @return a select QueryBuilder
      */
-    public static SelectQueryBuilder select() {
-        return new SelectQueryBuilderImpl();
+    public static QueryBuilder<ParsedTupleQuery> select() {
+        return new AbstractQueryBuilder<ParsedTupleQuery>(new ParsedTupleQuery());
     }
 
     /**
@@ -43,8 +43,8 @@ public class QueryBuilderFactory {
      * @param theProjectionVars the list of elements in the projection of the query
      * @return a select query builder
      */
-    public static SelectQueryBuilder select(String... theProjectionVars) {
-        SelectQueryBuilder aBuilder = new SelectQueryBuilderImpl();
+    public static QueryBuilder<ParsedTupleQuery> select(String... theProjectionVars) {
+        QueryBuilder<ParsedTupleQuery> aBuilder = new AbstractQueryBuilder<ParsedTupleQuery>(new ParsedTupleQuery());
         aBuilder.addProjectionVar(theProjectionVars);
 
         return aBuilder;
@@ -54,7 +54,7 @@ public class QueryBuilderFactory {
      * Create a QueryBuilder for building a construct query
      * @return a construct QueryBuilder
      */
-    public static ConstructQueryBuilder construct() {
-        return new ConstructQueryBuilderImpl();
+    public static QueryBuilder<ParsedGraphQuery> construct() {
+        return new AbstractQueryBuilder<ParsedGraphQuery>(new ParsedGraphQuery());
     }
 }

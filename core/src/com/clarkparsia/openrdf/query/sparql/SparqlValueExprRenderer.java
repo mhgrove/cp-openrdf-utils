@@ -81,8 +81,6 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 * @throws Exception if there is an error while rendering
 	 */
 	public String render(ValueExpr theExpr) throws Exception {
-		reset();
-
 		theExpr.visit(this);
 
 		return mBuffer.toString();

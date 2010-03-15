@@ -15,26 +15,16 @@
 
 package com.clarkparsia.openrdf.query.builder;
 
-import org.openrdf.query.parser.ParsedTupleQuery;
+import org.openrdf.query.algebra.TupleExpr;
 
 /**
- * <p>Extends the QueryBuilder interface to provide Select query specific functions.</p>
+ * <p>Interface for something that supports the ability to turn itself into a Sesame TupleExpr.</p>
  *
  * @author Michael Grove
- * @version 0.2.1
- * @since 0.2.1
+ * @version 0.2.2
+ * @since 0.2.2
  */
-public interface SelectQueryBuilder extends QueryBuilder<ParsedTupleQuery> {
-    /**
-     * Specify that this query should use the "distinct" keyword
-     * @return this query builder
-     */
-    public SelectQueryBuilder distinct();
+public interface SupportsExpr {
 
-    /**
-     * Specify that this query should use the "reduced" keyword
-     * @return this query builder
-     */
-    public SelectQueryBuilder reduced();
-
+	TupleExpr expr();
 }
