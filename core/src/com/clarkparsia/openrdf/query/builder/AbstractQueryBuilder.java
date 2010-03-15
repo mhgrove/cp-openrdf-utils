@@ -33,6 +33,10 @@ import org.openrdf.query.algebra.ValueConstant;
 import org.openrdf.query.algebra.Distinct;
 import org.openrdf.query.algebra.Reduced;
 import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.Filter;
+import org.openrdf.query.algebra.QueryRoot;
+import org.openrdf.query.algebra.And;
+import org.openrdf.query.algebra.EmptySet;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
 import org.openrdf.query.algebra.helpers.VarNameCollector;
 import org.openrdf.query.parser.ParsedGraphQuery;
@@ -371,8 +375,28 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
     private TupleExpr groupAsJoin(List<Group> theList) {
 		BinaryTupleOperator aJoin = new Join();
 
+		Filter aFilter = null;
 		for (Group aGroup : theList) {
 			TupleExpr aExpr = aGroup.expr();
+
+			if (aExpr instanceof Filter && (((Filter)aExpr).getArg() == null || ((Filter)aExpr).getArg() instanceof EmptySet)) {
+				if (aFilter == null) {
+					aFilter = (Filter) aExpr;
+				}
+				else {
+					// if we already have a filter w/ an empty arg, let's And the conditions together.
+					aFilter.setCondition(new And(aFilter.getCondition(), ((Filter)aExpr).getCondition()));
+				}
+
+				continue;
+			}
+
+			if (aFilter != null) {
+				aFilter.setArg(aExpr);
+				aExpr = aFilter;
+
+				aFilter = null;
+			}
 
 			if (aGroup.isOptional()) {
 				LeftJoin lj = new LeftJoin();
@@ -405,7 +429,14 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 			}
 		}
 
-		return joinOrExpr(aJoin);
+		TupleExpr aExpr = joinOrExpr(aJoin);
+
+		if (aFilter != null) {
+			aFilter.setArg(aExpr);
+			aExpr = aFilter;
+		}
+
+		return aExpr;
 	}
 
 	private TupleExpr joinOrExpr(BinaryTupleOperator theExpr) {

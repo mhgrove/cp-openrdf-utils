@@ -23,6 +23,8 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.QueryRoot;
+import org.openrdf.query.algebra.EmptySet;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,32 +80,51 @@ public class BasicGroup implements Group {
 	}
 
 	private TupleExpr expr(boolean filterExpr) {
-		TupleExpr aExpr = asJoin(mExpressions);
+		TupleExpr aExpr = null;
 
-		if (filterExpr) {
-			aExpr = filteredTuple(aExpr);
+		if (mExpressions.isEmpty() && !mFilters.isEmpty()){
+			if (children.isEmpty()) {
+				aExpr = new Filter(new EmptySet(), filtersAsAnd());
+			}
+		}
+		else {
+			aExpr = asJoin(mExpressions);
+
+			if (filterExpr) {
+				aExpr = filteredTuple(aExpr);
+			}
 		}
 
 		if (!children.isEmpty()) {
-
 			for (Group aGroup : children) {
-				BinaryTupleOperator aJoin = aGroup.isOptional() ? new LeftJoin() : new Join();
-
-				aJoin.setLeftArg(aExpr);
-
-				if (aGroup.isOptional() && aJoin instanceof LeftJoin && aGroup instanceof BasicGroup && !((BasicGroup)aGroup).mFilters.isEmpty()) {
-
-					BasicGroup aBasicGroup = (BasicGroup) aGroup;
-
-					aJoin.setRightArg(aBasicGroup.expr(false));
-
-					((LeftJoin)aJoin).setCondition(aBasicGroup.filtersAsAnd());
+				if (aExpr == null) {
+					if (mExpressions.isEmpty() && !mFilters.isEmpty()) {
+						aExpr = new Filter(aGroup.expr(), filtersAsAnd());
+					}
+					else {
+						aExpr = aGroup.expr();
+					}
 				}
 				else {
-					aJoin.setRightArg(aGroup.expr());
+					BinaryTupleOperator aJoin = aGroup.isOptional() ? new LeftJoin() : new Join();
+
+					aJoin.setLeftArg(aExpr);
+
+					if (aGroup.isOptional() && aJoin instanceof LeftJoin && aGroup instanceof BasicGroup && !((BasicGroup)aGroup).mFilters.isEmpty()) {
+
+						BasicGroup aBasicGroup = (BasicGroup) aGroup;
+
+						aJoin.setRightArg(aBasicGroup.expr(false));
+
+						((LeftJoin)aJoin).setCondition(aBasicGroup.filtersAsAnd());
+					}
+					else {
+						aJoin.setRightArg(aGroup.expr());
+					}
+
+					aExpr = aJoin;
 				}
 
-				aExpr = aJoin;
 			}
 		}
 		
