@@ -45,6 +45,7 @@ import java.util.Set;
 public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
 	private E mBuilder;
 	private BasicGroup mGroup;
+	private BasicGroup mParent;
 
 	private StatementPattern.Scope mScope = StatementPattern.Scope.DEFAULT_CONTEXTS;
 	private Var mContext = null;
@@ -67,6 +68,7 @@ public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
 			}
 		}
 		else {
+			mParent = theParent;
 			theParent.addChild(mGroup);
 		}
 	}
@@ -84,6 +86,15 @@ public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
 	}
 
 	public E closeGroup() {
+		if (mGroup.isEmpty()) {
+			if (mParent != null) {
+				mParent.removeChild(mGroup);
+			}
+			else {
+				mBuilder.removeGroup(mGroup);
+			}
+		}
+
 		return mBuilder;
 	}
 

@@ -66,6 +66,14 @@ public class GraphBuilder {
 		return instance(theType, theURI.toString());
 	}
 
+	public ResourceBuilder instance(URI theType, Resource theRes) {
+		if (theType != null) {
+			mGraph.add(theRes, RDF.TYPE, theType);
+		}
+
+		return new ResourceBuilder(mGraph, theRes);
+	}
+
     public ResourceBuilder instance(URI theType, String theURI) {
         Resource aRes = theURI == null
                         ? mGraph.getValueFactory().createBNode()

@@ -67,6 +67,17 @@ public class UnionBuilder<T extends ParsedQuery> implements SupportsGroups<Union
 		return this;
 	}
 
+	public UnionBuilder<T> removeGroup(final Group theGroup) {
+		if (mLeft != null && mLeft.equals(theGroup)) {
+			mLeft = null;
+		}
+		else if (mRight != null && mRight.equals(theGroup)) {
+			mRight = null;
+		}
+
+		return this;
+	}
+
 	/**
 	 * @inheritDoc
 	 */
@@ -78,7 +89,19 @@ public class UnionBuilder<T extends ParsedQuery> implements SupportsGroups<Union
 	 * @inheritDoc
 	 */
 	public TupleExpr expr() {
-		return new Union(mLeft.expr(), mRight.expr());
+		if (mLeft != null && mRight != null) {
+			return new Union(mLeft.expr(), mRight.expr());
+		}
+		else if (mLeft != null && mRight == null) {
+			return mLeft.expr();
+
+		}
+		else if (mRight != null && mLeft == null) {
+			return mRight.expr();
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**

@@ -23,7 +23,6 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.algebra.QueryRoot;
 import org.openrdf.query.algebra.EmptySet;
 
 import java.util.Collection;
@@ -47,9 +46,13 @@ import com.clarkparsia.openrdf.query.builder.Group;
 public class BasicGroup implements Group {
 	private boolean mIsOptional = false;
 	private Collection<TupleExpr> mExpressions = new HashSet<TupleExpr>();
-	private List<Group> children = new ArrayList<Group>();
+	private List<Group> mChildren = new ArrayList<Group>();
 	private Collection<ValueExpr> mFilters = new HashSet<ValueExpr>();
 
+	/**
+	 * Create a new BasicGroup
+	 * @param theOptional whether or not the patterns and filters in this group are optional
+	 */
 	public BasicGroup(final boolean theOptional) {
 		mIsOptional = theOptional;
 	}
@@ -58,11 +61,27 @@ public class BasicGroup implements Group {
 	 * @inheritDoc
 	 */
 	public void addChild(Group theGroup) {
-		children.add(theGroup);
+		mChildren.add(theGroup);
 	}
 
+	/**
+	 * Remove a child from this group
+	 * @param theGroup the child to remove
+	 */
+	public void removeChild(Group theGroup) {
+		mChildren.remove(theGroup);
+	}
+
+	/**
+	 * Add a Filter to this group
+	 * @param theExpr the value filter to add
+	 */
 	public void addFilter(ValueExpr theExpr) {
 		mFilters.add(theExpr);
+	}
+
+	public boolean isEmpty() {
+		return mFilters.isEmpty() && mExpressions.isEmpty() && mChildren.isEmpty();
 	}
 
 	/**
@@ -82,8 +101,11 @@ public class BasicGroup implements Group {
 	private TupleExpr expr(boolean filterExpr) {
 		TupleExpr aExpr = null;
 
-		if (mExpressions.isEmpty() && !mFilters.isEmpty()){
-			if (children.isEmpty()) {
+		if (mExpressions.isEmpty() && mFilters.isEmpty()) {
+			return null;
+		}
+		else if (mExpressions.isEmpty() && !mFilters.isEmpty()) {
+			if (mChildren.isEmpty()) {
 				aExpr = new Filter(new EmptySet(), filtersAsAnd());
 			}
 		}
@@ -95,8 +117,8 @@ public class BasicGroup implements Group {
 			}
 		}
 
-		if (!children.isEmpty()) {
-			for (Group aGroup : children) {
+		if (!mChildren.isEmpty()) {
+			for (Group aGroup : mChildren) {
 				if (aExpr == null) {
 					if (mExpressions.isEmpty() && !mFilters.isEmpty()) {
 						aExpr = new Filter(aGroup.expr(), filtersAsAnd());

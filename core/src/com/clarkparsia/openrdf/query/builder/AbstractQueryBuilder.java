@@ -371,6 +371,13 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
         return this;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public QueryBuilder<T> removeGroup(Group theGroup) {
+		mQueryAtoms.remove(theGroup);
+		return this;
+	}
 
     private TupleExpr groupAsJoin(List<Group> theList) {
 		BinaryTupleOperator aJoin = new Join();
@@ -378,6 +385,10 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 		Filter aFilter = null;
 		for (Group aGroup : theList) {
 			TupleExpr aExpr = aGroup.expr();
+
+			if (aExpr == null) {
+				continue;
+			}
 
 			if (aExpr instanceof Filter && (((Filter)aExpr).getArg() == null || ((Filter)aExpr).getArg() instanceof EmptySet)) {
 				if (aFilter == null) {

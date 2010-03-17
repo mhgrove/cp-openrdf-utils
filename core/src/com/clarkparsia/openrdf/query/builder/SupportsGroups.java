@@ -25,9 +25,16 @@ package com.clarkparsia.openrdf.query.builder;
 public interface SupportsGroups<T> {
 
 	/**
-	 * Add this group the the query
+	 * Add this group from the query
 	 * @param theGroup the group to add
 	 * @return this builder
 	 */
 	public T addGroup(Group theGroup);
+
+	/**
+	 * Remove this group from the query
+	 * @param theGroup the group to remove
+	 * @return this builder
+	 */
+	public T removeGroup(Group theGroup);
 }
