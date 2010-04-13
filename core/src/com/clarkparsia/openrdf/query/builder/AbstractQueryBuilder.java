@@ -167,7 +167,9 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 			aCurr = (UnaryTupleOperator) aProjection.getArg();
 		}
 
-		aCurr.setArg(aJoin);
+		if (aJoin != null) {
+			aCurr.setArg(aJoin);
+		}
 
 		mQuery.setTupleExpr(aRoot);
 

@@ -133,7 +133,7 @@ public class SesameQueryUtils {
         }
     }
 
-    /**
+	/**
      * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit of a query
      * object to the provided value.  If there is no limit specified, {@link #limitWasSet} will return false.
      */

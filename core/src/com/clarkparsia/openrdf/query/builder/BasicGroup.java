@@ -102,7 +102,9 @@ public class BasicGroup implements Group {
 		TupleExpr aExpr = null;
 
 		if (mExpressions.isEmpty() && mFilters.isEmpty()) {
-			return null;
+			if (mChildren.isEmpty()) {
+				return null;
+			}
 		}
 		else if (mExpressions.isEmpty() && !mFilters.isEmpty()) {
 			if (mChildren.isEmpty()) {

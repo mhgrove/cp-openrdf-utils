@@ -42,7 +42,6 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.GraphQueryResult;
 
-import org.openrdf.query.impl.TupleQueryResultImpl;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.sail.memory.MemoryStore;
@@ -75,6 +74,7 @@ import info.aduna.iteration.CloseableIteration;
  *
  * @author Michael Grove
  * @since 0.1
+ * @since 0.2.2
  */
 public class ExtRepository extends RepositoryWrapper {
 	private static Logger LOGGER = LogManager.getLogger("com.clarkparsia.openrdf");
@@ -146,14 +146,6 @@ public class ExtRepository extends RepositoryWrapper {
 
 	private CloseableIteration<Statement, RepositoryException> emptyStatementIteration() {
 		return new EmptyIteration<Statement, RepositoryException>();
-	}
-
-	private CloseableIteration<BindingSet, QueryEvaluationException> emptyQueryIteration() {
-		return new EmptyIteration<BindingSet, QueryEvaluationException>();
-	}
-
-	private TupleQueryResult emptyQueryResults() {
-		return new TupleQueryResultImpl(Collections.<String>emptyList(), emptyQueryIteration());
 	}
 
 	public TupleQueryResult selectQuery(SesameQuery theQuery) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
