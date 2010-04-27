@@ -260,11 +260,20 @@ class SerqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(SameTerm theOp) throws Exception {
-		mBuffer.append(" sameTerm(");
-		theOp.getLeftArg().visit(this);
-		mBuffer.append(", ");
-		theOp.getRightArg().visit(this);
-		mBuffer.append(")");
+		if (SeRQLQueryRenderer.SERQL_ONE_X_COMPATIBILITY_MODE) {
+			mBuffer.append("(");
+			theOp.getLeftArg().visit(this);
+			mBuffer.append(" = ");
+			theOp.getRightArg().visit(this);
+			mBuffer.append(")");
+		}
+		else {
+			mBuffer.append(" sameTerm(");
+			theOp.getLeftArg().visit(this);
+			mBuffer.append(", ");
+			theOp.getRightArg().visit(this);
+			mBuffer.append(")");
+		}
 	}
 
 	/**

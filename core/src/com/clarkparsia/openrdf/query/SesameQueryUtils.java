@@ -415,5 +415,16 @@ public class SesameQueryUtils {
 				   "limit 10000";
 
 		System.err.println(new SeRQLQueryRenderer().render(new SPARQLParser().parseQuery(q, "http://example.org")));
+System.err.println("---");
+		System.err.println(new SPARQLParser().parseQuery("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
+														 "DESCRIBE ?x ?y <http://example.org/>\n" +
+														 "WHERE    {?x foaf:knows ?y}", "http://example.org"));
+
+		System.err.println(QueryBuilderFactory.describe(new String[] {"x", "y"}, ValueFactoryImpl.getInstance().createURI("http://example.org/")).group().atom("x", FOAF.ontology().knows, "y").closeGroup().query());
+
+//		System.err.println(new SPARQLParser().parseQuery("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
+//														 "CONSTRUCT {?x ?y <http://example.org/>}\n" +
+//														 "WHERE    {?x foaf:knows ?y}", "http://example.org"));
+
 	}
 }

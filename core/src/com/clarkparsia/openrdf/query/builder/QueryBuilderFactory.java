@@ -17,6 +17,12 @@ package com.clarkparsia.openrdf.query.builder;
 
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.ParsedGraphQuery;
+import org.openrdf.query.algebra.ValueExpr;
+import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.SameTerm;
+import org.openrdf.query.algebra.ValueConstant;
+import org.openrdf.model.Value;
+import org.openrdf.model.Resource;
 
 /**
  * <p>Factory class for obtaining instances of {@link QueryBuilder} objects for the various types of queries.</p>
@@ -53,4 +59,25 @@ public class QueryBuilderFactory {
     public static QueryBuilder<ParsedGraphQuery> construct() {
         return new AbstractQueryBuilder<ParsedGraphQuery>(new ParsedGraphQuery());
     }
+
+	public static QueryBuilder<ParsedGraphQuery> describe(String[] theVars, Resource... theValues) {
+		QueryBuilder<ParsedGraphQuery> aBuilder = new AbstractQueryBuilder<ParsedGraphQuery>(new ParsedGraphQuery());
+
+		aBuilder.addProjectionStatement("-descr-subj", "-descr-pred", "-descr-obj");
+		GroupBuilder<?,?> aGroup = aBuilder.group();
+
+		for (String aVar : theVars) {
+			aGroup.filter().or(new SameTerm(new Var(aVar), new Var("-descr-subj")),
+				 			   new SameTerm(new Var(aVar), new Var("-descr-obj")));
+		}
+
+		for (Resource aVar : theValues) {
+			aGroup.filter().or(new SameTerm(new ValueConstant(aVar), new Var("-descr-subj")),
+				 			   new SameTerm(new ValueConstant(aVar), new Var("-descr-obj")));
+		}
+
+		aGroup.atom("-descr-subj", "-descr-pred", "-descr-obj");
+
+		return aBuilder;
+	}
 }
