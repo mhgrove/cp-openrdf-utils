@@ -40,18 +40,23 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 
 import com.clarkparsia.utils.collections.CollectionUtil;
+import com.clarkparsia.utils.Predicate;
+import com.clarkparsia.utils.Function;
 
 /**
  * <p>Extends the {@link DelegatingGraph} class to provide additional convenience methods for working with a graph
  * object.</p>
  *
  * @author Michael Grove
+ * @since 0.1
+ * @version 0.2.2
  */
 public class ExtGraph extends DelegatingGraph {
 	public ExtGraph() {
@@ -60,6 +65,23 @@ public class ExtGraph extends DelegatingGraph {
 	public ExtGraph(final Graph theGraph) {
 		super(theGraph);
 	}
+
+	/**
+	 * Return a sub-graph where all the statements pass the supplied Predicate filter
+	 * @param thePredicate the filter
+	 * @return the graph of statements that pass the filter
+	 */
+	public ExtGraph filter(Predicate<Statement> thePredicate) {
+		ExtGraph aFilteredGraph = new ExtGraph();
+
+		aFilteredGraph.addAll(CollectionUtil.filter(this, thePredicate));
+
+		return aFilteredGraph;
+	}
+
+//	public <T> Collection<T> transform(Function<Statement, T> theFunc) {
+//		return CollectionUtil.transform(this, theFunc);
+//	}
 
 	/**
 	 * Alias for the {@link #match} method
