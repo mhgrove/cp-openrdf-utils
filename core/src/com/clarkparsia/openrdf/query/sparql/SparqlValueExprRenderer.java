@@ -334,7 +334,10 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(IsResource theOp) throws Exception {
-		unaryMeet("isResource", theOp);
+		// there's no isResource method in SPARQL, so lets serialize this as not isLiteral -- if something is not a literal
+		// then its probably a resource, tho it might be just not bound so this might not be 100% correct,
+		// but close enough for right now.
+		unaryMeet("!isLiteral", theOp);
 	}
 
 	/**
