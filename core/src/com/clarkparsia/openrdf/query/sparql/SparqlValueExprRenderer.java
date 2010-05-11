@@ -51,6 +51,8 @@ import org.openrdf.query.algebra.BinaryValueOperator;
 import org.openrdf.query.algebra.UnaryValueOperator;
 import org.openrdf.query.algebra.BNodeGenerator;
 import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.Order;
+import org.openrdf.query.algebra.OrderElem;
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 import com.clarkparsia.openrdf.query.SesameQueryUtils;
 

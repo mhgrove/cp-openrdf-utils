@@ -147,19 +147,19 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 			aFirst = true;
 			for (OrderElem aOrder : mOrdering) {
 				if (!aFirst) {
-					aQuery.append(", ");
+					aQuery.append(" ");
 				}
 				else {
 					aFirst = false;
 				}
 
-				aQuery.append(aOrder.getExpr());
-				aQuery.append(" " );
 				if (aOrder.isAscending()) {
-					aQuery.append("asc");
+					aQuery.append(renderValueExpr(aOrder.getExpr()));
 				}
 				else {
-					aQuery.append("desc");
+					aQuery.append("desc(");
+					aQuery.append(renderValueExpr(aOrder.getExpr()));
+					aQuery.append(")");
 				}
 			}
 		}
