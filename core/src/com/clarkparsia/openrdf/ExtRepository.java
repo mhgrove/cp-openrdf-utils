@@ -88,11 +88,11 @@ public class ExtRepository extends RepositoryWrapper {
 	}
 
 	/**
-	 * Return a graph which describes the given URI
-	 * @param theURI the URI to describe
+	 * Return a graph which describes the given Resource
+	 * @param theResource the resource to describe
 	 * @return the graph which describes the URI
 	 */
-	public Graph describe(URI theURI) {
+	public ExtGraph describe(Resource theResource) {
 		Graph aGraph = new GraphImpl();
 
 		RepositoryConnection aConn = null;
@@ -100,7 +100,7 @@ public class ExtRepository extends RepositoryWrapper {
 		try {
 			aConn = getConnection();
 
-			aGraph.addAll(CollectionUtil.set(new IterationIterator<Statement>(getStatements(theURI, null, null))));
+			aGraph.addAll(CollectionUtil.set(new IterationIterator<Statement>(getStatements(theResource, null, null))));
 		}
 		catch (Exception ex) {
 			LOGGER.error(ex);
@@ -109,7 +109,7 @@ public class ExtRepository extends RepositoryWrapper {
 			close(aConn);
 		}
 
-		return aGraph;
+		return new ExtGraph(aGraph);
 	}
 
 	/**

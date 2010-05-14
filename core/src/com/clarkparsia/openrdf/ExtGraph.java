@@ -259,6 +259,7 @@ public class ExtGraph extends DelegatingGraph {
 	}
 
 	public void add(Graph theGraph) {
+		theGraph.removeAll(this);
 		addAll(theGraph);
 	}
 
