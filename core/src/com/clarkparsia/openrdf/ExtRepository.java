@@ -78,11 +78,18 @@ import info.aduna.iteration.CloseableIteration;
  */
 public class ExtRepository extends RepositoryWrapper {
 	private static Logger LOGGER = LogManager.getLogger("com.clarkparsia.openrdf");
-	
+
+	/**
+	 * Create a new in-memory ExtRepository
+	 */
 	public ExtRepository() {
 		super(new SailRepository(new MemoryStore()));
 	}
 
+	/**
+	 * Create a new ExtRepository which wraps the provided source.
+	 * @param theRepository the source repository
+	 */
 	public ExtRepository(final Repository theRepository) {
 		super(theRepository);
 	}
@@ -144,14 +151,35 @@ public class ExtRepository extends RepositoryWrapper {
 		}
 	}
 
+	/**
+	 * Return an empty Iteration over Statements
+	 * @return an empty iteration
+	 */
 	private CloseableIteration<Statement, RepositoryException> emptyStatementIteration() {
 		return new EmptyIteration<Statement, RepositoryException>();
 	}
 
+	/**
+	 * Execute a select query
+	 * @param theQuery the query to execute
+	 * @return the query result set.
+	 * @throws RepositoryException if there is an error while querying
+	 * @throws MalformedQueryException if the query cannot be parsed
+	 * @throws QueryEvaluationException if there is an error while querying
+	 */
 	public TupleQueryResult selectQuery(SesameQuery theQuery) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 		return selectQuery(theQuery.getLanguage(), theQuery.getQueryString()); 
 	}
 
+	/**
+	 * Execute a select query.
+	 * @param theLang the query language
+	 * @param theQuery the query to execute
+	 * @return the result set
+	 * @throws RepositoryException if there is an error while querying
+	 * @throws MalformedQueryException if the query cannot be parsed
+	 * @throws QueryEvaluationException if there is an error while querying
+	 */
 	public TupleQueryResult selectQuery(QueryLanguage theLang, String theQuery) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 		RepositoryConnection aConn = null;
 		try {
@@ -164,10 +192,27 @@ public class ExtRepository extends RepositoryWrapper {
 		}
 	}
 
+	/**
+	 * Execute a construct query against this repository
+	 * @param theQuery the Query to execute
+	 * @return the results of the construct query
+	 * @throws RepositoryException if there is an error while querying
+	 * @throws MalformedQueryException if the query cannot be parsed
+	 * @throws QueryEvaluationException if there is an error while querying
+	 */
 	public ExtGraph constructQuery(SesameQuery theQuery) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 		return constructQuery(theQuery.getLanguage(), theQuery.getQueryString());
 	}
 
+	/**
+	 * Execute a construct query against this repository
+	 * @param theLang the query language
+	 * @param theQuery the query string
+	 * @return the results of the construct query
+	 * @throws RepositoryException if there is an error while querying
+	 * @throws MalformedQueryException if the query cannot be parsed
+	 * @throws QueryEvaluationException if there is an error while querying
+	 */
 	public ExtGraph constructQuery(QueryLanguage theLang, String theQuery) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 		RepositoryConnection aConn = null;
 
@@ -309,6 +354,11 @@ public class ExtRepository extends RepositoryWrapper {
 		addGraph(asGraph(theStatement));
 	}
 
+	/**
+	 * Add the graph to the repository
+	 * @param theGraph the graph to add
+	 * @throws RepositoryException if there is an error while adding the graph
+	 */
 	public void addGraph(final Graph theGraph) throws RepositoryException {
 		RepositoryConnection aConn = null;
 
@@ -322,6 +372,11 @@ public class ExtRepository extends RepositoryWrapper {
 		}
 	}
 
+	/**
+	 * Remove the graph from the repository
+	 * @param theGraph the graph to remove
+	 * @throws RepositoryException if there is an error while removing the graph
+	 */
 	public void removeGraph(final Graph theGraph) throws RepositoryException {
 		RepositoryConnection aConn = null;
 
@@ -335,6 +390,11 @@ public class ExtRepository extends RepositoryWrapper {
 		}
 	}
 
+	/**
+	 * Return the number of statements in this repository
+	 * @return the size of the repo
+	 * @throws RepositoryException if there is an error while retrieving the size.
+	 */
 	public long size() throws RepositoryException {
 		RepositoryConnection aConn = null;
 

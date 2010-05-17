@@ -49,6 +49,7 @@ import org.openrdf.query.impl.MapBindingSet;
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
+import org.openrdf.query.parser.serql.SeRQLParser;
 
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
@@ -426,5 +427,29 @@ System.err.println("---");
 //														 "CONSTRUCT {?x ?y <http://example.org/>}\n" +
 //														 "WHERE    {?x foaf:knows ?y}", "http://example.org"));
 
+		System.err.println("---------------------------");
+		String aOrderByQuery = "select distinct ?aLabel ?sim ?uri\n" +
+							   "where {\n" +
+							   "{<http://www.semanticweb.org/ontologies/WF.owl#Customer_45905> <http://www.semanticweb.org/ontologies/WF.owl#similarIndustryBusinessSalesAndEmployees> ?v0.  ?v0 <http://www.semanticweb.org/ontologies/WF.owl#similarTo> ?uri.  ?v0 <http://www.semanticweb.org/ontologies/WF.owl#similarity> ?sim.  ?uri <http://www.semanticweb.org/ontologies/WF.owl#name> ?aLabel.   filter (?uri != <http://www.semanticweb.org/ontologies/WF.owl#Customer_45905>).}. }\n" +
+							   "\n" +
+							   "order by desc(?sim)\n" +
+							   "limit 10";
+		System.err.println(new SPARQLParser().parseQuery(aOrderByQuery, "http://example.org"));
+		System.err.println(new SPARQLQueryRenderer().render(new SPARQLParser().parseQuery(aOrderByQuery, "http://example.org")));
+
+//		System.err.println("---------------------------");
+//		String q1 = "select DISTINCT predicate from {subj} predicate {value}, [{subj} rdf:type {type}] WHERE isResource(value) and type = NULL";
+////		String q2 = "select label(L) from {<urn:subject>} <urn:labelProperty> {L} WHERE isLiteral(L)";
+//		String q2 =  "select DISTINCT subjec, predicate, object from " +
+//                       "{subjec} <"+RDF.TYPE+"> {<urn:type>} ," +
+//                       "{subjec} predicate {object} " +
+//                       "WHERE isLiteral(object)";
+//
+//
+//		System.err.println(new SPARQLQueryRenderer().render(new SeRQLParser().parseQuery(q1, "http://example.org")));
+//		System.err.println(new SPARQLParser().parseQuery(new SPARQLQueryRenderer().render(new SeRQLParser().parseQuery(q1, "http://example.org")), "http://example.org"));
+//
+//		System.err.println(new SPARQLQueryRenderer().render(new SeRQLParser().parseQuery(q2, "http://example.org")));
+//		System.err.println(new SPARQLParser().parseQuery(new SPARQLQueryRenderer().render(new SeRQLParser().parseQuery(q2, "http://example.org")), "http://example.org"));
 	}
 }
