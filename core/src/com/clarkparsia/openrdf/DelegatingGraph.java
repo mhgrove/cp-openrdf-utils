@@ -53,7 +53,12 @@ public class DelegatingGraph implements Graph {
 	 * @inheritDoc
 	 */
 	public boolean add(final Resource theResource, final URI theURI, final Value theValue, final Resource... theContexts) {
-		return mGraph.add(theResource,  theURI, theValue, theContexts);
+		if (!mGraph.match(theResource, theURI, theValue, theContexts).hasNext()) {
+			return mGraph.add(theResource,  theURI, theValue, theContexts);
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**
@@ -109,7 +114,7 @@ public class DelegatingGraph implements Graph {
 	 * @inheritDoc
 	 */
 	public boolean add(final Statement e) {
-		return mGraph.add(e);
+		return !mGraph.contains(e) ? mGraph.add(e) : false;
 	}
 
 	/**
@@ -130,7 +135,16 @@ public class DelegatingGraph implements Graph {
 	 * @inheritDoc
 	 */
 	public boolean addAll(final Collection<? extends Statement> c) {
-		return mGraph.addAll(c);
+		boolean aGraphChanged = false;
+
+		for (Statement aStmt : c) {
+			boolean aAdded = add(aStmt);
+			if (aAdded) {
+				aGraphChanged = true;
+			}
+		}
+
+		return aGraphChanged;
 	}
 
 	/**
