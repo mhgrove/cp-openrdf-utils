@@ -50,10 +50,13 @@ import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.serql.SeRQLParser;
+import org.openrdf.query.parser.serql.SeRQLParserFactory;
 
 import org.openrdf.query.parser.sparql.SPARQLParser;
+import org.openrdf.query.parser.sparql.SPARQLParserFactory;
 
 import org.openrdf.query.algebra.Compare;
+import org.openrdf.query.MalformedQueryException;
 
 import com.clarkparsia.openrdf.vocabulary.FOAF;
 import com.clarkparsia.openrdf.vocabulary.DC;
@@ -72,6 +75,21 @@ import com.clarkparsia.openrdf.query.serql.SeRQLQueryRenderer;
  * @version 0.2.1
  */
 public class SesameQueryUtils {
+
+	/**
+	 * Return a parsed query object from the query string
+	 * @param theQuery the query string to parse
+	 * @return the parsed query object
+	 * @throws MalformedQueryException if the query string is not in a known query format.
+	 */
+	public static ParsedQuery parse(String theQuery) throws MalformedQueryException {
+		try {
+			return new SPARQLParserFactory().getParser().parseQuery(theQuery, "http://openrdf.clarkparsia.com");
+		}
+		catch (MalformedQueryException e) {
+			return new SeRQLParserFactory().getParser().parseQuery(theQuery, "http://openrdf.clarkparsia.com");
+		}
+	}
 
 	/**
 	 * Return the query string rendering of the {@link Value}
