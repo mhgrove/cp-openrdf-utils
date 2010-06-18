@@ -108,7 +108,7 @@ public class SesameQueryUtils {
         }
         else if (theValue instanceof Literal) {
             Literal aLit = (Literal)theValue;
-            aBuffer.append("\"").append(escape(aLit.getLabel())).append("\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
+            aBuffer.append("\"\"\"").append(escape(aLit.getLabel())).append("\"\"\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
             if (aLit.getDatatype() != null) {
                 aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
             }
@@ -234,7 +234,6 @@ public class SesameQueryUtils {
     }
 
 	public static void main(String[] args) throws Exception {
-
 		String aGroupedQuery = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n" +
 							   "SELECT ?name ?mbox\n" +
 							   "WHERE  { { ?x foaf:name ?name . }\n" +
