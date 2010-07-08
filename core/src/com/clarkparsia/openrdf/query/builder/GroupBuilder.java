@@ -98,8 +98,8 @@ public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
 		return mBuilder;
 	}
 
-	public UnionBuilder<T> union() {
-		UnionBuilder<T> aBuilder = new UnionBuilder<T>(this);
+	public UnionBuilder<T, E> union() {
+		UnionBuilder<T, E> aBuilder = new UnionBuilder<T, E>(this);
 		
 		mGroup.addChild(aBuilder);
 

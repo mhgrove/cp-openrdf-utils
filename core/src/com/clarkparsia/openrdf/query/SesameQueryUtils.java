@@ -96,7 +96,7 @@ public class SesameQueryUtils {
 	 * @param theValue the value to render
 	 * @return the value rendered in its query string representation
 	 */
-	public static String getQueryString(Value theValue) {
+	public static String getSPARQLQueryString(Value theValue) {
         StringBuffer aBuffer = new StringBuffer();
 
         if (theValue instanceof URI) {
@@ -108,7 +108,9 @@ public class SesameQueryUtils {
         }
         else if (theValue instanceof Literal) {
             Literal aLit = (Literal)theValue;
+
             aBuffer.append("\"\"\"").append(escape(aLit.getLabel())).append("\"\"\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
+
             if (aLit.getDatatype() != null) {
                 aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
             }
@@ -116,6 +118,35 @@ public class SesameQueryUtils {
 
         return aBuffer.toString();
 	}
+	
+	/**
+	 * Return the query string rendering of the {@link Value}
+	 * @param theValue the value to render
+	 * @return the value rendered in its query string representation
+	 */
+	public static String getSerqlQueryString(Value theValue) {
+        StringBuffer aBuffer = new StringBuffer();
+
+        if (theValue instanceof URI) {
+            URI aURI = (URI) theValue;
+            aBuffer.append("<").append(aURI.toString()).append(">");
+        }
+        else if (theValue instanceof BNode) {
+            aBuffer.append("_:").append(((BNode)theValue).getID());
+        }
+        else if (theValue instanceof Literal) {
+            Literal aLit = (Literal)theValue;
+
+            aBuffer.append("\"").append(escape(aLit.getLabel())).append("\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
+
+            if (aLit.getDatatype() != null) {
+                aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
+            }
+        }
+
+        return aBuffer.toString();
+	}
+
 
 	/**
 	 * Properly escape out any " characters in the query string

@@ -16,11 +16,9 @@
 package com.clarkparsia.openrdf.query.builder;
 
 import org.openrdf.query.parser.ParsedQuery;
+
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.Union;
-import com.clarkparsia.openrdf.query.builder.SupportsGroups;
-import com.clarkparsia.openrdf.query.builder.Group;
-import com.clarkparsia.openrdf.query.builder.GroupBuilder;
 
 /**
  * <p>Builder class for creating Unioned groups</p>
@@ -29,31 +27,55 @@ import com.clarkparsia.openrdf.query.builder.GroupBuilder;
  * @version 0.2.2
  * @since 0.2.2
  */
-public class UnionBuilder<T extends ParsedQuery> implements SupportsGroups<UnionBuilder<T>>, Group {
-	private Group mLeft;
-	private Group mRight;
-	private GroupBuilder<T,?> mParent;
+public class UnionBuilder<T extends ParsedQuery, E extends SupportsGroups> implements SupportsGroups<UnionBuilder<T, E>>, Group {
 
-	public UnionBuilder(final GroupBuilder<T, ?> theParent) {
+	/**
+	 * Left operand
+	 */
+	private Group mLeft;
+
+	/**
+	 * Right operand
+	 */
+	private Group mRight;
+
+	/**
+	 * Parent builder
+	 */
+	private GroupBuilder<T,E> mParent;
+
+	public UnionBuilder(final GroupBuilder<T, E> theParent) {
 		mParent = theParent;
 	}
 
-	public GroupBuilder<T, UnionBuilder<T>> left() {
-		return new GroupBuilder<T, UnionBuilder<T>>(this);
+	/**
+	 * Return a builder for creating the left operand of the union
+	 * @return builder for left operand
+	 */
+	public GroupBuilder<T, UnionBuilder<T, E>> left() {
+		return new GroupBuilder<T, UnionBuilder<T, E>>(this);
 	}
 
-	public GroupBuilder<T, UnionBuilder<T>> right() {
-		return new GroupBuilder<T, UnionBuilder<T>>(this);
+	/**
+	 * Return a builder for creating the right operand of the union
+	 * @return builder for right operand
+	 */
+	public GroupBuilder<T, UnionBuilder<T, E>> right() {
+		return new GroupBuilder<T, UnionBuilder<T, E>>(this);
 	}
 
-	public GroupBuilder<T,?> closeUnion() {
+	/**
+	 * Close this union and return it's parent group builder.
+	 * @return the parent builder
+	 */
+	public GroupBuilder<T,E> closeUnion() {
 		return mParent;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public UnionBuilder<T> addGroup(final Group theGroup) {
+	public UnionBuilder<T, E> addGroup(final Group theGroup) {
 		if (mLeft == null) {
 			mLeft = theGroup;
 		}
@@ -67,7 +89,10 @@ public class UnionBuilder<T extends ParsedQuery> implements SupportsGroups<Union
 		return this;
 	}
 
-	public UnionBuilder<T> removeGroup(final Group theGroup) {
+	/**
+	 * @inheritDoc
+	 */
+	public UnionBuilder<T, E> removeGroup(final Group theGroup) {
 		if (mLeft != null && mLeft.equals(theGroup)) {
 			mLeft = null;
 		}

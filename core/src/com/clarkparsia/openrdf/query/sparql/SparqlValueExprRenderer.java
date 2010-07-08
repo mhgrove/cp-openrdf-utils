@@ -107,7 +107,7 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 			mBuffer.append("?").append(BaseTupleExprRenderer.scrubVarName(theVar.getName().substring(1)));
 		}
 		else if (theVar.hasValue()) {
-			mBuffer.append(SesameQueryUtils.getQueryString(theVar.getValue()));
+			mBuffer.append(SesameQueryUtils.getSPARQLQueryString(theVar.getValue()));
 		}
 		else {
 			mBuffer.append("?").append(theVar.getName());
@@ -198,7 +198,7 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(ValueConstant theVal) throws Exception {
-		mBuffer.append(SesameQueryUtils.getQueryString(theVal.getValue()));
+		mBuffer.append(SesameQueryUtils.getSPARQLQueryString(theVal.getValue()));
 	}
 
 	/**

@@ -250,7 +250,7 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @return the list of subjects who have properties matching the po pattern.
 	 */
 	public Collection<Resource> getSubjects(URI thePredicate, Value theObject) {
-		String aQuery = "select uri from {uri} " + (thePredicate == null ? "p" : SesameQueryUtils.getQueryString(thePredicate)) + " {" + (theObject == null ? "o" : SesameQueryUtils.getQueryString(theObject)) + "}";
+		String aQuery = "select uri from {uri} " + (thePredicate == null ? "p" : SesameQueryUtils.getSerqlQueryString(thePredicate)) + " {" + (theObject == null ? "o" : SesameQueryUtils.getSerqlQueryString(theObject)) + "}";
 
 		RepositoryConnection aConn = null;
 
@@ -319,7 +319,7 @@ public class ExtRepository extends RepositoryWrapper {
 		}
 
         try {
-            String aQuery = "select value from {"+ SesameQueryUtils.getQueryString(theSubj)+"} <"+thePred+"> {value}";
+            String aQuery = "select value from {"+ SesameQueryUtils.getSerqlQueryString(theSubj)+"} <"+thePred+"> {value}";
 
             TupleQueryResult aTable = selectQuery(QueryLanguage.SERQL, aQuery);
 

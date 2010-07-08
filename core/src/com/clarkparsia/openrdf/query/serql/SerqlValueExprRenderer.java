@@ -106,7 +106,7 @@ class SerqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 			mBuffer.append(BaseTupleExprRenderer.scrubVarName(theVar.getName().substring(1)));
 		}
 		else if (theVar.hasValue()) {
-			mBuffer.append(SesameQueryUtils.getQueryString(theVar.getValue()));
+			mBuffer.append(SesameQueryUtils.getSerqlQueryString(theVar.getValue()));
 		}
 		else {
 			mBuffer.append(theVar.getName());
@@ -189,7 +189,7 @@ class SerqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(ValueConstant theVal) throws Exception {
-		mBuffer.append(SesameQueryUtils.getQueryString(theVal.getValue()));
+		mBuffer.append(SesameQueryUtils.getSerqlQueryString(theVal.getValue()));
 	}
 
 	/**
