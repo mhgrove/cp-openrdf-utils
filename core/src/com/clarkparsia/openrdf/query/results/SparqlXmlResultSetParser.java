@@ -102,6 +102,10 @@ public class SparqlXmlResultSetParser extends DefaultHandler {
 		return mBooleanResult == null ? false : mBooleanResult;
 	}
 
+	public boolean isBooleanResult() {
+		return mBooleanResult == null;
+	}
+
 	/**
 	 * @inheritDoc
 	 */
