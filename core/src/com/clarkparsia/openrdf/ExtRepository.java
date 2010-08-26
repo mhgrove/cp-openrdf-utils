@@ -21,6 +21,8 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
+import org.openrdf.repository.util.RDFInserter;
+import org.openrdf.repository.util.RDFRemover;
 import org.openrdf.repository.sail.SailRepository;
 
 import org.openrdf.model.Resource;
@@ -28,11 +30,13 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Graph;
+import org.openrdf.model.Literal;
 
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
 
 import org.openrdf.model.impl.GraphImpl;
+import org.openrdf.model.impl.ValueFactoryImpl;
 
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.QueryLanguage;
@@ -44,6 +48,7 @@ import org.openrdf.query.GraphQueryResult;
 
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFFormat;
+
 import org.openrdf.sail.memory.MemoryStore;
 
 import org.apache.log4j.Logger;
@@ -52,13 +57,19 @@ import org.apache.log4j.LogManager;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import com.clarkparsia.utils.collections.CollectionUtil;
 import static com.clarkparsia.utils.collections.CollectionUtil.transform;
 import com.clarkparsia.utils.Function;
 import com.clarkparsia.utils.FunctionUtil;
+import com.clarkparsia.utils.io.Encoder;
 import static com.clarkparsia.utils.FunctionUtil.compose;
 
 import static com.clarkparsia.openrdf.OpenRdfUtil.close;
@@ -74,7 +85,7 @@ import info.aduna.iteration.CloseableIteration;
  *
  * @author Michael Grove
  * @since 0.1
- * @since 0.2.2
+ * @since 0.2.3
  */
 public class ExtRepository extends RepositoryWrapper {
 	private static Logger LOGGER = LogManager.getLogger("com.clarkparsia.openrdf");
@@ -92,6 +103,50 @@ public class ExtRepository extends RepositoryWrapper {
 	 */
 	public ExtRepository(final Repository theRepository) {
 		super(theRepository);
+	}
+
+	public void clear() {
+		RepositoryConnection aConn = null;
+
+		try {
+			aConn = getConnection();
+
+			aConn.clear();
+		}
+		catch (RepositoryException e) {
+			LOGGER.error(e);
+		}
+		finally {
+			close(aConn);
+		}
+	}
+
+	public void add(final InputStream theInput, final RDFFormat theFormat, final String theBase) throws IOException, RDFParseException {
+		OpenRdfIO.addData(this, new InputStreamReader(theInput, Encoder.UTF8), theFormat, ValueFactoryImpl.getInstance().createURI(theBase));
+	}
+
+	public void add(InputStream theStream, RDFFormat theFormat) throws IOException, RDFParseException {
+		OpenRdfIO.addData(this, theStream, theFormat);
+	}
+
+	public void add(Repository theRepo) {
+		RepositoryConnection aExportConn = null;
+		RepositoryConnection aConn = null;
+
+		try {
+			aExportConn = theRepo.getConnection();
+			aConn = getConnection();
+
+			RDFInserter aInsert = new RDFInserter(aConn);
+			aExportConn.export(aInsert);
+		}
+		catch (Exception e) {
+			LOGGER.error(e);
+		}
+		finally {
+			close(aExportConn);
+			close(aConn);
+		}
 	}
 
 	/**
@@ -243,6 +298,10 @@ public class ExtRepository extends RepositoryWrapper {
 		OpenRdfIO.addData(this, theStream, theFormat);
 	}
 
+	public void read(Reader theStream, RDFFormat theFormat) throws IOException, RDFParseException {
+		OpenRdfIO.addData(this, theStream, theFormat);
+	}
+
 	/**
 	 * List all the subjects which have the given predicate and object.
 	 * @param thePredicate the predicate to search for, or null for any predicate
@@ -346,12 +405,42 @@ public class ExtRepository extends RepositoryWrapper {
 	}
 
 	/**
+	 * Return the contents of the given list by following the rdf:first/rdf:rest structure of the list
+	 * @param theRes the resouce which is the head of the list
+	 * @return the contents of the list.
+	 */
+	public List<Value> asList(Resource theRes) {
+        List<Value> aList = new ArrayList<Value>();
+
+        Resource aListRes = theRes;
+
+        while (aListRes != null) {
+
+            Resource aFirst = (Resource) getValue(aListRes, RDF.FIRST);
+            Resource aRest = (Resource) getValue(aListRes, RDF.REST);
+
+            if (aFirst != null) {
+               aList.add(aFirst);
+            }
+
+            if (aRest == null || aRest.equals(RDF.NIL)) {
+               aListRes = null;
+            }
+            else {
+                aListRes = aRest;
+            }
+        }
+
+        return aList;
+	}
+
+	/**
 	 * Add the statements to the repository
 	 * @param theStatement the statement(s) to add
 	 * @throws RepositoryException thrown if there is an error while adding
 	 */
 	public void add(Statement... theStatement) throws RepositoryException {
-		addGraph(asGraph(theStatement));
+		add(asGraph(theStatement));
 	}
 
 	/**
@@ -359,7 +448,7 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @param theGraph the graph to add
 	 * @throws RepositoryException if there is an error while adding the graph
 	 */
-	public void addGraph(final Graph theGraph) throws RepositoryException {
+	public void add(final Graph theGraph) throws RepositoryException {
 		RepositoryConnection aConn = null;
 
 		try {
@@ -406,5 +495,29 @@ public class ExtRepository extends RepositoryWrapper {
 		finally {
 			close(aConn);
 		}
+	}
+
+	public void remove(final Repository theRepo) {
+		RepositoryConnection aExportConn = null;
+		RepositoryConnection aConn = null;
+
+		try {
+			aExportConn = theRepo.getConnection();
+			aConn = getConnection();
+
+			RDFRemover aRemover = new RDFRemover(aConn);
+			aExportConn.export(aRemover);
+		}
+		catch (Exception e) {
+			LOGGER.error(e);
+		}
+		finally {
+			close(aExportConn);
+			close(aConn);
+		}
+	}
+
+	public Literal getLiteral(final URI theSubject, final URI theProperty) {
+		return (Literal) getValue(theSubject, theProperty);
 	}
 }

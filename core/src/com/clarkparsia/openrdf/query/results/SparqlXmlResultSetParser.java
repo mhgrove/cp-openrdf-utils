@@ -103,7 +103,7 @@ public class SparqlXmlResultSetParser extends DefaultHandler {
 	}
 
 	public boolean isBooleanResult() {
-		return mBooleanResult == null;
+		return mBooleanResult != null;
 	}
 
 	/**

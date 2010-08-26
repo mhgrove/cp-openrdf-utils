@@ -29,7 +29,7 @@ import org.openrdf.model.Resource;
  *
  * @author Michael Grove
  * @since 0.2
- * @since 0.2.1
+ * @since 0.2.3
  */
 public class QueryBuilderFactory {
     /**
@@ -78,20 +78,30 @@ public class QueryBuilderFactory {
 	public static QueryBuilder<ParsedGraphQuery> describe(String[] theVars, Resource... theValues) {
 		QueryBuilder<ParsedGraphQuery> aBuilder = new AbstractQueryBuilder<ParsedGraphQuery>(new ParsedGraphQuery());
 
-		aBuilder.addProjectionStatement("-descr-subj", "-descr-pred", "-descr-obj");
+		aBuilder.reduced();
+		aBuilder.addProjectionVar("-descr-subj", "-descr-pred", "-descr-obj");
 		GroupBuilder<?,?> aGroup = aBuilder.group();
 
 		if (theVars != null) {
 			for (String aVar : theVars) {
-				aGroup.filter().or(new SameTerm(new Var(aVar), new Var("-descr-subj")),
-								   new SameTerm(new Var(aVar), new Var("-descr-obj")));
+				Var aVarObj = new Var(aVar);
+				aVarObj.setAnonymous(true);
+
+				aGroup.filter().or(new SameTerm(aVarObj, new Var("-descr-subj")),
+								   new SameTerm(aVarObj, new Var("-descr-obj")));
 			}
 		}
 
 		if (theValues != null) {
 			for (Resource aVar : theValues) {
-				aGroup.filter().or(new SameTerm(new ValueConstant(aVar), new Var("-descr-subj")),
-					 			   new SameTerm(new ValueConstant(aVar), new Var("-descr-obj")));
+				Var aSubjVar = new Var("-descr-subj");
+				aSubjVar.setAnonymous(true);
+
+				Var aObjVar = new Var("-descr-obj");
+				aObjVar.setAnonymous(true);
+				
+				aGroup.filter().or(new SameTerm(new ValueConstant(aVar), aSubjVar),
+					 			   new SameTerm(new ValueConstant(aVar), aObjVar));
 			}
 		}
 

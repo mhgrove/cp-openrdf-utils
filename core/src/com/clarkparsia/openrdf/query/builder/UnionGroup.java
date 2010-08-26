@@ -14,8 +14,9 @@ import org.openrdf.query.parser.ParsedQuery;
  *
  * @author Michael Grove
  * @version 0.2.2
- * @since 0.2.2
+ * @since 0.2.3
  */
+@Deprecated
 public class UnionGroup implements Group {
 	private Group mLeft;
 	private Group mRight;
@@ -25,14 +26,30 @@ public class UnionGroup implements Group {
 		mRight = theRight;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public TupleExpr expr() {
 		return new Union(mLeft.expr(), mRight.expr());
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public boolean isOptional() {
 		return false;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public int size() {
+		return (mLeft == null ? 0 : mLeft.size()) + (mRight == null ? 0 : mRight.size());
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public void addChild(final Group theGroup) {
 		if (mLeft == null) {
 			mLeft = theGroup;

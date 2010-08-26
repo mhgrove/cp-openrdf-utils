@@ -24,6 +24,7 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
+import org.openrdf.model.Resource;
 import org.openrdf.repository.Repository;
 
 import org.openrdf.repository.RepositoryConnection;
@@ -52,6 +53,8 @@ import com.clarkparsia.utils.io.Encoder;
  * <p>Collection of utility methods for doing IO operations with RIO and the OpenRdf API</p>
  *
  * @author Michael Grove
+ * @since 0.1
+ * @version 0.2.3
  */
 public class OpenRdfIO {
 
@@ -69,7 +72,21 @@ public class OpenRdfIO {
 	 * @throws RDFParseException if there is an error while trying to parse the data as the specified format
 	 */
 	public static Graph readGraph(InputStream theInput, RDFFormat theFormat) throws IOException, RDFParseException {
-		return readGraph(new InputStreamReader(theInput), theFormat);
+		return readGraph(new InputStreamReader(theInput, Encoder.UTF8), theFormat);
+	}
+
+
+	/**
+	 * Read an RDF graph from the stream using the specified format
+	 * @param theInput the stream to read from
+	 * @param theFormat the format the data is in
+	 * @param theBase the base url used for parsing
+	 * @return the graph represented by the data from the stream
+	 * @throws IOException if there is an error while reading
+	 * @throws RDFParseException if there is an error while trying to parse the data as the specified format
+	 */
+	public static Graph readGraph(InputStream theInput, RDFFormat theFormat, String theBase) throws IOException, RDFParseException {
+		return readGraph(new InputStreamReader(theInput, Encoder.UTF8), theFormat, theBase);
 	}
 
 	/**
@@ -81,14 +98,29 @@ public class OpenRdfIO {
 	 * @throws RDFParseException if there is an error while trying to parse the data as the specified format
 	 */
 	public static ExtGraph readGraph(Reader theInput, RDFFormat theFormat) throws IOException, RDFParseException {
+		return readGraph(theInput, theFormat, "http://openrdf.clarkparsia.com/");
+	}
+
+	/**
+	 * Read an RDF graph from the Reader using the specified format
+	 * @param theInput the reader to read from
+	 * @param theFormat the format the data is in
+	 * @param theBase the base url for parsing
+	 * @return the graph represented by the data from the stream
+	 * @throws IOException if there is an error while reading
+	 * @throws RDFParseException if there is an error while trying to parse the data as the specified format
+	 */
+	public static ExtGraph readGraph(Reader theInput, RDFFormat theFormat, String theBase) throws IOException, RDFParseException {
 		RDFParser aParser = Rio.createParser(theFormat);
+		aParser.setDatatypeHandling(RDFParser.DatatypeHandling.IGNORE);
+		aParser.setPreserveBNodeIDs(true);
 
 		GraphBuildingRDFHandler aHandler = new GraphBuildingRDFHandler();
 
 		aParser.setRDFHandler(aHandler);
 
 		try {
-			aParser.parse(theInput, "http://openrdf.clarkparsia.com/");
+			aParser.parse(theInput, theBase);
 		}
 		catch (RDFHandlerException e) {
 			throw new RDFParseException(e);
@@ -138,8 +170,13 @@ public class OpenRdfIO {
 	}
 
 	public static void addData(Repository theRepo, Reader theStream, RDFFormat theFormat) throws RDFParseException, IOException {
-		RDFParser aParser = Rio.createParser(theFormat);
+		addData(theRepo, theStream, theFormat, null);
+	}
 
+	public static void addData(Repository theRepo, Reader theStream, RDFFormat theFormat, Resource theBase) throws RDFParseException, IOException {
+		RDFParser aParser = Rio.createParser(theFormat);
+		
+		aParser.setDatatypeHandling(RDFParser.DatatypeHandling.IGNORE);
 		aParser.setVerifyData(false);
 
 		RepositoryConnection aConn = null;
@@ -147,9 +184,15 @@ public class OpenRdfIO {
 		try {
 			aConn = theRepo.getConnection();
 
-			aParser.setRDFHandler(new RDFInserter(aConn));
+			RDFInserter aInserter = new RDFInserter(aConn);
 
-			aParser.parse(theStream, "");
+			if (theBase != null) {
+				aInserter.enforceContext(theBase);
+			}
+
+			aParser.setRDFHandler(aInserter);
+
+			aParser.parse(theStream, theBase == null ? "" : theBase.stringValue());
 		}
 		catch (Exception e) {
 			throw new IOException(e);
@@ -219,5 +262,17 @@ public class OpenRdfIO {
 		catch (RDFHandlerException e) {
 			throw new IOException(e);
 		}
+	}
+
+	public static ExtRepository readRepository(final InputStream theStream, final RDFFormat theFormat) throws IOException, RDFParseException {
+		return readRepository(new InputStreamReader(theStream, Encoder.UTF8), theFormat);
+	}
+
+	public static ExtRepository readRepository(final Reader theStream, final RDFFormat theFormat) throws IOException, RDFParseException {
+		ExtRepository aRepo = OpenRdfUtil.createInMemoryRepo();
+
+		aRepo.read(theStream, theFormat);
+
+		return aRepo;
 	}
 }

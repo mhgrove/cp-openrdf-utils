@@ -20,11 +20,13 @@ package com.clarkparsia.openrdf.query.builder;
  *
  * @author Michael Grove
  * @since 0.2.2
- * @version 0.2.2
+ * @version 0.2.3
  */
 public interface Group extends SupportsExpr {
 
 	public boolean isOptional();
 
 	public void addChild(Group theGroup);
+
+	public int size();
 }

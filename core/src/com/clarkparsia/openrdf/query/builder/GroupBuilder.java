@@ -26,8 +26,6 @@ import org.openrdf.model.Value;
 import com.clarkparsia.utils.BasicUtils;
 
 import static com.clarkparsia.utils.collections.CollectionUtil.set;
-import com.clarkparsia.openrdf.query.builder.UnionBuilder;
-import com.clarkparsia.openrdf.query.builder.BasicGroup;
 
 import org.openrdf.query.parser.ParsedQuery;
 
@@ -40,7 +38,7 @@ import java.util.Set;
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.2
+ * @version 0.2.3
  */
 public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
 	private E mBuilder;
@@ -56,6 +54,10 @@ public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
 
 	public GroupBuilder(final E theBuilder, boolean theOptional) {
 		this(theBuilder, theOptional, null);
+	}
+
+	public int size() {
+		return mGroup.size();
 	}
 
 	public GroupBuilder(final E theBuilder, boolean theOptional, BasicGroup theParent) {

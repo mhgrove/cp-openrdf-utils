@@ -34,14 +34,13 @@ import com.clarkparsia.utils.Predicate;
 import com.clarkparsia.utils.FunctionUtil;
 import static com.clarkparsia.utils.collections.CollectionUtil.filter;
 import static com.clarkparsia.utils.collections.CollectionUtil.transform;
-import com.clarkparsia.openrdf.query.builder.Group;
 
 /**
  * <p>Internal class for representing a group within a query.</p>
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.2
+ * @version 0.2.3
  */
 public class BasicGroup implements Group {
 	private boolean mIsOptional = false;
@@ -55,6 +54,19 @@ public class BasicGroup implements Group {
 	 */
 	public BasicGroup(final boolean theOptional) {
 		mIsOptional = theOptional;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public int size() {
+		int aSize = mExpressions.size();
+
+		for (Group aChild : mChildren) {
+			aSize += aChild.size();
+		}
+
+		return aSize;
 	}
 
 	/**

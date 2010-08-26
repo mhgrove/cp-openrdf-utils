@@ -49,7 +49,6 @@ import org.openrdf.query.impl.MapBindingSet;
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
-import org.openrdf.query.parser.serql.SeRQLParser;
 import org.openrdf.query.parser.serql.SeRQLParserFactory;
 
 import org.openrdf.query.parser.sparql.SPARQLParser;
@@ -66,6 +65,7 @@ import com.clarkparsia.openrdf.query.builder.QueryBuilder;
 
 import com.clarkparsia.openrdf.query.sparql.SPARQLQueryRenderer;
 import com.clarkparsia.openrdf.query.serql.SeRQLQueryRenderer;
+import com.clarkparsia.openrdf.query.util.DescribeVisitor;
 
 /**
  * <p>Collection of utility methods for working with the OpenRdf Sesame Query API.</p>
@@ -499,5 +499,47 @@ System.err.println("---");
 //
 //		System.err.println(new SPARQLQueryRenderer().render(new SeRQLParser().parseQuery(q2, "http://example.org")));
 //		System.err.println(new SPARQLParser().parseQuery(new SPARQLQueryRenderer().render(new SeRQLParser().parseQuery(q2, "http://example.org")), "http://example.org"));
+
+
+		ParsedQuery asdf = new SPARQLParser().parseQuery("describe <http://google.com> <http://foo.bar.baz>", "http://example.org/");
+		System.err.println(asdf);
+		DescribeVisitor v = new DescribeVisitor();
+		v.checkQuery(asdf);
+		System.err.println(v.isDescribe());
+		System.err.println(v.getValues());
+
+		v.checkQuery(new SPARQLParser().parseQuery(aOptionalWithFilter, "http://example.org"));
+		System.err.println(v.isDescribe());
+		System.err.println(v.getValues());
+
+		v.checkQuery(new SPARQLParser().parseQuery("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
+														 "DESCRIBE ?x ?y <http://example.org/>\n" +
+														 "WHERE    {?x foaf:knows ?y}", "http://example.org"));
+		System.err.println(v.isDescribe());
+		System.err.println(v.getValues());
+
+		v.checkQuery(new SPARQLParser().parseQuery("construct {?s <"+RDF.TYPE+"> <"+RDFS.RESOURCE+">} where {?s ?p ?o } ", "http://example.org"));
+		System.err.println(v.isDescribe());
+		System.err.println(v.getValues());
+
+				String qq = "ask \n" +
+				   "where {\n" +
+				   "?var6 <http://www.clarkparsia.com/baseball/battingAverage> ?uri.  ?var5 <http://www.clarkparsia.com/baseball/team> ?var2.  ?var5 <http://www.clarkparsia.com/baseball/player> ?goal_base.  ?goal_base <http://www.clarkparsia.com/baseball/careerBatting> ?var6.   {?var5 <http://www.clarkparsia.com/baseball/position> <http://www.clarkparsia.com/baseball/position/FirstBase>.  }\n" +
+				   "union\n" +
+				   "{?var5 <http://www.clarkparsia.com/baseball/position> <http://www.clarkparsia.com/baseball/position/ThirdBase>.  }.\n" +
+				   "}\n";
+
+		System.err.println(new SPARQLParser().parseQuery(qq, "http://example.org"));
+
+		System.err.println(new SPARQLQueryRenderer().render(new SPARQLParser().parseQuery(qq, "http://example.org")));
+
+		String str = new SPARQLQueryRenderer().render(new SPARQLParser().parseQuery(qq, "http://example.org"));
+
+		str = "select distinct * where { " + str + " } limit 1";
+
+		System.err.println(str);
+
+		new SPARQLParser().parseQuery(str, "http://example.org");
 	}
+
 }

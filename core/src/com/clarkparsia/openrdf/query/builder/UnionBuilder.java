@@ -25,7 +25,7 @@ import org.openrdf.query.algebra.Union;
  *
  * @author Michael Grove
  * @version 0.2.2
- * @since 0.2.2
+ * @since 0.2.3
  */
 public class UnionBuilder<T extends ParsedQuery, E extends SupportsGroups> implements SupportsGroups<UnionBuilder<T, E>>, Group {
 
@@ -42,7 +42,7 @@ public class UnionBuilder<T extends ParsedQuery, E extends SupportsGroups> imple
 	/**
 	 * Parent builder
 	 */
-	private GroupBuilder<T,E> mParent;
+	private GroupBuilder<T, E> mParent;
 
 	public UnionBuilder(final GroupBuilder<T, E> theParent) {
 		mParent = theParent;
@@ -70,6 +70,13 @@ public class UnionBuilder<T extends ParsedQuery, E extends SupportsGroups> imple
 	 */
 	public GroupBuilder<T,E> closeUnion() {
 		return mParent;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public int size() {
+		return (mLeft == null ? 0 : mLeft.size()) + (mRight == null ? 0 : mRight.size());
 	}
 
 	/**

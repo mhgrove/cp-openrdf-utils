@@ -46,11 +46,14 @@ import java.util.Arrays;
 import com.clarkparsia.openrdf.util.IterationIterator;
 import com.clarkparsia.utils.Function;
 import static com.clarkparsia.utils.collections.CollectionUtil.transform;
+import static com.clarkparsia.utils.collections.CollectionUtil.list;
 
 /**
  * <p>Utility methods for working with the OpenRDF Sesame API.</p>
  *
  * @author Michael Grove
+ * @since 0.1
+ * @version 0.2.3
  */
 public class OpenRdfUtil {
 	/**
@@ -143,5 +146,9 @@ public class OpenRdfUtil {
 
     public static boolean isType(final ExtGraph theGraph, final URI theSubj, final URI theType) {
         return theGraph.getValues(theSubj, RDF.TYPE).contains(theType);
+    }
+
+    public static boolean isType(final ExtRepository theRepository, final URI theSubj, final URI theType) {
+        return list(theRepository.getValues(theSubj, RDF.TYPE)).contains(theType);
     }
 }
