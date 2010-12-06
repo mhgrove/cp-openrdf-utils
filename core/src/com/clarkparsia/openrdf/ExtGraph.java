@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import com.clarkparsia.utils.collections.CollectionUtil;
+import static com.clarkparsia.utils.collections.CollectionUtil.transform;
 import com.clarkparsia.utils.Predicate;
 import com.clarkparsia.utils.Function;
 
@@ -78,11 +79,7 @@ public class ExtGraph extends DelegatingGraph {
 
 		return aFilteredGraph;
 	}
-
-//	public <T> Collection<T> transform(Function<Statement, T> theFunc) {
-//		return CollectionUtil.transform(this, theFunc);
-//	}
-
+	
 	/**
 	 * Alias for the {@link #match} method
 	 * @param theSubj the subject to match, or null for wildcard
@@ -118,7 +115,11 @@ public class ExtGraph extends DelegatingGraph {
 	 * @return all values of the property on the resource.
 	 */
 	public Collection<Value> getValues(Resource theSubj, URI thePred) {
-		return CollectionUtil.list(GraphUtil.getObjectIterator(this, theSubj, thePred));
+		return transform(getStatements(theSubj, thePred, null), new Function<Statement, Value>() {
+			public Value apply(final Statement theIn) {
+				return theIn.getObject();
+			}
+		});
 	}
 
 	/**

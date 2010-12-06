@@ -125,8 +125,42 @@ public class OpenRdfIO {
 		catch (RDFHandlerException e) {
 			throw new RDFParseException(e);
 		}
+		finally {
+			if (theInput != null) {
+				theInput.close();
+			}
+		}
 
 		return aHandler.getGraph();
+	}
+
+	/**
+	 * Read an RDF graph from the Reader using the specified format
+	 * @param theHandler the handler for the results of reading the data
+	 * @param theInput the reader to read from
+	 * @param theFormat the format the data is in
+	 * @param theBase the base url for parsing
+	 * @throws IOException if there is an error while reading
+	 * @throws RDFParseException if there is an error while trying to parse the data as the specified format
+	 */
+	public static void readGraph(RDFHandler theHandler, Reader theInput, RDFFormat theFormat, String theBase) throws IOException, RDFParseException {
+		RDFParser aParser = Rio.createParser(theFormat);
+		aParser.setDatatypeHandling(RDFParser.DatatypeHandling.IGNORE);
+		aParser.setPreserveBNodeIDs(true);
+
+		aParser.setRDFHandler(theHandler);
+
+		try {
+			aParser.parse(theInput, theBase);
+		}
+		catch (RDFHandlerException e) {
+			throw new RDFParseException(e);
+		}
+		finally {
+			if (theInput != null) {
+				theInput.close();
+			}
+		}
 	}
 
 	/**
@@ -147,6 +181,11 @@ public class OpenRdfIO {
 		}
 		catch (RDFHandlerException e) {
 			throw new RDFParseException(e);
+		}
+		finally {
+			if (theInput != null) {
+				theInput.close();
+			}
 		}
 	}
 	
@@ -199,6 +238,7 @@ public class OpenRdfIO {
 		}
 		finally {
 			close(aConn);
+			if (theStream != null) theStream.close();
 		}
 	}
 
@@ -239,13 +279,17 @@ public class OpenRdfIO {
 	}
 
 	private static void writeRepository(Repository theRepo, RDFWriter theWriter) throws IOException, RepositoryException {
+		RepositoryConnection aConn = null;
 		try {
-			RepositoryConnection aConn = theRepo.getConnection();
+			aConn = theRepo.getConnection();
 
 			aConn.exportStatements(null, null, null, true, theWriter);
 		}
 		catch (RDFHandlerException e) {
 			throw new IOException(e);
+		}
+		finally {
+			close(aConn);
 		}
 	}
 

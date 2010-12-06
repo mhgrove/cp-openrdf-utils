@@ -56,6 +56,8 @@ import org.openrdf.query.parser.sparql.SPARQLParserFactory;
 
 import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.QueryEvaluationException;
 
 import com.clarkparsia.openrdf.vocabulary.FOAF;
 import com.clarkparsia.openrdf.vocabulary.DC;
@@ -66,15 +68,32 @@ import com.clarkparsia.openrdf.query.builder.QueryBuilder;
 import com.clarkparsia.openrdf.query.sparql.SPARQLQueryRenderer;
 import com.clarkparsia.openrdf.query.serql.SeRQLQueryRenderer;
 import com.clarkparsia.openrdf.query.util.DescribeVisitor;
+import com.clarkparsia.openrdf.ExtGraph;
 
 /**
  * <p>Collection of utility methods for working with the OpenRdf Sesame Query API.</p>
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.1
+ * @version 0.2.3
  */
 public class SesameQueryUtils {
+
+	/**
+	 * Create a Sesame graph from the GraphQueryResult
+	 * @param theResult the result of the query
+	 * @return the graph built from the result
+	 * @throws QueryEvaluationException if there was an error while creating the graph from the query result
+	 */
+	public static ExtGraph asGraph(GraphQueryResult theResult) throws QueryEvaluationException {
+		ExtGraph aGraph = new ExtGraph();
+
+		while (theResult.hasNext()) {
+			aGraph.add(theResult.next());
+		}
+
+		return aGraph;
+	}
 
 	/**
 	 * Return a parsed query object from the query string
@@ -89,6 +108,34 @@ public class SesameQueryUtils {
 		catch (MalformedQueryException e) {
 			return new SeRQLParserFactory().getParser().parseQuery(theQuery, "http://openrdf.clarkparsia.com");
 		}
+	}
+
+	/**
+	 * Return the query string rendering of the {@link Value}
+	 * @param theValue the value to render
+	 * @return the value rendered in its query string representation
+	 */
+	public static String getARQSPARQLQueryString(Value theValue) {
+        StringBuffer aBuffer = new StringBuffer();
+
+        if (theValue instanceof URI) {
+            URI aURI = (URI) theValue;
+            aBuffer.append("<").append(aURI.toString()).append(">");
+        }
+        else if (theValue instanceof BNode) {
+            aBuffer.append("<_:").append(((BNode)theValue).getID()).append(">");
+        }
+        else if (theValue instanceof Literal) {
+            Literal aLit = (Literal)theValue;
+
+            aBuffer.append("\"\"\"").append(escape(aLit.getLabel())).append("\"\"\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
+
+            if (aLit.getDatatype() != null) {
+                aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
+            }
+        }
+
+        return aBuffer.toString();
 	}
 
 	/**
@@ -166,7 +213,7 @@ public class SesameQueryUtils {
      */
     public static void setLimit(final ParsedQuery theQuery, final int theLimit) {
         try {
-            SetLimit aLimitSetter = new SetLimit(theLimit);
+            SliceMutator aLimitSetter = new SliceMutator(theLimit);
             theQuery.getTupleExpr().visit(aLimitSetter);
 
             if (!aLimitSetter.limitWasSet()) {
@@ -183,34 +230,69 @@ public class SesameQueryUtils {
         }
     }
 
-	/**
-     * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit of a query
-     * object to the provided value.  If there is no limit specified, {@link #limitWasSet} will return false.
+    /**
+     * Set the value of the limit on the query object to a new value, or specify a limit if one is not specified.
+     * @param theQuery the query to alter
+     * @param theOffset the new limit
      */
-    private static class SetLimit extends QueryModelVisitorBase<Exception> {
+    public static void setOffset(final ParsedQuery theQuery, final int theOffset) {
+        try {
+            SliceMutator aLimitSetter = new SliceMutator(theOffset);
+            theQuery.getTupleExpr().visit(aLimitSetter);
+
+            if (!aLimitSetter.offsetWasSet()) {
+                Slice aSlice = new Slice();
+
+                aSlice.setOffset(theOffset);
+                aSlice.setArg(theQuery.getTupleExpr());
+
+                theQuery.getTupleExpr().setParentNode(aSlice);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+	/**
+     * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit or offset of a query
+     * object to the provided value.  If there is no slice operator specified, {@link #limitWasSet} and {@link #offsetWasSet} will return false.
+     */
+    private static class SliceMutator extends QueryModelVisitorBase<Exception> {
         /**
          * Whether or not the limit was set on the query object
          */
         private boolean mLimitWasSet = false;
+
+		/**
+		 * Whether or not the offset was set on the query object
+		 */
+		private boolean mOffsetWasSet = false;
 
         /**
          * The new limit for the query
          */
         private int mNewLimit;
 
+		/**
+		 * The new offset for the query
+		 */
+		private int mNewOffset;
+
         /**
          * Create a new SetLimit object
          * @param theNewLimit the new limit to use for the query
          */
-        private SetLimit(final int theNewLimit) {
+        private SliceMutator(final int theNewLimit) {
             mNewLimit = theNewLimit;
         }
 
-        /**
+		/**
          * Resets the state of this visitor so it can be re-used.
          */
         public void reset() {
             mLimitWasSet = false;
+			mOffsetWasSet = false;
         }
 
         /**
@@ -221,13 +303,28 @@ public class SesameQueryUtils {
             return mLimitWasSet;
         }
 
+		/**
+		 * Retun whether or not the offset was set by this visitor
+		 * @return true of the offset was set, false otherwise
+		 */
+		public boolean offsetWasSet() {
+			return mOffsetWasSet;
+		}
+
         /**
          * @inheritDoc
          */
         @Override
         public void meet(Slice theSlice) {
-            mLimitWasSet = true;
-            theSlice.setLimit(mNewLimit);
+			if (mNewLimit > 0) {
+            	mLimitWasSet = true;
+            	theSlice.setLimit(mNewLimit);
+			}
+
+			if (mNewOffset > 0) {
+				mOffsetWasSet = true;
+				theSlice.setOffset(mNewOffset);
+			}
         }
     }
 

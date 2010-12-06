@@ -30,9 +30,11 @@ import java.util.Collection;
  * <p>Base class which implements the Graph interface, but delegates all operations to a sub-graph.</p>
  *
  * @author Michael Grove
+ * @since 0.1
+ * @version 0.2.4
  */
 public class DelegatingGraph implements Graph {
-	private Graph mGraph;
+	protected Graph mGraph;
 
 	public DelegatingGraph() {
 		this(new GraphImpl());
