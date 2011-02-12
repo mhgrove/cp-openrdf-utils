@@ -209,10 +209,14 @@ public class OpenRdfIO {
 	}
 
 	public static void addData(Repository theRepo, Reader theStream, RDFFormat theFormat) throws RDFParseException, IOException {
-		addData(theRepo, theStream, theFormat, null);
+		addData(theRepo, theStream, theFormat, null, null);
 	}
 
-	public static void addData(Repository theRepo, Reader theStream, RDFFormat theFormat, Resource theBase) throws RDFParseException, IOException {
+	public static void addData(final Repository theRepo, final Reader theStream, final RDFFormat theFormat, final Resource theContext) throws IOException, RDFParseException {
+		addData(theRepo, theStream, theFormat, theContext, null);
+	}
+
+	public static void addData(Repository theRepo, Reader theStream, RDFFormat theFormat, Resource theContext, String theBase) throws RDFParseException, IOException {
 		RDFParser aParser = Rio.createParser(theFormat);
 		
 		aParser.setDatatypeHandling(RDFParser.DatatypeHandling.IGNORE);
@@ -225,13 +229,13 @@ public class OpenRdfIO {
 
 			RDFInserter aInserter = new RDFInserter(aConn);
 
-			if (theBase != null) {
-				aInserter.enforceContext(theBase);
+			if (theContext != null) {
+				aInserter.enforceContext(theContext);
 			}
 
 			aParser.setRDFHandler(aInserter);
 
-			aParser.parse(theStream, theBase == null ? "" : theBase.stringValue());
+			aParser.parse(theStream, theBase == null ? (theContext != null ? theContext.stringValue() : "http://openrdf.clarkparsia.com") : theBase);
 		}
 		catch (Exception e) {
 			throw new IOException(e);

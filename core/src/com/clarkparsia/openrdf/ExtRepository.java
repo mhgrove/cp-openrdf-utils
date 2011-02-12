@@ -198,11 +198,12 @@ public class ExtRepository extends RepositoryWrapper {
 			return aConn.getStatements(theSubj, thePred, theObj, true);
 		}
 		catch (Exception ex) {
-			close(aConn);
-
 			LOGGER.error(ex);
 
 			return new RepositoryResult<Statement>(emptyStatementIteration());
+		}
+		finally {
+			close(aConn);
 		}
 	}
 
