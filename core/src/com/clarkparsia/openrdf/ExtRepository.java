@@ -64,6 +64,7 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Map;
 
 import com.clarkparsia.utils.collections.CollectionUtil;
 import static com.clarkparsia.utils.collections.CollectionUtil.transform;
@@ -85,7 +86,7 @@ import info.aduna.iteration.CloseableIteration;
  *
  * @author Michael Grove
  * @since 0.1
- * @since 0.2.3
+ * @since 0.2.5
  */
 public class ExtRepository extends RepositoryWrapper {
 	private static Logger LOGGER = LogManager.getLogger("com.clarkparsia.openrdf");
@@ -191,19 +192,22 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @return an Iterable over the matching statements
 	 */
 	public RepositoryResult<Statement> getStatements(Resource theSubj, URI thePred, Value theObj) {
-		RepositoryConnection aConn = null;
 		try {
-			aConn = getConnection();
+			final RepositoryConnection aConn = getConnection();
 
-			return aConn.getStatements(theSubj, thePred, theObj, true);
+			final RepositoryResult<Statement> aResult = aConn.getStatements(theSubj, thePred, theObj, true);
+            return new RepositoryResult<Statement>(aResult) {
+                @Override
+                protected void handleClose() throws RepositoryException {
+                    super.handleClose();
+                    OpenRdfUtil.close(aConn);
+                }
+            };
 		}
 		catch (Exception ex) {
 			LOGGER.error(ex);
 
 			return new RepositoryResult<Statement>(emptyStatementIteration());
-		}
-		finally {
-			close(aConn);
 		}
 	}
 
@@ -240,7 +244,7 @@ public class ExtRepository extends RepositoryWrapper {
 		RepositoryConnection aConn = null;
 		try {
 			aConn = getConnection();
-			return aConn.prepareTupleQuery(theLang, theQuery).evaluate();
+			return new ConnectionClosingTupleQueryResult(aConn, aConn.prepareTupleQuery(theLang, theQuery).evaluate());
 		}
 		catch (RepositoryException e) {
 			close(aConn);
@@ -381,6 +385,7 @@ public class ExtRepository extends RepositoryWrapper {
         try {
             String aQuery = "select value from {"+ SesameQueryUtils.getSerqlQueryString(theSubj)+"} <"+thePred+"> {value}";
 
+            // TODO: close result
             TupleQueryResult aTable = selectQuery(QueryLanguage.SERQL, aQuery);
 
             return transform(new IterationIterator<BindingSet>(aTable), new Function<BindingSet, Value>() {
@@ -521,4 +526,101 @@ public class ExtRepository extends RepositoryWrapper {
 	public Literal getLiteral(final URI theSubject, final URI theProperty) {
 		return (Literal) getValue(theSubject, theProperty);
 	}
+
+    private class ConnectionClosingGraphResult implements GraphQueryResult {
+        private GraphQueryResult mResult;
+        private RepositoryConnection mConn;
+
+        /**
+         * @inheritDoc
+         */
+        public Map<String, String> getNamespaces() {
+            return mResult.getNamespaces();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public void close() throws QueryEvaluationException {
+            mResult.close();
+            try {
+                mConn.close();
+            }
+            catch (RepositoryException e) {
+                throw new QueryEvaluationException(e);
+            }
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public boolean hasNext() throws QueryEvaluationException {
+            return mResult.hasNext();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public Statement next() throws QueryEvaluationException {
+            return mResult.next();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public void remove() throws QueryEvaluationException {
+            mResult.next();
+        }
+    }
+
+    private class ConnectionClosingTupleQueryResult implements TupleQueryResult {
+        private TupleQueryResult mResult;
+        private RepositoryConnection mConn;
+
+        private ConnectionClosingTupleQueryResult(final RepositoryConnection theConn, final TupleQueryResult theResult) {
+            mResult = theResult;
+            mConn = theConn;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public List<String> getBindingNames() {
+            return mResult.getBindingNames();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public void close() throws QueryEvaluationException {
+            mResult.close();
+            try {
+                mConn.close();
+            }
+            catch (RepositoryException e) {
+                throw new QueryEvaluationException(e);
+            }
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public boolean hasNext() throws QueryEvaluationException {
+            return mResult.hasNext();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public BindingSet next() throws QueryEvaluationException {
+            return mResult.next();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public void remove() throws QueryEvaluationException {
+            mResult.remove();
+        }
+    }
 }
