@@ -192,19 +192,15 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @return an Iterable over the matching statements
 	 */
 	public RepositoryResult<Statement> getStatements(Resource theSubj, URI thePred, Value theObj) {
+		RepositoryConnection aConn = null;
 		try {
-			final RepositoryConnection aConn = getConnection();
+			aConn = getConnection();
 
 			final RepositoryResult<Statement> aResult = aConn.getStatements(theSubj, thePred, theObj, true);
-            return new RepositoryResult<Statement>(aResult) {
-                @Override
-                protected void handleClose() throws RepositoryException {
-                    super.handleClose();
-                    OpenRdfUtil.close(aConn);
-                }
-            };
+            return new ConnectionClosingRepositoryResult<Statement>(aConn, aResult);
 		}
 		catch (Exception ex) {
+			OpenRdfUtil.close(aConn);
 			LOGGER.error(ex);
 
 			return new RepositoryResult<Statement>(emptyStatementIteration());
@@ -623,4 +619,19 @@ public class ExtRepository extends RepositoryWrapper {
             mResult.remove();
         }
     }
+
+	private class ConnectionClosingRepositoryResult<T> extends RepositoryResult<Statement> {
+		RepositoryConnection mConn;
+
+		public ConnectionClosingRepositoryResult(final RepositoryConnection theConn, final RepositoryResult<Statement> theResult) {
+			super(theResult);
+			mConn = theConn;
+		}
+
+		@Override
+		protected void handleClose() throws RepositoryException {
+			super.handleClose();
+			OpenRdfUtil.close(mConn);
+		}
+	}
 }
