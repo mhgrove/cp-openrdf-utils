@@ -55,6 +55,7 @@ import org.openrdf.query.algebra.Order;
 import org.openrdf.query.algebra.OrderElem;
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 import com.clarkparsia.openrdf.query.SesameQueryUtils;
+import com.clarkparsia.utils.NamespaceUtils;
 
 /**
  * <p>Renders a Sesame {@link ValueExpr} into SPARQL syntax.</p>
@@ -206,7 +207,7 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(FunctionCall theOp) throws Exception {
-		mBuffer.append(theOp.getURI()).append("(");
+		mBuffer.append("<").append(theOp.getURI()).append(">(");
 		boolean aFirst = true;
 		for (ValueExpr aArg : theOp.getArgs()) {
 			if (!aFirst) {

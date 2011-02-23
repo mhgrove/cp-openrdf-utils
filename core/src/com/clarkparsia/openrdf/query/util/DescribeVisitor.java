@@ -20,13 +20,45 @@ import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.SameTerm;
 import org.openrdf.query.algebra.ValueConstant;
+import org.openrdf.query.algebra.Join;
+import org.openrdf.query.algebra.Union;
+import org.openrdf.query.algebra.LeftJoin;
+import org.openrdf.query.algebra.Filter;
+import org.openrdf.query.algebra.SingletonSet;
+import org.openrdf.query.algebra.BinaryTupleOperator;
+import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.Projection;
+import org.openrdf.query.algebra.MultiProjection;
+import org.openrdf.query.algebra.Extension;
+import org.openrdf.query.algebra.ProjectionElemList;
+import org.openrdf.query.algebra.ExtensionElem;
+import org.openrdf.query.algebra.Or;
+import org.openrdf.query.algebra.And;
+import org.openrdf.query.algebra.BinaryValueOperator;
+import org.openrdf.query.algebra.UnaryValueOperator;
+import org.openrdf.query.algebra.FunctionCall;
+import org.openrdf.query.algebra.ValueExpr;
+import org.openrdf.query.algebra.Bound;
+import org.openrdf.query.algebra.evaluation.impl.ConstantOptimizer;
+import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.parser.ParsedQuery;
+import org.openrdf.query.parser.sparql.SPARQLParser;
+import org.openrdf.query.impl.MapBindingSet;
+import org.openrdf.query.impl.DatasetImpl;
+import org.openrdf.query.impl.EmptyBindingSet;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.model.Value;
+import org.openrdf.model.Literal;
+import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.impl.BooleanLiteralImpl;
 
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>TupleExprVisitor implementation that will scan a query model and see if it looks like the model for a describe
@@ -38,24 +70,20 @@ import java.util.Collections;
  * and what is being described so you could "compile" the describe query into a query language that does not support
  * describe natively, such as SeRQL.  Once you know what is being described, you could then simulate the support with
  * a construct query.</p>
-*
-* @author Michael Grove
+ *
+ * @author Michael Grove
+ * @since 0.2.4
+ * @version 0.3
 */
-public class DescribeVisitor extends QueryModelVisitorBase<Exception> {
+public final class DescribeVisitor extends QueryModelVisitorBase<Exception> {
 
 	/**
 	 * Whether or not the query model represents a describe query
 	 */
 	private boolean mIsDescribe = false;
 
-	/**
-	 * Collection of Concepts to be described in the query
-	 */
-	private Set<Value> mValues = new HashSet<Value>();
-
 	public void reset() {
 		mIsDescribe = false;
-		mValues = new HashSet<Value>();
 	}
 
 	/**
@@ -64,11 +92,11 @@ public class DescribeVisitor extends QueryModelVisitorBase<Exception> {
 	 * @return this visitor
 	 * @throws Exception if there is an error while checking
 	 */
-	public DescribeVisitor checkQuery(TupleExpr theExpr) throws Exception {
+	public boolean checkQuery(TupleExpr theExpr) throws Exception {
 		reset();
 		theExpr.visit(this);
 
-		return this;
+		return isDescribe();
 	}
 
 	/**
@@ -77,7 +105,7 @@ public class DescribeVisitor extends QueryModelVisitorBase<Exception> {
 	 * @return this visitor
 	 * @throws Exception if there is an error while checking
 	 */
-	public DescribeVisitor checkQuery(ParsedQuery theQuery) throws Exception {
+	public boolean checkQuery(ParsedQuery theQuery) throws Exception {
 		return checkQuery(theQuery.getTupleExpr());
 	}
 
@@ -90,45 +118,14 @@ public class DescribeVisitor extends QueryModelVisitorBase<Exception> {
 	}
 
 	/**
-	 * Collection of Concepts to be described in the query
-	 * @return the described concepts
-	 */
-	public Collection<Value> getValues() {
-		if (mIsDescribe) {
-			return Collections.unmodifiableCollection(mValues);
-		}
-		else {
-			return Collections.emptySet();
-		}
-	}
-
-	/**
 	 * @inheritDoc
 	 */
 	@Override
 	public void meet(final ProjectionElem theProjectionElem) throws Exception {
-		super.meet(theProjectionElem);
-
 		if (theProjectionElem.getSourceName().startsWith("-descr") && (theProjectionElem.getTargetName().equals("subject")
 																	   || theProjectionElem.getTargetName().equals("predicate")
 																	   || theProjectionElem.getTargetName().equals("object"))) {
 			mIsDescribe = true;
-		}
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	@Override
-	public void meet(final SameTerm theSameTerm) throws Exception {
-		super.meet(theSameTerm);
-
-		if (theSameTerm.getLeftArg() instanceof ValueConstant) {
-			mValues.add(((ValueConstant) theSameTerm.getLeftArg()).getValue());
-		}
-
-		if (theSameTerm.getRightArg() instanceof ValueConstant) {
-			mValues.add(((ValueConstant) theSameTerm.getRightArg()).getValue());
 		}
 	}
 }

@@ -68,6 +68,7 @@ import com.clarkparsia.openrdf.query.builder.QueryBuilder;
 import com.clarkparsia.openrdf.query.sparql.SPARQLQueryRenderer;
 import com.clarkparsia.openrdf.query.serql.SeRQLQueryRenderer;
 import com.clarkparsia.openrdf.query.util.DescribeVisitor;
+import com.clarkparsia.openrdf.query.util.DescribeRewriter;
 import com.clarkparsia.openrdf.ExtGraph;
 
 /**
@@ -75,9 +76,33 @@ import com.clarkparsia.openrdf.ExtGraph;
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.3
+ * @version 0.3
  */
-public class SesameQueryUtils {
+public final class SesameQueryUtils {
+
+	private SesameQueryUtils() {
+	}
+
+	public static boolean isDescribe(final TupleExpr theExpr) {
+		try {
+			DescribeVisitor aVisitor = new DescribeVisitor();
+			theExpr.visit(aVisitor);
+			return aVisitor.isDescribe();
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
+
+	public static void rewriteDescribe(final TupleExpr theExpr) {
+		try {
+			DescribeRewriter aRewriter = new DescribeRewriter();
+			theExpr.visit(aRewriter);
+		}
+		catch (Exception e) {
+			// no-op
+		}
+	}
 
 	/**
 	 * Create a Sesame graph from the GraphQueryResult
@@ -603,21 +628,17 @@ System.err.println("---");
 		DescribeVisitor v = new DescribeVisitor();
 		v.checkQuery(asdf);
 		System.err.println(v.isDescribe());
-		System.err.println(v.getValues());
 
 		v.checkQuery(new SPARQLParser().parseQuery(aOptionalWithFilter, "http://example.org"));
 		System.err.println(v.isDescribe());
-		System.err.println(v.getValues());
 
 		v.checkQuery(new SPARQLParser().parseQuery("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
 														 "DESCRIBE ?x ?y <http://example.org/>\n" +
 														 "WHERE    {?x foaf:knows ?y}", "http://example.org"));
 		System.err.println(v.isDescribe());
-		System.err.println(v.getValues());
 
 		v.checkQuery(new SPARQLParser().parseQuery("construct {?s <"+RDF.TYPE+"> <"+RDFS.RESOURCE+">} where {?s ?p ?o } ", "http://example.org"));
 		System.err.println(v.isDescribe());
-		System.err.println(v.getValues());
 
 				String qq = "ask \n" +
 				   "where {\n" +
