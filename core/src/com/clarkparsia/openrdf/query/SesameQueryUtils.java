@@ -247,7 +247,7 @@ public final class SesameQueryUtils {
                 aSlice.setLimit(theLimit);
                 aSlice.setArg(theQuery.getTupleExpr());
 
-                theQuery.getTupleExpr().setParentNode(aSlice);
+                theQuery.setTupleExpr(aSlice);
             }
         }
         catch (Exception e) {
@@ -271,7 +271,7 @@ public final class SesameQueryUtils {
                 aSlice.setOffset(theOffset);
                 aSlice.setArg(theQuery.getTupleExpr());
 
-                theQuery.getTupleExpr().setParentNode(aSlice);
+                theQuery.setTupleExpr(aSlice);
             }
         }
         catch (Exception e) {
