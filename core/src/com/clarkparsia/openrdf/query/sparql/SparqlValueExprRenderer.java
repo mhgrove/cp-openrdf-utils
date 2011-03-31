@@ -297,7 +297,9 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(Not theNot) throws Exception {
+		mBuffer.append("(");
 		unaryMeet("!", theNot);
+		mBuffer.append(")");
 	}
 
 	/**
