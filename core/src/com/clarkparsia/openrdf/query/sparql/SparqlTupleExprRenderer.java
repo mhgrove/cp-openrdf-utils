@@ -27,6 +27,8 @@ import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.ProjectionElemList;
 import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.OrderElem;
+import org.openrdf.query.parser.ParsedQuery;
+import org.openrdf.query.parser.sparql.SPARQLParser;
 
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 
@@ -56,123 +58,9 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 * @inheritDoc
 	 */
 	public String render(final TupleExpr theExpr) throws Exception {
-//		reset();
-
 		theExpr.visit(this);
 
-		if (mJoinBuffer.length() > 0 && mProjection.isEmpty()) {
-			// return the rendered joins if that's all that's been rendered
-			return mJoinBuffer.toString();
-		}
-
-		boolean aFirst = true;
-
-		StringBuffer aQuery = new StringBuffer();
-
-		if (!mProjection.isEmpty()) {
-			if (isSelect()) {
-				aQuery.append("select ");
-			}
-			else {
-				aQuery.append("construct ");
-			}
-
-			if (mDistinct) {
-				aQuery.append("distinct ");
-			}
-
-			if (mReduced && isSelect()) {
-				aQuery.append("reduced ");
-			}
-
-			aFirst = true;
-
-			if (!isSelect()) {
-				aQuery.append(" {\n");
-			}
-
-			for (ProjectionElemList aList : mProjection) {
-				if (isSPOElemList(aList)) {
-					if (!aFirst) {
-						aQuery.append("\n");
-					}
-					else {
-						aFirst = false;
-					}
-
-					aQuery.append(renderPattern(toStatementPattern(aList)));
-				}
-				else {
-					for (ProjectionElem aElem : aList.getElements()) {
-						if (!aFirst) {
-							aQuery.append(" ");
-						}
-						else {
-							aFirst = false;
-						}
-
-						aQuery.append(mExtensions.containsKey(aElem.getSourceName()) ? renderValueExpr(mExtensions.get(aElem.getSourceName())) : "?"+aElem.getSourceName());
-
-						if (!aElem.getSourceName().equals(aElem.getTargetName()) || (mExtensions.containsKey(aElem.getTargetName()) && !mExtensions.containsKey(aElem.getSourceName()))) {
-							aQuery.append(" as ").append(mExtensions.containsKey(aElem.getTargetName()) ? renderValueExpr(mExtensions.get(aElem.getTargetName())) : aElem.getTargetName());
-						}
-					}
-				}
-			}
-
-			if (!isSelect()) {
-				aQuery.append("}");
-			}
-
-			aQuery.append("\n");
-		}
-
-		if (mJoinBuffer.length() > 0) {
-
-			// this removes any superflous trailing commas, i think this is just an artifact of this code's history
-			// from initially being a serql renderer.  i'll leave it for now, but i think this is to be removed.
-			// test cases to prove these things work would be lovely.
-			if (mJoinBuffer.toString().trim().lastIndexOf(",") == mJoinBuffer.length()-1) {
-				mJoinBuffer.setCharAt(mJoinBuffer.lastIndexOf(","), ' ');
-			}
-			
-			aQuery.append("where {\n");
-			aQuery.append(mJoinBuffer);
-			aQuery.append("}");
-		}
-
-		if (!mOrdering.isEmpty()) {
-			aQuery.append("\norder by ");
-
-			aFirst = true;
-			for (OrderElem aOrder : mOrdering) {
-				if (!aFirst) {
-					aQuery.append(" ");
-				}
-				else {
-					aFirst = false;
-				}
-
-				if (aOrder.isAscending()) {
-					aQuery.append(renderValueExpr(aOrder.getExpr()));
-				}
-				else {
-					aQuery.append("desc(");
-					aQuery.append(renderValueExpr(aOrder.getExpr()));
-					aQuery.append(")");
-				}
-			}
-		}
-
-		if (mLimit != -1) {
-			aQuery.append("\nlimit ").append(mLimit);
-		}
-
-		if (mOffset != -1) {
-			aQuery.append("\noffset ").append(mOffset);
-		}
-
-		return aQuery.toString();
+		return mJoinBuffer.toString();
 	}
 
 	/**
@@ -201,7 +89,7 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 
 		theJoin.getLeftArg().visit(this);
 
-		mJoinBuffer.append(" OPTIONAL {");
+		mJoinBuffer.append("\nOPTIONAL {");
 
 		theJoin.getRightArg().visit(this);
 
@@ -241,7 +129,7 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 		String aLeft = renderTupleExpr(theOp.getLeftArg());
 		String aRight = renderTupleExpr(theOp.getRightArg());
 
-		mJoinBuffer.append(" {").append(aLeft).append("}").append("\nunion\n").append("{").append(aRight).append("}.\n");
+		mJoinBuffer.append("\n{").append(aLeft).append("}").append("\nunion\n").append("{").append(aRight).append("}.\n");
 	}
 
 	/**
@@ -252,7 +140,7 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 		String aLeft = renderTupleExpr(theOp.getLeftArg());
 		String aRight = renderTupleExpr(theOp.getRightArg());
 
-		mJoinBuffer.append(" {").append(aLeft).append("}").append("\nminus\n").append("{").append(aRight).append("}.\n");
+		mJoinBuffer.append("\n{").append(aLeft).append("}").append("\nminus\n").append("{").append(aRight).append("}.\n");
 	}
 
 	/**
@@ -263,7 +151,7 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 		String aLeft = renderTupleExpr(theOp.getLeftArg());
 		String aRight = renderTupleExpr(theOp.getRightArg());
 
-		mJoinBuffer.append(" {").append(aLeft).append("}").append("\nintersection\n").append("{").append(aRight).append("}.\n");
+		mJoinBuffer.append("\n").append(aLeft).append("}").append("\nintersection\n").append("{").append(aRight).append("}.\n");
 	}
 
 	/**
@@ -291,10 +179,16 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	}
 
 
-	private String renderPattern(StatementPattern thePattern) throws Exception {
-		return "" + renderValueExpr(thePattern.getSubjectVar()) + " " +
+	String renderPattern(StatementPattern thePattern) throws Exception {
+		return " " + renderValueExpr(thePattern.getSubjectVar()) + " " +
 			   renderValueExpr(thePattern.getPredicateVar()) + " " +
-			   "" + renderValueExpr(thePattern.getObjectVar()) + ". ";
+			   "" + renderValueExpr(thePattern.getObjectVar()) + ". \n";
 
+	}
+
+	public static void main(String[] args) throws Exception {
+		ParsedQuery q = new SPARQLParser().parseQuery("ask { ?s ?p ?o }", "http://foo.com");
+
+		System.err.println(new SPARQLQueryRenderer().render(q));
 	}
 }

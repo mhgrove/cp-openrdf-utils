@@ -93,6 +93,34 @@ public abstract class BaseTupleExprRenderer extends QueryModelVisitorBase<Except
 		mProjection.clear();
 	}
 
+	public Map<String, ValueExpr> getExtensions() {
+		return mExtensions;
+	}
+
+	public List<ProjectionElemList> getProjection() {
+		return mProjection;
+	}
+
+	public List<OrderElem> getOrdering() {
+		return mOrdering;
+	}
+
+	public boolean isDistinct() {
+		return mDistinct;
+	}
+
+	public boolean isReduced() {
+		return mReduced;
+	}
+
+	public int getLimit() {
+		return mLimit;
+	}
+
+	public int getOffset() {
+		return mOffset;
+	}
+
 	/**
 	 * Render the ParsedQuery as a query string
 	 * @param theQuery the parsed query to render
@@ -126,7 +154,7 @@ public abstract class BaseTupleExprRenderer extends QueryModelVisitorBase<Except
 	 * @return the elem list for a construct projection as a statement pattern
 	 * @throws Exception if there is an exception while rendering
 	 */
-	protected StatementPattern toStatementPattern(ProjectionElemList theList) throws Exception {
+	public StatementPattern toStatementPattern(ProjectionElemList theList) throws Exception {
 		ProjectionElem aSubj = theList.getElements().get(0);
 		ProjectionElem aPred = theList.getElements().get(1);
 		ProjectionElem aObj = theList.getElements().get(2);
@@ -182,7 +210,7 @@ public abstract class BaseTupleExprRenderer extends QueryModelVisitorBase<Except
 	 * @param theList the projection element list to inspect
 	 * @return true if it has the format of a spo construct projection element, false otherwise
 	 */
-	protected boolean isSPOElemList(ProjectionElemList theList) {
+	public static boolean isSPOElemList(ProjectionElemList theList) {
 		return theList.getElements().size() == 3
 				&& theList.getElements().get(0).getTargetName().equalsIgnoreCase("subject")
 				&& theList.getElements().get(1).getTargetName().equalsIgnoreCase("predicate")

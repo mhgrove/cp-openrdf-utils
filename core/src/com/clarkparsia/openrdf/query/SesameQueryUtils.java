@@ -407,6 +407,7 @@ public final class SesameQueryUtils {
 		System.err.println(pq);
 		System.err.println("---------------------------");
 		System.err.println(new SPARQLParser().parseQuery(aGroupedQuery, "http://example.org"));
+		System.err.println(new SPARQLQueryRenderer().render(pq));
 
 
 		String aGroupedQuery2 = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n" +
@@ -434,6 +435,7 @@ public final class SesameQueryUtils {
 		System.err.println(pq);
 		System.err.println("---------------------------");
 		System.err.println(new SPARQLParser().parseQuery(aGroupedQuery2, "http://example.org"));
+		System.err.println(new SPARQLQueryRenderer().render(pq));
 
 		String aOptionalWithFilter = "PREFIX  dc:  <http://purl.org/dc/elements/1.1/>\n" +
 									 "PREFIX  ns:  <http://example.org/ns#>\n" +
@@ -467,6 +469,7 @@ public final class SesameQueryUtils {
 		System.err.println(pq);
 		System.err.println("---------------------------");
 		System.err.println(new SPARQLParser().parseQuery(aOptionalWithFilter, "http://example.org"));
+		System.err.println(new SPARQLQueryRenderer().render(pq));
 
 
 		aBuilder.reset();
@@ -487,6 +490,7 @@ public final class SesameQueryUtils {
 		System.err.println(pq);
 		System.err.println("---------------------------");
 		System.err.println(new SPARQLParser().parseQuery(aSelectStar, "http://example.org"));
+		System.err.println(new SPARQLQueryRenderer().render(pq));
 
         QueryBuilder<ParsedGraphQuery> aConstructBuilder = QueryBuilderFactory.construct();
 
@@ -497,6 +501,7 @@ public final class SesameQueryUtils {
         System.err.println(gq);
         System.err.println("---------------------------");
         System.err.println(new SPARQLParser().parseQuery("construct {?s ?p ?o} where {?s ?p ?o } ", "http://example.org"));
+		System.err.println(new SPARQLQueryRenderer().render(gq));
 
         aConstructBuilder.reset();
 
@@ -507,6 +512,7 @@ public final class SesameQueryUtils {
         System.err.println(gq);
         System.err.println("---------------------------");
         System.err.println(new SPARQLParser().parseQuery("construct {?s <"+RDF.TYPE+"> <"+RDFS.RESOURCE+">} where {?s ?p ?o } ", "http://example.org"));
+		System.err.println(new SPARQLQueryRenderer().render(gq));
 
 		System.err.println(new SPARQLParser().parseQuery("construct {?s ?p ?o}\n" +
 														 "from <http://lurch.hq.nasa.gov/2006/09/26/ldap/210195930>\n" +
@@ -533,6 +539,7 @@ public final class SesameQueryUtils {
 
 		System.err.println(new SPARQLParser().parseQuery(aUnionQuery, "http://example.org"));
 
+
 		aBuilder.reset();
 		aBuilder.addProjectionVar("uri", "aLabel")
 				.distinct()
@@ -549,8 +556,6 @@ public final class SesameQueryUtils {
 
 		System.err.println(aBuilder.query());
 		System.err.println(new SPARQLQueryRenderer().render(aBuilder.query()));
-
-
 
 		String aUnionQuery2 = "select distinct ?uri ?aLabel\n" +
 							 "where {\n" +
@@ -591,7 +596,9 @@ System.err.println("---");
 														 "DESCRIBE ?x ?y <http://example.org/>\n" +
 														 "WHERE    {?x foaf:knows ?y}", "http://example.org"));
 
-		System.err.println(QueryBuilderFactory.describe(new String[] {"x", "y"}, ValueFactoryImpl.getInstance().createURI("http://example.org/")).group().atom("x", FOAF.ontology().knows, "y").closeGroup().query());
+		ParsedQuery desc = QueryBuilderFactory.describe(new String[] {"x", "y"}, ValueFactoryImpl.getInstance().createURI("http://example.org/")).group().atom("x", FOAF.ontology().knows, "y").closeGroup().query();
+		System.err.println(desc);
+		System.err.println(new SPARQLQueryRenderer().render(desc));
 
 //		System.err.println(new SPARQLParser().parseQuery("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
 //														 "CONSTRUCT {?x ?y <http://example.org/>}\n" +
@@ -653,8 +660,8 @@ System.err.println("---");
 
 		String str = new SPARQLQueryRenderer().render(new SPARQLParser().parseQuery(qq, "http://example.org"));
 
-		str = "select distinct * where { " + str + " } limit 1";
-
+//		str = "select distinct * where { " + str + " } limit 1";
+//
 		System.err.println(str);
 
 		new SPARQLParser().parseQuery(str, "http://example.org");
