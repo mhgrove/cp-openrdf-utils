@@ -26,6 +26,7 @@ import org.openrdf.query.algebra.Or;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.Bound;
 import org.openrdf.query.algebra.ValueExpr;
+import org.openrdf.query.algebra.UnaryTupleOperator;
 import org.openrdf.model.Value;
 import org.openrdf.model.Literal;
 import org.openrdf.model.impl.BooleanLiteralImpl;
@@ -52,6 +53,9 @@ public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 	@Override
 	public void meet(final Filter theFilter) throws Exception {
 		super.meet(theFilter);
+
+		rewriteUnary(theFilter);
+
 		theFilter.visit(new ConstantVisitor());
 
 		if (theFilter.getCondition() instanceof ValueConstant
@@ -59,6 +63,15 @@ public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 
 			theFilter.replaceWith(theFilter.getArg());
 		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	protected void meetUnaryTupleOperator(final UnaryTupleOperator theUnaryTupleOperator) throws Exception {
+		super.meetUnaryTupleOperator(theUnaryTupleOperator);
+		rewriteUnary(theUnaryTupleOperator);
 	}
 
 	/**
@@ -181,6 +194,14 @@ public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 		rewriteBinary(theUnion);
 	}
 
+	@Override
+	public void meet(final StatementPattern thePattern) throws Exception {
+		super.meet(thePattern);
+		if (isDescribeOnlyPattern(thePattern)) {
+			thePattern.replaceWith(new SingletonSet());
+		}
+	}
+
 	private void rewriteBinary(BinaryTupleOperator theOp) {
 		boolean removeLeft = false;
 		boolean removeRight = false;
@@ -201,6 +222,12 @@ public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 		}
 		else if (removeRight) {
 			theOp.replaceWith(theOp.getLeftArg());
+		}
+	}
+
+	private void rewriteUnary(UnaryTupleOperator theOp) {
+		if (isDescribeOnlyPattern(theOp.getArg())) {
+			theOp.getArg().replaceWith(new SingletonSet());
 		}
 	}
 
@@ -311,67 +338,6 @@ public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 				}
 		}
 
-//		@Override
-//		protected void meetBinaryValueOperator(BinaryValueOperator binaryValueOp) throws Exception {
-//			super.meetBinaryValueOperator(binaryValueOp);
-//
-//			if (isConstant(binaryValueOp.getLeftArg()) && isConstant(binaryValueOp.getRightArg())) {
-//				try {
-//					Value value = strategy.evaluate(binaryValueOp, EmptyBindingSet.getInstance());
-//					binaryValueOp.replaceWith(new ValueConstant(value));
-//				}
-//				catch (ValueExprEvaluationException e) {
-//					logger.debug("Failed to evaluate BinaryValueOperator with two constant arguments", e);
-//				}
-//				catch (QueryEvaluationException e) {
-//					logger.error("Query evaluation exception caught", e);
-//				}
-//			}
-//		}
-//
-//		@Override
-//		protected void meetUnaryValueOperator(UnaryValueOperator unaryValueOp) throws Exception {
-//			super.meetUnaryValueOperator(unaryValueOp);
-//
-//			if (isConstant(unaryValueOp.getArg())) {
-//				try {
-//					Value value = strategy.evaluate(unaryValueOp, EmptyBindingSet.getInstance());
-//					unaryValueOp.replaceWith(new ValueConstant(value));
-//				}
-//				catch (ValueExprEvaluationException e) {
-//					logger.debug("Failed to evaluate UnaryValueOperator with a constant argument", e);
-//				}
-//				catch (QueryEvaluationException e) {
-//					logger.error("Query evaluation exception caught", e);
-//				}
-//			}
-//		}
-//
-//		@Override
-//		public void meet(FunctionCall functionCall) throws Exception {
-//			super.meet(functionCall);
-//
-//			List<ValueExpr> args = functionCall.getArgs();
-//			for (ValueExpr arg : args) {
-//				if (!isConstant(arg)) {
-//					return;
-//				}
-//			}
-//
-//			// All arguments are constant
-//
-//			try {
-//				Value value = strategy.evaluate(functionCall, EmptyBindingSet.getInstance());
-//				functionCall.replaceWith(new ValueConstant(value));
-//			}
-//			catch (ValueExprEvaluationException e) {
-//				logger.debug("Failed to evaluate BinaryValueOperator with two constant arguments", e);
-//			}
-//			catch (QueryEvaluationException e) {
-//				logger.error("Query evaluation exception caught", e);
-//			}
-//		}
-
 		@Override
 		public void meet(Bound bound) throws Exception {
 			super.meet(bound);
@@ -392,6 +358,27 @@ public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 
 		private boolean isConstant(ValueExpr expr) {
 			return expr instanceof ValueConstant || expr instanceof Var && ((Var) expr).hasValue();
+		}
+	}
+
+	public static class Clean extends QueryModelVisitorBase<Exception> {
+
+		@Override
+		protected void meetBinaryTupleOperator(final BinaryTupleOperator theBinaryTupleOperator) throws Exception {
+			super.meetBinaryTupleOperator(theBinaryTupleOperator);
+
+			boolean removeLeft = theBinaryTupleOperator.getLeftArg() instanceof SingletonSet;
+			boolean removeRight = theBinaryTupleOperator.getRightArg() instanceof SingletonSet;
+
+			if (removeLeft && removeRight) {
+				theBinaryTupleOperator.replaceWith(new SingletonSet());
+			}
+			else if (removeLeft) {
+				theBinaryTupleOperator.replaceWith(theBinaryTupleOperator.getRightArg());
+			}
+			else if (removeRight) {
+				theBinaryTupleOperator.replaceWith(theBinaryTupleOperator.getLeftArg());
+			}
 		}
 	}
 }

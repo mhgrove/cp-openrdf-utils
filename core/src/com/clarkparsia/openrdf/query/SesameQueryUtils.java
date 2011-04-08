@@ -55,6 +55,10 @@ import org.openrdf.query.parser.sparql.SPARQLParser;
 import org.openrdf.query.parser.sparql.SPARQLParserFactory;
 
 import org.openrdf.query.algebra.Compare;
+import org.openrdf.query.algebra.QueryModelVisitor;
+import org.openrdf.query.algebra.UnaryTupleOperator;
+import org.openrdf.query.algebra.BinaryTupleOperator;
+import org.openrdf.query.algebra.SingletonSet;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
@@ -98,6 +102,7 @@ public final class SesameQueryUtils {
 		try {
 			DescribeRewriter aRewriter = new DescribeRewriter();
 			theExpr.visit(aRewriter);
+			theExpr.visit(new DescribeRewriter.Clean());
 		}
 		catch (Exception e) {
 			// no-op
@@ -666,5 +671,4 @@ System.err.println("---");
 
 		new SPARQLParser().parseQuery(str, "http://example.org");
 	}
-
 }
