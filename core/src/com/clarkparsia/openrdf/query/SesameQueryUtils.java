@@ -59,6 +59,7 @@ import org.openrdf.query.algebra.QueryModelVisitor;
 import org.openrdf.query.algebra.UnaryTupleOperator;
 import org.openrdf.query.algebra.BinaryTupleOperator;
 import org.openrdf.query.algebra.SingletonSet;
+import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
@@ -75,6 +76,9 @@ import com.clarkparsia.openrdf.query.util.DescribeVisitor;
 import com.clarkparsia.openrdf.query.util.DescribeRewriter;
 import com.clarkparsia.openrdf.ExtGraph;
 
+import java.util.HashSet;
+import java.util.Collection;
+
 /**
  * <p>Collection of utility methods for working with the OpenRdf Sesame Query API.</p>
  *
@@ -85,6 +89,25 @@ import com.clarkparsia.openrdf.ExtGraph;
 public final class SesameQueryUtils {
 
 	private SesameQueryUtils() {
+	}
+
+	public static Collection<String> getProjection(TupleExpr theExpr) {
+		final Collection<String> aVars = new HashSet<String>();
+
+		try {
+			theExpr.visit(new QueryModelVisitorBase<Exception>() {
+				@Override
+				public void meet(final ProjectionElem theProjectionElem) throws Exception {
+					super.meet(theProjectionElem);
+					aVars.add(theProjectionElem.getTargetName());
+				}
+			});
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return aVars;
 	}
 
 	public static boolean isDescribe(final TupleExpr theExpr) {
