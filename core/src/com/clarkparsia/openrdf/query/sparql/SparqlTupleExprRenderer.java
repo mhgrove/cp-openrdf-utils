@@ -27,10 +27,19 @@ import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.ProjectionElemList;
 import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.OrderElem;
+import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.BinaryTupleOperator;
+import org.openrdf.query.algebra.UnaryTupleOperator;
+import org.openrdf.query.algebra.QueryModelNode;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
+import com.clarkparsia.openrdf.query.SesameQueryUtils;
+import com.clarkparsia.utils.BasicUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -43,6 +52,8 @@ import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 
 	private StringBuffer mJoinBuffer = new StringBuffer();
+	private Map<TupleExpr,Var> mContexts = new HashMap<TupleExpr, Var>();
+	private int mIndent = 2;
 
 	/**
 	 * @inheritDoc
@@ -52,15 +63,22 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 		super.reset();
 
 		mJoinBuffer = new StringBuffer();
+		mContexts.clear();
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public String render(final TupleExpr theExpr) throws Exception {
+		mContexts = ContextCollector.collectContexts(theExpr);
+		
 		theExpr.visit(this);
 
 		return mJoinBuffer.toString();
+	}
+
+	private String indent() {
+		return BasicUtils.repeat(' ', mIndent);
 	}
 
 	/**
@@ -70,15 +88,38 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 		return new SparqlValueExprRenderer().render(theExpr);
 	}
 
+	private void ctxOpen(TupleExpr theExpr) {
+		Var aContext = mContexts.get(theExpr);
+
+		if (aContext != null && aContext.getValue() != null) {
+			mJoinBuffer.append(indent()).append("GRAPH ");
+			mJoinBuffer.append(SesameQueryUtils.getSPARQLQueryString(aContext.getValue()));
+			mJoinBuffer.append(" {\n");
+			mIndent += 2;
+		}
+	}
+
+	private void ctxClose(TupleExpr theExpr) {
+		Var aContext = mContexts.get(theExpr);
+
+		if ((aContext != null) && (aContext.getValue() != null)) {
+			mJoinBuffer.append("}");
+			mIndent -= 2;
+		}
+	}
+
 	/**
 	 * @inheritDoc
 	 */
 	@Override
 	public void meet(Join theJoin) throws Exception {
+		ctxOpen(theJoin);
+
 		theJoin.getLeftArg().visit(this);
 
 		theJoin.getRightArg().visit(this);
 
+		ctxClose(theJoin);
 	}
 
 	/**
@@ -86,18 +127,20 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 */
 	@Override
 	public void meet(LeftJoin theJoin) throws Exception {
-
 		theJoin.getLeftArg().visit(this);
 
-		mJoinBuffer.append("\nOPTIONAL {");
+		mJoinBuffer.append(indent()).append("OPTIONAL {\n");
 
+		mIndent+=2;
 		theJoin.getRightArg().visit(this);
 
 		if (theJoin.getCondition() != null) {
-			mJoinBuffer.append(" filter").append(renderValueExpr(theJoin.getCondition()));
+			mJoinBuffer.append(indent()).append("filter").append(renderValueExpr(theJoin.getCondition())).append("\n");
 		}
 
-		mJoinBuffer.append("}.");
+		mIndent-=2;
+
+		mJoinBuffer.append(indent()).append("}.\n");
 	}
 
 	/**
@@ -118,6 +161,9 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 //		aRenderer.mLimit = mLimit;
 //		aRenderer.mOffset = mOffset;
 
+		aRenderer.mIndent = mIndent;
+		aRenderer.mContexts = new HashMap<TupleExpr, Var>(mContexts);
+
 		return aRenderer.render(theExpr);
 	}
 
@@ -126,10 +172,21 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 */
 	@Override
 	public void meet(Union theOp) throws Exception {
-		String aLeft = renderTupleExpr(theOp.getLeftArg());
-		String aRight = renderTupleExpr(theOp.getRightArg());
+		ctxOpen(theOp);
 
-		mJoinBuffer.append("\n{").append(aLeft).append("}").append("\nunion\n").append("{").append(aRight).append("}.\n");
+		String aLeft = renderTupleExpr(theOp.getLeftArg());
+		if (aLeft.endsWith("\n")) {
+			aLeft = aLeft.substring(0, aLeft.length()-1);
+		}
+
+		String aRight = renderTupleExpr(theOp.getRightArg());
+		if (aRight.endsWith("\n")) {
+			aRight = aRight.substring(0, aRight.length()-1);
+		}
+
+		mJoinBuffer.append(indent()).append("{\n").append(aLeft).append("\n").append(indent()).append("}\n").append(indent()).append("union\n").append(indent()).append("{\n").append(aRight).append("\n").append(indent()).append("}.\n");
+
+		ctxClose(theOp);
 	}
 
 	/**
@@ -159,15 +216,15 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 */
 	@Override
 	public void meet(final Filter theFilter) throws Exception {
-		mJoinBuffer.append("{");
+		ctxOpen(theFilter);
 
 		if (theFilter.getArg() != null) {
 			theFilter.getArg().visit(this);
 		}
 
-		mJoinBuffer.append(" filter ").append(renderValueExpr(theFilter.getCondition())).append(".");
+		mJoinBuffer.append(indent()).append("filter ").append(renderValueExpr(theFilter.getCondition())).append(".\n");
 
-		mJoinBuffer.append("}. ");
+		ctxClose(theFilter);
 	}
 
 	/**
@@ -175,14 +232,18 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 */
 	@Override
 	public void meet(StatementPattern thePattern) throws Exception {
-		mJoinBuffer.append(renderPattern(thePattern)).append(" ");
+		ctxOpen(thePattern);
+
+		mJoinBuffer.append(indent()).append(renderPattern(thePattern));
+
+		ctxClose(thePattern);
 	}
 
 
 	String renderPattern(StatementPattern thePattern) throws Exception {
-		return " " + renderValueExpr(thePattern.getSubjectVar()) + " " +
+		return renderValueExpr(thePattern.getSubjectVar()) + " " +
 			   renderValueExpr(thePattern.getPredicateVar()) + " " +
-			   "" + renderValueExpr(thePattern.getObjectVar()) + ". \n";
+			   "" + renderValueExpr(thePattern.getObjectVar()) + ".\n";
 
 	}
 

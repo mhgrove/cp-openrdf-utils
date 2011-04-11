@@ -122,7 +122,7 @@ public final class DescribeVisitor extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(final ProjectionElem theProjectionElem) throws Exception {
-		if (theProjectionElem.getSourceName().startsWith("-descr") && (theProjectionElem.getTargetName().equals("subject")
+		if (theProjectionElem.getSourceName().startsWith("descr") && (theProjectionElem.getTargetName().equals("subject")
 																	   || theProjectionElem.getTargetName().equals("predicate")
 																	   || theProjectionElem.getTargetName().equals("object"))) {
 			mIsDescribe = true;

@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import com.clarkparsia.utils.Predicate;
 import com.clarkparsia.utils.FunctionUtil;
@@ -40,13 +41,13 @@ import static com.clarkparsia.utils.collections.CollectionUtil.transform;
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.3
+ * @version 0.3
  */
 public class BasicGroup implements Group {
 	private boolean mIsOptional = false;
-	private Collection<TupleExpr> mExpressions = new HashSet<TupleExpr>();
+	private Collection<TupleExpr> mExpressions = new LinkedHashSet<TupleExpr>();
 	private List<Group> mChildren = new ArrayList<Group>();
-	private Collection<ValueExpr> mFilters = new HashSet<ValueExpr>();
+	private Collection<ValueExpr> mFilters = new LinkedHashSet<ValueExpr>();
 
 	/**
 	 * Create a new BasicGroup

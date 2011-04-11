@@ -79,7 +79,7 @@ public class QueryBuilderFactory {
 		QueryBuilder<ParsedGraphQuery> aBuilder = new AbstractQueryBuilder<ParsedGraphQuery>(new ParsedGraphQuery());
 
 		aBuilder.reduced();
-		aBuilder.addProjectionVar("-descr-subj", "-descr-pred", "-descr-obj");
+		aBuilder.addProjectionVar("descr_subj", "descr_pred", "descr_obj");
 		GroupBuilder<?,?> aGroup = aBuilder.group();
 
 		if (theVars != null) {
@@ -87,17 +87,17 @@ public class QueryBuilderFactory {
 				Var aVarObj = new Var(aVar);
 				aVarObj.setAnonymous(true);
 
-				aGroup.filter().or(new SameTerm(aVarObj, new Var("-descr-subj")),
-								   new SameTerm(aVarObj, new Var("-descr-obj")));
+				aGroup.filter().or(new SameTerm(aVarObj, new Var("descr_subj")),
+								   new SameTerm(aVarObj, new Var("descr_obj")));
 			}
 		}
 
 		if (theValues != null) {
 			for (Resource aVar : theValues) {
-				Var aSubjVar = new Var("-descr-subj");
+				Var aSubjVar = new Var("descr_subj");
 				aSubjVar.setAnonymous(true);
 
-				Var aObjVar = new Var("-descr-obj");
+				Var aObjVar = new Var("descr_obj");
 				aObjVar.setAnonymous(true);
 				
 				aGroup.filter().or(new SameTerm(new ValueConstant(aVar), aSubjVar),
@@ -105,7 +105,7 @@ public class QueryBuilderFactory {
 			}
 		}
 
-		aGroup.atom("-descr-subj", "-descr-pred", "-descr-obj");
+		aGroup.atom("descr_subj", "descr_pred", "descr_obj");
 
 		return aBuilder;
 	}

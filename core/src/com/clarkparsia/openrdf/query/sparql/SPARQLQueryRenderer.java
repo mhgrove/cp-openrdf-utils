@@ -92,7 +92,7 @@ public class SPARQLQueryRenderer implements QueryRenderer {
 						aFirst = false;
 					}
 
-					aQuery.append(mRenderer.renderPattern(mRenderer.toStatementPattern(aList)));
+					aQuery.append("  ").append(mRenderer.renderPattern(mRenderer.toStatementPattern(aList)));
 				}
 				else {
 					for (ProjectionElem aElem : aList.getElements()) {
@@ -129,7 +129,7 @@ public class SPARQLQueryRenderer implements QueryRenderer {
 			}
 
 			if (!(theQuery instanceof ParsedBooleanQuery)) {
-				aQuery.append("where");
+				aQuery.append("where ");
 			}
 
 			aQuery.append("{\n");

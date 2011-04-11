@@ -105,7 +105,7 @@ class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	@Override
 	public void meet(Var theVar) throws Exception {
 		if (theVar.isAnonymous() && !theVar.hasValue()) {
-			mBuffer.append("?").append(BaseTupleExprRenderer.scrubVarName(theVar.getName().substring(1)));
+			mBuffer.append("?").append(BaseTupleExprRenderer.scrubVarName(theVar.getName()));
 		}
 		else if (theVar.hasValue()) {
 			mBuffer.append(SesameQueryUtils.getSPARQLQueryString(theVar.getValue()));
