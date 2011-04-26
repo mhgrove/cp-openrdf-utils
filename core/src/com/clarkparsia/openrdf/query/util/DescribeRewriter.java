@@ -272,9 +272,12 @@ public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 
 	private boolean isDescribeOnlyPattern(final TupleExpr theExpr) {
 		return theExpr instanceof StatementPattern
-			   && ((StatementPattern)theExpr).getSubjectVar().getName().equals("-descr-subj")
-			   && ((StatementPattern)theExpr).getPredicateVar().getName().equals("-descr-pred")
-			   && ((StatementPattern)theExpr).getObjectVar().getName().equals("-descr-obj");
+			   && (((StatementPattern)theExpr).getSubjectVar().getName().equals("-descr-subj")
+                   || ((StatementPattern)theExpr).getSubjectVar().getName().equals("descrsubj"))
+			   && (((StatementPattern)theExpr).getPredicateVar().getName().equals("-descr-pred")
+                   || ((StatementPattern)theExpr).getPredicateVar().getName().equals("descrpred"))
+			   && (((StatementPattern)theExpr).getObjectVar().getName().equals("-descr-obj")
+                || ((StatementPattern)theExpr).getObjectVar().getName().equals("descrobj"));
 	}
 
 	/**
