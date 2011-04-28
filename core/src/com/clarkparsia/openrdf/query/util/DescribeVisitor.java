@@ -62,9 +62,7 @@ import java.util.List;
 
 /**
  * <p>TupleExprVisitor implementation that will scan a query model and see if it looks like the model for a describe
- * query.  If so, {@link #isDescribe} will return true after {@link #checkQuery checking} the query.  Also,
- * {@link #getValues} will return a list of all the concrete values to be described in the query.  This will <b>not</b>
- * return any variables to be described.</p>
+ * query.  If so, {@link #isDescribe} will return true after {@link #checkQuery(TupleExpr) checking} the query. </p>
  *
  * <p>The main aim of this class is to provide some functionality to scan a query model to find out if its a describe,
  * and what is being described so you could "compile" the describe query into a query language that does not support
@@ -122,10 +120,14 @@ public final class DescribeVisitor extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(final ProjectionElem theProjectionElem) throws Exception {
-		if ((theProjectionElem.getSourceName().startsWith("-descr") || theProjectionElem.getSourceName().startsWith("descr_")) && (theProjectionElem.getTargetName().equals("subject")
-																																   || theProjectionElem.getTargetName().equals("predicate")
-																																   || theProjectionElem.getTargetName().equals("object"))) {
-			mIsDescribe = true;
-		}
+        if (isDescribeName(theProjectionElem.getSourceName()) && (theProjectionElem.getTargetName().equals("subject")
+                                                                  || theProjectionElem.getTargetName().equals("predicate")
+                                                                  || theProjectionElem.getTargetName().equals("object"))) {
+            mIsDescribe = true;
+        }
 	}
+
+    public static boolean isDescribeName(final String theName) {
+        return theName.startsWith("-descr") || theName.startsWith("descr") || theName.startsWith("descr_");
+    }
 }

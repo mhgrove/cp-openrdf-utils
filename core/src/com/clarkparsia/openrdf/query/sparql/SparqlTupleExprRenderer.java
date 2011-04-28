@@ -91,9 +91,14 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	private void ctxOpen(TupleExpr theExpr) {
 		Var aContext = mContexts.get(theExpr);
 
-		if (aContext != null && aContext.getValue() != null) {
+		if (aContext != null) {
 			mJoinBuffer.append(indent()).append("GRAPH ");
-			mJoinBuffer.append(SesameQueryUtils.getSPARQLQueryString(aContext.getValue()));
+			if (aContext.hasValue()) {
+				mJoinBuffer.append(SesameQueryUtils.getSPARQLQueryString(aContext.getValue()));
+			}
+			else {
+				mJoinBuffer.append("?").append(aContext.getName());
+			}
 			mJoinBuffer.append(" {\n");
 			mIndent += 2;
 		}
@@ -102,7 +107,7 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	private void ctxClose(TupleExpr theExpr) {
 		Var aContext = mContexts.get(theExpr);
 
-		if ((aContext != null) && (aContext.getValue() != null)) {
+		if (aContext != null) {
 			mJoinBuffer.append("}");
 			mIndent -= 2;
 		}
