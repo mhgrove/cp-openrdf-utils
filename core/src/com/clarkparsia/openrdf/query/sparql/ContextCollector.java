@@ -154,7 +154,7 @@ public class ContextCollector extends QueryModelVisitorBase<Exception> {
 	}
 	
 	private boolean isSameCtx(Var v1, Var v2) {
-		if ((v1 != null) && (v2 != null)) {
+		if ((v1 != null && v1.getValue() != null) && (v2 != null && v2.getValue() != null)) {
 			return v1.getValue().equals(v2.getValue());
 		}
 		
