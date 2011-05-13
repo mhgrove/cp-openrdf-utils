@@ -83,7 +83,7 @@ public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 
 		boolean remove = false;
 
-		if (theSameTerm.getLeftArg() instanceof Var && ((Var)theSameTerm.getLeftArg()).getName().startsWith("-descr-")) {
+		if (theSameTerm.getLeftArg() instanceof Var && DescribeVisitor.isDescribeName(((Var)theSameTerm.getLeftArg()).getName())) {
 			if (theSameTerm.getRightArg() instanceof Var) {
 				mVars.add(((Var)theSameTerm.getRightArg()).getName());
 			}
@@ -94,7 +94,7 @@ public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 			remove = true;
 		}
 
-		if (theSameTerm.getRightArg() instanceof Var && ((Var)theSameTerm.getRightArg()).getName().startsWith("-descr-")) {
+		if (theSameTerm.getRightArg() instanceof Var && DescribeVisitor.isDescribeName(((Var)theSameTerm.getRightArg()).getName())) {
 			if (theSameTerm.getLeftArg() instanceof Var) {
 				mVars.add(((Var)theSameTerm.getLeftArg()).getName());
 			}
