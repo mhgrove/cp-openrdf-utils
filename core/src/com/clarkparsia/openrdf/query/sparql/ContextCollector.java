@@ -138,15 +138,7 @@ public class ContextCollector extends QueryModelVisitorBase<Exception> {
 	}
 	
 	private void sameCtxCheck(TupleExpr theCurrentExpr, TupleExpr theLeftExpr, Var theLeftCtx, TupleExpr theRightExpr, Var theRightCtx) {
-		if ((theLeftCtx == null) && (theRightCtx != null)) {
-			mContexts.remove(theRightExpr);
-			mContexts.put(theCurrentExpr, theRightCtx);
-		}
-		else if ((theLeftCtx != null) && (theRightCtx == null)) {
-			mContexts.remove(theLeftExpr);
-			mContexts.put(theCurrentExpr, theLeftCtx);
-		}
-		else if ((theLeftCtx != null) && (theRightCtx != null) && isSameCtx(theLeftCtx, theRightCtx)) {
+		if ((theLeftCtx != null) && (theRightCtx != null) && isSameCtx(theLeftCtx, theRightCtx)) {
 			mContexts.remove(theLeftExpr);			
 			mContexts.remove(theRightExpr);
 			mContexts.put(theCurrentExpr, theLeftCtx);
