@@ -132,6 +132,8 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	 */
 	@Override
 	public void meet(LeftJoin theJoin) throws Exception {
+		ctxOpen(theJoin);
+		
 		theJoin.getLeftArg().visit(this);
 
 		mJoinBuffer.append(indent()).append("OPTIONAL {\n");
@@ -146,6 +148,8 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 		mIndent-=2;
 
 		mJoinBuffer.append(indent()).append("}.\n");
+		
+		ctxClose(theJoin);
 	}
 
 	/**

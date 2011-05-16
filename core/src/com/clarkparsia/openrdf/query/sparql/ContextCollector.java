@@ -157,6 +157,9 @@ public class ContextCollector extends QueryModelVisitorBase<Exception> {
 		if ((v1 != null && v1.getValue() != null) && (v2 != null && v2.getValue() != null)) {
 			return v1.getValue().equals(v2.getValue());
 		}
+		else if ((v1 != null && v1.getName() != null) && (v2 != null && v2.getName() != null)) {
+			return v1.getName().equals(v2.getName());
+		}
 		
 		return false;
 	}
