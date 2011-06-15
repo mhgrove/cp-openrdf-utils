@@ -227,6 +227,8 @@ public class OpenRdfIO {
 		try {
 			aConn = theRepo.getConnection();
 
+			aConn.setAutoCommit(false);
+
 			RDFInserter aInserter = new RDFInserter(aConn);
 
 			if (theContext != null) {
@@ -236,6 +238,8 @@ public class OpenRdfIO {
 			aParser.setRDFHandler(aInserter);
 
 			aParser.parse(theStream, theBase == null ? (theContext != null ? theContext.stringValue() : "http://openrdf.clarkparsia.com") : theBase);
+
+			aConn.commit();
 		}
 		catch (Exception e) {
 			throw new IOException(e);
