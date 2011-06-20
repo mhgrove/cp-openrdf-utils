@@ -17,6 +17,7 @@ package com.clarkparsia.openrdf.query.builder;
 
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.ParsedGraphQuery;
+import org.openrdf.query.parser.ParsedBooleanQuery;
 
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.SameTerm;
@@ -29,9 +30,17 @@ import org.openrdf.model.Resource;
  *
  * @author Michael Grove
  * @since 0.2
- * @since 0.2.3
+ * @since 0.3.1
  */
 public class QueryBuilderFactory {
+    /**
+     * Create a QueryBuilder for creating a select query
+     * @return a select QueryBuilder
+     */
+    public static QueryBuilder<ParsedBooleanQuery> ask() {
+        return new AbstractQueryBuilder<ParsedBooleanQuery>(new ParsedBooleanQuery());
+    }
+
     /**
      * Create a QueryBuilder for creating a select query
      * @return a select QueryBuilder

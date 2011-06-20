@@ -9,12 +9,14 @@ import static org.junit.Assert.assertEquals;
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedGraphQuery;
+import org.openrdf.query.parser.ParsedBooleanQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 import org.openrdf.query.algebra.Compare;
 
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.URI;
 import com.clarkparsia.openrdf.query.builder.QueryBuilder;
 import com.clarkparsia.openrdf.query.builder.QueryBuilderFactory;
 import com.clarkparsia.openrdf.query.builder.ValueExprFactory;
@@ -25,13 +27,90 @@ import com.clarkparsia.openrdf.vocabulary.DC;
  * <p></p>
  *
  * @author Michael Grove
- * @version 0
- * @since 0
+ * @version 0.3
+ * @since 0.3.1
  */
 public class TestRendering {
 
 	private String render(final ParsedQuery theQuery) throws Exception {
 		return new SPARQLQueryRenderer().render(theQuery);
+	}
+
+	@Test
+	public void testRenderFromInSelect() throws Exception {
+		URI aFrom = ValueFactoryImpl.getInstance().createURI("urn:from");
+
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o");
+
+		final String aExpected = "select ?s ?p ?o\n" +
+								 "from <" + aFrom + ">\n" +
+								 "where {\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}";
+
+		assertEquals(aExpected, render(aBuilder.query()));
+
+	}
+
+	@Test
+	public void testRenderFromInAsk() throws Exception {
+		URI aFrom = ValueFactoryImpl.getInstance().createURI("urn:from");
+
+		QueryBuilder<ParsedBooleanQuery> aBuilder = QueryBuilderFactory.ask();
+
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o");
+
+		final String aExpected = "ask\n" +
+								 "from <" + aFrom + ">\n" +
+								 "{\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}";
+
+		assertEquals(aExpected, render(aBuilder.query()));
+	}
+
+	@Test
+	public void testRenderFromNamedInSelect() throws Exception {
+		URI aFromNamed = ValueFactoryImpl.getInstance().createURI("urn:from_named");
+
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+
+		aBuilder.fromNamed(aFromNamed)
+			.group()
+			.atom("s", "p", "o");
+
+		final String aExpected = "select ?s ?p ?o\n" +
+								 "from named <" + aFromNamed + ">\n" +
+								 "where {\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}";
+
+		assertEquals(aExpected, render(aBuilder.query()));
+	}
+
+	@Test
+	public void testRenderFromNamedInAsk() throws Exception {
+		URI aFromNamed = ValueFactoryImpl.getInstance().createURI("urn:from_named");
+
+		QueryBuilder<ParsedBooleanQuery> aBuilder = QueryBuilderFactory.ask();
+
+		aBuilder.fromNamed(aFromNamed)
+			.group()
+			.atom("s", "p", "o");
+
+		final String aExpected = "ask\n" +
+								 "from named <" + aFromNamed + ">\n" +
+								 "{\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}";
+
+		assertEquals(aExpected, render(aBuilder.query()));
 	}
 
 	@Test
@@ -235,7 +314,8 @@ public class TestRendering {
 						"{?var5 <http://www.clarkparsia.com/baseball/position> <http://www.clarkparsia.com/baseball/position/ThirdBase>.  }.\n" +
 						"}\n";
 
-		final String aExpected = "ask {\n" +
+		final String aExpected = "ask\n" +
+								 "{\n" +
 								 "  ?var6 <http://www.clarkparsia.com/baseball/battingAverage> ?uri.\n" +
 								 "  ?var5 <http://www.clarkparsia.com/baseball/team> ?var2.\n" +
 								 "  ?var5 <http://www.clarkparsia.com/baseball/player> ?goal_base.\n" +

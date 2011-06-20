@@ -17,6 +17,7 @@ package com.clarkparsia.openrdf.query.builder;
 
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.model.Value;
+import org.openrdf.model.URI;
 
 /**
  * <p>Interface for a QueryBuilder which provides a simple fluent API for constructing Sesame query
@@ -24,7 +25,7 @@ import org.openrdf.model.Value;
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.2
+ * @version 0.3.1
  */
 public interface QueryBuilder<T extends ParsedQuery> extends SupportsGroups {
     /**
@@ -82,6 +83,20 @@ public interface QueryBuilder<T extends ParsedQuery> extends SupportsGroups {
 	 * @return this query builder
 	 */
 	public QueryBuilder<T> addProjectionVar(String... theNames);
+
+	/**
+	 * Add a from clause to this query
+	 * @param theURI the from URI
+	 * @return this query builder
+	 */
+	public QueryBuilder<T> from(URI theURI);
+
+	/**
+	 * Add a 'from named' clause to this query
+	 * @param theURI the graph URI
+	 * @return this query builder
+	 */
+	public QueryBuilder<T> fromNamed(URI theURI);
 
 	public QueryBuilder<T> addProjectionStatement(String theSubj, String thePred, String theObj);
 	public QueryBuilder<T> addProjectionStatement(String theSubj, String thePred, Value theObj);

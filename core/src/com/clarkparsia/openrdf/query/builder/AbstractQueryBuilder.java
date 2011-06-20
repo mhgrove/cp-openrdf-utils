@@ -34,7 +34,6 @@ import org.openrdf.query.algebra.Distinct;
 import org.openrdf.query.algebra.Reduced;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.Filter;
-import org.openrdf.query.algebra.QueryRoot;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.EmptySet;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
@@ -42,18 +41,22 @@ import org.openrdf.query.algebra.helpers.VarNameCollector;
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
+import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.model.Value;
+import org.openrdf.model.URI;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * <p>Base implementation of a QueryBuilder.</p>
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.2
+ * @version 0.3.1
  */
 public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder<T> {
 
@@ -64,13 +67,32 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 
 	private List<Group> mQueryAtoms = new ArrayList<Group>();
 
+	/**
+	 * the current limit on the number of results
+	 */
 	private int mLimit = -1;
 
+	/**
+	 * The current result offset
+	 */
 	private int mOffset = -1;
 
 	private boolean mDistinct = false;
 	private boolean mReduced = false;
 
+	/**
+	 * the from clauses in the query
+	 */
+	private Set<URI> mFrom = new HashSet<URI>();
+
+	/**
+	 * The from named clauses of the query
+	 */
+	private Set<URI> mFromNamed = new HashSet<URI>();
+
+	/**
+	 * The query to be built
+	 */
     private T mQuery;
 
     AbstractQueryBuilder(T theQuery) {
@@ -173,7 +195,37 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 
 		mQuery.setTupleExpr(aRoot);
 
+		if (!mFrom.isEmpty() || !mFromNamed.isEmpty()) {
+			DatasetImpl aDataset = new DatasetImpl();
+
+			for (URI aFrom : mFrom) {
+				aDataset.addDefaultGraph(aFrom);
+			}
+
+			for (URI aFrom : mFromNamed) {
+				aDataset.addNamedGraph(aFrom);
+			}
+
+			mQuery.setDataset(aDataset);
+		}
+
         return mQuery;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public QueryBuilder<T> fromNamed(final URI theURI) {
+		mFromNamed.add(theURI);
+		return this;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public QueryBuilder<T> from(final URI theURI) {
+		mFrom.add(theURI);
+		return this;
 	}
 
 	/**

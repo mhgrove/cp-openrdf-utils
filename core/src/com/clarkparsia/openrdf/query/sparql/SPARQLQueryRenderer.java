@@ -24,6 +24,7 @@ import org.openrdf.query.algebra.OrderElem;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.ParsedBooleanQuery;
+import org.openrdf.model.URI;
 
 /**
  * <p>Implementation of the {@link QueryRenderer} interface which renders queries into the SPARQL syntax.</p>
@@ -61,7 +62,7 @@ public class SPARQLQueryRenderer implements QueryRenderer {
 			aQuery.append("select ");
 		}
 		else if (theQuery instanceof ParsedBooleanQuery) {
-			aQuery.append("ask ");
+			aQuery.append("ask\n");
 		}
 		else {
 			aQuery.append("construct ");
@@ -75,7 +76,7 @@ public class SPARQLQueryRenderer implements QueryRenderer {
 			aQuery.append("reduced ");
 		}
 
-		if (!mRenderer.getProjection().isEmpty()) {
+		if (!mRenderer.getProjection().isEmpty() && !(theQuery instanceof ParsedBooleanQuery)) {
 
 			aFirst = true;
 
@@ -120,6 +121,17 @@ public class SPARQLQueryRenderer implements QueryRenderer {
 			}
 
 			aQuery.append("\n");
+		}
+
+
+		if (theQuery.getDataset() != null) {
+			for (URI aURI : theQuery.getDataset().getDefaultGraphs()) {
+				aQuery.append("from <").append(aURI).append(">\n");
+			}
+
+			for (URI aURI : theQuery.getDataset().getNamedGraphs()) {
+				aQuery.append("from named <").append(aURI).append(">\n");
+			}
 		}
 
 		if (aBody.length() > 0) {
