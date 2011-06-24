@@ -63,6 +63,9 @@ import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import com.clarkparsia.openrdf.vocabulary.FOAF;
 import com.clarkparsia.openrdf.vocabulary.DC;
@@ -79,14 +82,20 @@ import com.clarkparsia.openrdf.ExtGraph;
 import java.util.HashSet;
 import java.util.Collection;
 
+import info.aduna.iteration.CloseableIteration;
+
 /**
  * <p>Collection of utility methods for working with the OpenRdf Sesame Query API.</p>
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.3
+ * @version 0.3.1
  */
 public final class SesameQueryUtils {
+	/**
+	 * the logger
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(SesameQueryUtils.class);
 
 	private SesameQueryUtils() {
 	}
@@ -306,6 +315,21 @@ public final class SesameQueryUtils {
             e.printStackTrace();
         }
     }
+
+	/**
+	 * Close the iteration, ignoring any thrown exception and instead just logging it.
+	 * @param theResults the iteration to close
+	 */
+	public static void closeQuietly(final CloseableIteration<?, ? extends Exception> theResults) {
+		try {
+			if (theResults != null) {
+				theResults.close();
+			}
+		}
+		catch (Exception e) {
+			LOGGER.warn("There was an error closing an iteration: " + e.getMessage());
+		}
+	}
 
 	/**
      * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit or offset of a query
