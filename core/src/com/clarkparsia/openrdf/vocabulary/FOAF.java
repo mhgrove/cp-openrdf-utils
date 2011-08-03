@@ -18,9 +18,11 @@ package com.clarkparsia.openrdf.vocabulary;
 import org.openrdf.model.URI;
 
 /**
- * <p></p>
+ * <p>Constants for the concepts in the FOAF vocabulary</p>
  *
  * @author Michael Grove
+ * @since 0.1
+ * @version 0.3.1
  */
 public class FOAF extends Vocabulary {
 	private static FOAF INSTANCE;
@@ -42,6 +44,9 @@ public class FOAF extends Vocabulary {
     public final URI Person = term("Person");
     public final URI Organization = term("Organization");
     public final URI Image = term("Image");
+	public final URI Agent = term("Agent");
+	public final URI Group = term("Group");
+	public final URI Document = term("Document");
 
     public final URI firstName = term("firstName");
     public final URI surname = term("surname");
@@ -57,6 +62,17 @@ public class FOAF extends Vocabulary {
 	public final URI homepage = term("homepage");
 	public final URI birthday = term("birthday");
 	public final URI knows = term("knows");
+	public final URI lastName = term("lastName");
+	public final URI title = term("title");
+	public final URI openId = term("openId");
+	public final URI pastProject = term("pastProject");
+	public final URI topic_interest = term("topic_interest");
+	public final URI age = term("age");
+	public final URI member = term("member");
+	public final URI primaryTopic = term("primaryTopic");
+	public final URI made = term("made");
+	public final URI logo = term("logo");
+	public final URI currentProject = term("currentProject");
 
     @Deprecated
     public final URI regionDepicts = term("regionDepicts");

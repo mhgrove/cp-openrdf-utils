@@ -41,6 +41,7 @@ import com.clarkparsia.utils.collections.CollectionUtil;
  * @since 0.1
  * @version 0.3
  */
+@Deprecated
 public class SparqlXmlResultSetParser extends DefaultHandler {
 	private ResultSetBuilder mResults;
 
