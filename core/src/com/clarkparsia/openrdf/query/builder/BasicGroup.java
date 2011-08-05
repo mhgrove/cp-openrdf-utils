@@ -28,13 +28,11 @@ import org.openrdf.query.algebra.EmptySet;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import com.clarkparsia.utils.Predicate;
-import com.clarkparsia.utils.FunctionUtil;
-import static com.clarkparsia.utils.collections.CollectionUtil.filter;
-import static com.clarkparsia.utils.collections.CollectionUtil.transform;
+import com.google.common.collect.Collections2;
+import com.google.common.base.Predicate;
+import com.google.common.base.Function;
 
 /**
  * <p>Internal class for representing a group within a query.</p>
@@ -238,7 +236,27 @@ public class BasicGroup implements Group {
 	}
 
 	public Collection<StatementPattern> getPatterns() {
-		return transform(filter(mExpressions, new Predicate<TupleExpr>() { public boolean accept(TupleExpr theExpr) { return theExpr instanceof StatementPattern; } }),
-						 new FunctionUtil.Cast<TupleExpr, StatementPattern>(StatementPattern.class));
+		return Collections2.transform(Collections2.filter(mExpressions, new Predicate<TupleExpr>() { public boolean apply(TupleExpr theExpr) { return theExpr instanceof StatementPattern; } }),
+									  new Cast<TupleExpr, StatementPattern>(StatementPattern.class));
+	}
+
+	/**
+	 * A function that takes an object of one type and casts it to another.
+	 * <code><pre>
+	 *   Collection&lt;Integer&gt; aNewCollection = transform(aCollection, new Cast&lt;Number, Integer&gt;());
+	 * </pre></code>
+	 * @param <I> the input type
+	 * @param <O> the output type
+	 */
+	public static class Cast<I, O> implements Function<I, O> {
+		private Class<O> mClass;
+
+		public Cast(final Class<O> theClass) {
+			mClass = theClass;
+		}
+
+		public O apply(final I theIn) {
+			return mClass.cast(theIn);
+		}
 	}
 }

@@ -15,28 +15,25 @@
 
 package com.clarkparsia.openrdf;
 
-import org.openrdf.model.util.GraphUtil;
 import org.openrdf.model.vocabulary.RDF;
+
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryResult;
 
 import org.openrdf.repository.sail.SailRepository;
 
 import org.openrdf.sail.memory.MemoryStore;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.BNode;
 import org.openrdf.model.URI;
-import org.openrdf.model.Value;
+
 import org.openrdf.model.Statement;
 
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.BindingSet;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.LogManager;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import info.aduna.iteration.Iteration;
 
@@ -44,22 +41,20 @@ import java.util.Iterator;
 import java.util.Arrays;
 
 import com.clarkparsia.openrdf.util.IterationIterator;
-import com.clarkparsia.utils.Function;
-import static com.clarkparsia.utils.collections.CollectionUtil.transform;
-import static com.clarkparsia.utils.collections.CollectionUtil.list;
+import com.google.common.collect.Lists;
 
 /**
  * <p>Utility methods for working with the OpenRDF Sesame API.</p>
  *
  * @author Michael Grove
  * @since 0.1
- * @version 0.2.3
+ * @version 0.3.1
  */
 public class OpenRdfUtil {
 	/**
-	 * The logger
+	 * the logger
 	 */
-	private static Logger LOGGER = LogManager.getLogger("com.clarkparsia.openrdf");
+	private static final Logger LOGGER = LoggerFactory.getLogger(OpenRdfUtil.class);
 	
 	/**
 	 * Create a simple in-memory {@link Repository}
@@ -139,7 +134,7 @@ public class OpenRdfUtil {
 				theConn.close();
 			}
 			catch (RepositoryException e) {
-				LOGGER.error(e);
+				LOGGER.error("There was an error while closing the RepositoryConnection.", e);
 			}
 		}
 	}
@@ -149,6 +144,6 @@ public class OpenRdfUtil {
     }
 
     public static boolean isType(final ExtRepository theRepository, final URI theSubj, final URI theType) {
-        return list(theRepository.getValues(theSubj, RDF.TYPE)).contains(theType);
+        return Lists.newArrayList(theRepository.getValues(theSubj, RDF.TYPE)).contains(theType);
     }
 }

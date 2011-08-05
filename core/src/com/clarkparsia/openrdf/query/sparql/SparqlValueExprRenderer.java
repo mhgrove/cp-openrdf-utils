@@ -51,19 +51,18 @@ import org.openrdf.query.algebra.BinaryValueOperator;
 import org.openrdf.query.algebra.UnaryValueOperator;
 import org.openrdf.query.algebra.BNodeGenerator;
 import org.openrdf.query.algebra.TupleExpr;
-import org.openrdf.query.algebra.Order;
-import org.openrdf.query.algebra.OrderElem;
+
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 import com.clarkparsia.openrdf.query.SesameQueryUtils;
-import com.clarkparsia.utils.NamespaceUtils;
 
 /**
  * <p>Renders a Sesame {@link ValueExpr} into SPARQL syntax.</p>
  *
  * @author Michael Grove
  * @since 0.2
+ * @version 0.4
  */
-class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
+final class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 
 	/**
 	 * The current rendered value

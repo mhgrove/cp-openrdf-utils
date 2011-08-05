@@ -20,8 +20,8 @@ import info.aduna.iteration.CloseableIteration;
 
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.LogManager;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * <p>Implementation of the Iterator interface to wrap a Sesame Iteration object. If the Iteration is a
@@ -30,13 +30,14 @@ import org.apache.log4j.LogManager;
  * close it yourself.</p>
  *
  * @author Michael Grove
+ * @since 0.2
+ * @version 0.4
  */
-public class IterationIterator<T> implements Iterator<T> {
-
+public final class IterationIterator<T> implements Iterator<T> {
 	/**
-	 * The logger
+	 * the logger
 	 */
-	private static Logger LOGGER = LogManager.getLogger("com.clarkparsia.openrdf");
+	private static final Logger LOGGER = LoggerFactory.getLogger(IterationIterator.class);
 
 	/**
 	 * The Sesame iteration
@@ -63,7 +64,7 @@ public class IterationIterator<T> implements Iterator<T> {
 			return mIteration.hasNext();
 		}
 		catch (Exception e) {
-			LOGGER.error(e);
+			LOGGER.error("Iteration.hasNext exception!",e);
 			return false;
 		}
 	}
@@ -95,7 +96,7 @@ public class IterationIterator<T> implements Iterator<T> {
 			mIteration.remove();
 		}
 		catch (Exception e) {
-			LOGGER.error(e);
+			LOGGER.error("Iteration.remove exception!", e);
 		}
 	}
 }

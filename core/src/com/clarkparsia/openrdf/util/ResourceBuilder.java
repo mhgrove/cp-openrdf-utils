@@ -26,18 +26,22 @@ import org.openrdf.model.BNode;
 import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.GregorianCalendar;
 
-import com.clarkparsia.utils.BasicUtils;
 import com.clarkparsia.openrdf.ExtGraph;
 
-import static com.clarkparsia.utils.collections.CollectionUtil.set;
+import com.google.common.collect.Sets;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 /**
  * <p>Utility class for creating statements about a particular resource.</p>
  *
  * @author Michael Grove
  * @since 0.1
- * @version 0.2.1
+ * @version 0.4
  */
 public class ResourceBuilder {
     private ExtGraph mGraph;
@@ -97,7 +101,7 @@ public class ResourceBuilder {
         if (theBuilder != null) {
             addProperty(theProperty, theBuilder.getResource());
 
-            mGraph.addAll(set(theBuilder.mGraph));
+            mGraph.addAll(Sets.newHashSet(theBuilder.mGraph));
         }
 
         return this;
@@ -153,7 +157,15 @@ public class ResourceBuilder {
 
 	public ResourceBuilder addProperty(URI theProperty, Date theValue) {
 		if (theValue != null) {
-			return addProperty(theProperty, mGraph.getValueFactory().createLiteral(BasicUtils.date(theValue), XMLSchema.DATE));
+			GregorianCalendar c = new GregorianCalendar();
+			c.setTime(theValue);
+
+			try {
+				return addProperty(theProperty, mGraph.getValueFactory().createLiteral(DatatypeFactory.newInstance().newXMLGregorianCalendar(c).toXMLFormat(), XMLSchema.DATE));
+			}
+			catch (DatatypeConfigurationException e) {
+				throw new IllegalArgumentException(e);
+			}
 		}
 		else {
 			return this;

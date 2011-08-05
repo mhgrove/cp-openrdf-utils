@@ -31,9 +31,6 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.util.RDFInserter;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.LogManager;
-
 import java.io.Writer;
 import java.io.IOException;
 import java.io.File;
@@ -47,22 +44,16 @@ import java.io.FileOutputStream;
 
 import com.clarkparsia.openrdf.util.GraphBuildingRDFHandler;
 import static com.clarkparsia.openrdf.OpenRdfUtil.close;
-import com.clarkparsia.utils.io.Encoder;
+import com.google.common.base.Charsets;
 
 /**
  * <p>Collection of utility methods for doing IO operations with RIO and the OpenRdf API</p>
  *
  * @author Michael Grove
  * @since 0.1
- * @version 0.2.3
+ * @version 0.4
  */
 public class OpenRdfIO {
-
-	/**
-	 * The logger
-	 */
-	private static Logger LOGGER = LogManager.getLogger("com.clarkparsia.openrdf");
-
 	/**
 	 * Read an RDF graph from the stream using the specified format
 	 * @param theInput the stream to read from
@@ -72,7 +63,7 @@ public class OpenRdfIO {
 	 * @throws RDFParseException if there is an error while trying to parse the data as the specified format
 	 */
 	public static Graph readGraph(InputStream theInput, RDFFormat theFormat) throws IOException, RDFParseException {
-		return readGraph(new InputStreamReader(theInput, Encoder.UTF8), theFormat);
+		return readGraph(new InputStreamReader(theInput, Charsets.UTF_8), theFormat);
 	}
 
 
@@ -86,7 +77,7 @@ public class OpenRdfIO {
 	 * @throws RDFParseException if there is an error while trying to parse the data as the specified format
 	 */
 	public static Graph readGraph(InputStream theInput, RDFFormat theFormat, String theBase) throws IOException, RDFParseException {
-		return readGraph(new InputStreamReader(theInput, Encoder.UTF8), theFormat, theBase);
+		return readGraph(new InputStreamReader(theInput, Charsets.UTF_8), theFormat, theBase);
 	}
 
 	/**
@@ -205,7 +196,7 @@ public class OpenRdfIO {
 	}
 
 	public static void addData(Repository theRepo, InputStream theStream, RDFFormat theFormat) throws RDFParseException, IOException {
-		addData(theRepo, new InputStreamReader(theStream, Encoder.UTF8.name()), theFormat);
+		addData(theRepo, new InputStreamReader(theStream, Charsets.UTF_8), theFormat);
 	}
 
 	public static void addData(Repository theRepo, Reader theStream, RDFFormat theFormat) throws RDFParseException, IOException {
@@ -259,7 +250,7 @@ public class OpenRdfIO {
 	 * @throws IOException if there is an error writing to the file
 	 */
 	public static void writeRepository(Repository theRepo, File theFile, RDFFormat theFormat) throws RepositoryException, IOException {
-		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(new FileOutputStream(theFile), Encoder.UTF8)));
+		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(new FileOutputStream(theFile), Charsets.UTF_8)));
 	}
 
 	/**
@@ -271,7 +262,7 @@ public class OpenRdfIO {
 	 * @throws IOException if there is an error writing to the stream
 	 */
 	public static void writeRepository(Repository theRepo, OutputStream theStream, RDFFormat theFormat) throws RepositoryException, IOException {
-		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(theStream, Encoder.UTF8)));
+		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(theStream, Charsets.UTF_8)));
 	}
 
 	/**
@@ -317,7 +308,7 @@ public class OpenRdfIO {
 	}
 
 	public static ExtRepository readRepository(final InputStream theStream, final RDFFormat theFormat) throws IOException, RDFParseException {
-		return readRepository(new InputStreamReader(theStream, Encoder.UTF8), theFormat);
+		return readRepository(new InputStreamReader(theStream, Charsets.UTF_8), theFormat);
 	}
 
 	public static ExtRepository readRepository(final Reader theStream, final RDFFormat theFormat) throws IOException, RDFParseException {

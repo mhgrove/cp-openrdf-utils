@@ -29,8 +29,6 @@ import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.And;
 
-import static com.clarkparsia.utils.collections.CollectionUtil.each;
-import static com.clarkparsia.utils.collections.CollectionUtil.transform;
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 
 import java.util.ArrayList;
@@ -41,7 +39,7 @@ import java.util.HashMap;
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.1
+ * @version 0.4
  */
 class SerqlTupleExprRenderer extends BaseTupleExprRenderer {
 

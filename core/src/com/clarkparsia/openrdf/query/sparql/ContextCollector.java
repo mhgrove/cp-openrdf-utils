@@ -17,8 +17,6 @@ package com.clarkparsia.openrdf.query.sparql;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.algebra.Difference;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.Intersection;
@@ -30,15 +28,13 @@ import org.openrdf.query.algebra.Union;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 
-import com.clarkparsia.utils.BasicUtils;
-
 /**
  * <p>Visitor implementation for the sesame query algebra which walks the tree and figures out the context for nodes in the algebra.  The context for a node
  * is set on the highest node in the tree.  That is, everything below it shares the same context.</p>
  *
  * @author Blazej Bulka
  * @since 0.3
- * @version 0.3
+ * @version 0.4
  */
 public class ContextCollector extends QueryModelVisitorBase<Exception> {
 	

@@ -23,15 +23,13 @@ import org.openrdf.query.algebra.ValueConstant;
 
 import org.openrdf.model.Value;
 
-import com.clarkparsia.utils.BasicUtils;
-
-import static com.clarkparsia.utils.collections.CollectionUtil.set;
-
 import org.openrdf.query.parser.ParsedQuery;
 
 import java.util.Arrays;
 
 import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 /**
  * <p>Builder for creating a grouped set of query atoms and filters in a query.</p>
@@ -155,7 +153,7 @@ public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
     }
 
     public GroupBuilder<T,E> atom(StatementPattern... thePatterns) {
-        return atoms(set(Arrays.asList(thePatterns)));
+        return atoms(Sets.newHashSet(Arrays.asList(thePatterns)));
     }
 
     public GroupBuilder<T,E> atoms(Set<StatementPattern> thePatterns) {
@@ -210,8 +208,9 @@ public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
 		return new StatementPattern(mScope, theSubj, thePred, theObj, mContext);
 	}
 
+	static int cnt = 0;
 	public static Var valueToVar(Value theValue) {
-		Var aVar = new Var(BasicUtils.getRandomString(4), theValue);
+		Var aVar = new Var("var" + cnt++, theValue);
 		aVar.setAnonymous(true);
 
 		return aVar;

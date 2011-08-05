@@ -51,8 +51,8 @@ import org.openrdf.rio.RDFFormat;
 
 import org.openrdf.sail.memory.MemoryStore;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.LogManager;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -61,35 +61,42 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
+
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
 
-import com.clarkparsia.utils.collections.CollectionUtil;
-import static com.clarkparsia.utils.collections.CollectionUtil.transform;
-import com.clarkparsia.utils.Function;
-import com.clarkparsia.utils.FunctionUtil;
-import com.clarkparsia.utils.io.Encoder;
-import static com.clarkparsia.utils.FunctionUtil.compose;
-
 import static com.clarkparsia.openrdf.OpenRdfUtil.close;
 import static com.clarkparsia.openrdf.OpenRdfUtil.asGraph;
 import com.clarkparsia.openrdf.util.IterationIterator;
+import com.clarkparsia.openrdf.util.IterationIterable;
 import com.clarkparsia.openrdf.query.SesameQueryUtils;
+import com.clarkparsia.openrdf.query.builder.BasicGroup;
+import com.google.common.base.Charsets;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Collections2;
 
 import info.aduna.iteration.EmptyIteration;
 import info.aduna.iteration.CloseableIteration;
+import info.aduna.iteration.Iteration;
 
 /**
  * <p>Extends the normal Sesame Repository, via RepositoryWrapper, with some additional utility functions.</p>
  *
  * @author Michael Grove
  * @since 0.1
- * @since 0.2.5
+ * @since 0.4
  */
 public class ExtRepository extends RepositoryWrapper {
-	private static Logger LOGGER = LogManager.getLogger("com.clarkparsia.openrdf");
+	/**
+	 * the logger
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExtRepository.class);
 
 	/**
 	 * Create a new in-memory ExtRepository
@@ -106,6 +113,9 @@ public class ExtRepository extends RepositoryWrapper {
 		super(theRepository);
 	}
 
+	/**
+	 * Clear all data from this repository
+	 */
 	public void clear() {
 		RepositoryConnection aConn = null;
 
@@ -115,7 +125,7 @@ public class ExtRepository extends RepositoryWrapper {
 			aConn.clear();
 		}
 		catch (RepositoryException e) {
-			LOGGER.error(e);
+			LOGGER.error("There was an error while cleaning the repository", e);
 		}
 		finally {
 			close(aConn);
@@ -123,7 +133,7 @@ public class ExtRepository extends RepositoryWrapper {
 	}
 
 	public void add(final InputStream theInput, final RDFFormat theFormat, final String theBase) throws IOException, RDFParseException {
-		OpenRdfIO.addData(this, new InputStreamReader(theInput, Encoder.UTF8), theFormat, ValueFactoryImpl.getInstance().createURI(theBase));
+		OpenRdfIO.addData(this, new InputStreamReader(theInput, Charsets.UTF_8), theFormat, ValueFactoryImpl.getInstance().createURI(theBase));
 	}
 
 	public void add(InputStream theStream, RDFFormat theFormat) throws IOException, RDFParseException {
@@ -142,7 +152,7 @@ public class ExtRepository extends RepositoryWrapper {
 			aExportConn.export(aInsert);
 		}
 		catch (Exception e) {
-			LOGGER.error(e);
+			LOGGER.error("There was an error while adding", e);
 		}
 		finally {
 			close(aExportConn);
@@ -163,10 +173,10 @@ public class ExtRepository extends RepositoryWrapper {
 		try {
 			aConn = getConnection();
 
-			aGraph.addAll(CollectionUtil.set(new IterationIterator<Statement>(getStatements(theResource, null, null))));
+			aGraph.addAll(Sets.newHashSet(new IterationIterator<Statement>(getStatements(theResource, null, null))));
 		}
 		catch (Exception ex) {
-			LOGGER.error(ex);
+			LOGGER.error("There was an error doing simple describe.", ex);
 		}
 		finally {
 			close(aConn);
@@ -201,7 +211,8 @@ public class ExtRepository extends RepositoryWrapper {
 		}
 		catch (Exception ex) {
 			OpenRdfUtil.close(aConn);
-			LOGGER.error(ex);
+
+			LOGGER.error("There was an error getting statements, returning empty iteration.", ex);
 
 			return new RepositoryResult<Statement>(emptyStatementIteration());
 		}
@@ -330,7 +341,7 @@ public class ExtRepository extends RepositoryWrapper {
 			return aSubjects;
 		}
 		catch (Exception e) {
-			LOGGER.error(e);
+			LOGGER.error("There was an error getting the subjects", e);
 
 			return Collections.emptySet();
 		}
@@ -361,10 +372,9 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @param theRes the resource
 	 * @return the resource's superclasses
 	 */
-	public Iterable<Resource> getSuperclasses(Resource theRes) {
-		return transform(new IterationIterator<Statement>(getStatements(theRes, RDFS.SUBCLASSOF, null)),
-						 compose(new Function<Statement, Value>() {public Value apply(Statement theStmt) { return theStmt.getObject(); } },
-								 new FunctionUtil.Cast<Value, Resource>(Resource.class)));
+	public Iterable<Resource> getSuperclasses(final Resource theRes) {
+		return Iterables.transform(new IterationIterable<Statement>(new Supplier<RepositoryResult<Statement>>() { public RepositoryResult<Statement> get() { return getStatements(theRes, RDFS.SUBCLASSOF, null); } }),
+								   new Function<Statement, Resource>() {public Resource apply(Statement theStmt) { return (Resource) theStmt.getObject(); } });
 	}
 
 	/**
@@ -384,7 +394,7 @@ public class ExtRepository extends RepositoryWrapper {
             // TODO: close result
             TupleQueryResult aTable = selectQuery(QueryLanguage.SERQL, aQuery);
 
-            return transform(new IterationIterator<BindingSet>(aTable), new Function<BindingSet, Value>() {
+            return Iterables.transform(new IterationIterable<BindingSet>(Suppliers.ofInstance(aTable)), new Function<BindingSet, Value>() {
 				public Value apply(final BindingSet theIn) {
 					return theIn.getValue("value");
 				}
@@ -511,7 +521,7 @@ public class ExtRepository extends RepositoryWrapper {
 			aExportConn.export(aRemover);
 		}
 		catch (Exception e) {
-			LOGGER.error(e);
+			LOGGER.error("There was an error while removing", e);
 		}
 		finally {
 			close(aExportConn);

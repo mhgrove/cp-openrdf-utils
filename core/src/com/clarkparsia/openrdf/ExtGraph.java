@@ -21,8 +21,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
-import org.openrdf.model.impl.GraphImpl;
-import org.openrdf.model.impl.URIImpl;
+
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.util.GraphUtil;
 import org.openrdf.model.vocabulary.RDFS;
@@ -40,16 +39,17 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashSet;
+
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 
-import com.clarkparsia.utils.collections.CollectionUtil;
-import static com.clarkparsia.utils.collections.CollectionUtil.transform;
-import com.clarkparsia.utils.Predicate;
-import com.clarkparsia.utils.Function;
+import com.google.common.base.Predicate;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+
+import com.google.common.collect.Sets;
 
 /**
  * <p>Extends the {@link DelegatingGraph} class to provide additional convenience methods for working with a graph
@@ -57,7 +57,7 @@ import com.clarkparsia.utils.Function;
  *
  * @author Michael Grove
  * @since 0.1
- * @version 0.2.2
+ * @version 0.4
  */
 public class ExtGraph extends DelegatingGraph {
 	public ExtGraph() {
@@ -75,7 +75,7 @@ public class ExtGraph extends DelegatingGraph {
 	public ExtGraph filter(Predicate<Statement> thePredicate) {
 		ExtGraph aFilteredGraph = new ExtGraph();
 
-		aFilteredGraph.addAll(CollectionUtil.filter(this, thePredicate));
+		aFilteredGraph.addAll(Collections2.filter(this, thePredicate));
 
 		return aFilteredGraph;
 	}
@@ -115,7 +115,7 @@ public class ExtGraph extends DelegatingGraph {
 	 * @return all values of the property on the resource.
 	 */
 	public Collection<Value> getValues(Resource theSubj, URI thePred) {
-		return transform(getStatements(theSubj, thePred, null), new Function<Statement, Value>() {
+		return Collections2.transform(Sets.newHashSet(getStatements(theSubj, thePred, null)), new Function<Statement, Value>() {
 			public Value apply(final Statement theIn) {
 				return theIn.getObject();
 			}
@@ -233,7 +233,7 @@ public class ExtGraph extends DelegatingGraph {
     }
 
     public void read(final Reader theReader) throws IOException, RDFParseException {
-        Graph aGraph = new GraphImpl();
+        Graph aGraph;
 
         try {
             aGraph = OpenRdfIO.readGraph(theReader, RDFFormat.TURTLE);
@@ -259,9 +259,25 @@ public class ExtGraph extends DelegatingGraph {
 		addAll(OpenRdfIO.readGraph(theStream, theFormat));
 	}
 
-	public void add(Graph theGraph) {
-		theGraph.removeAll(this);
-		addAll(theGraph);
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public boolean add(Statement theStatement) {
+		return !contains(theStatement) && super.add(theStatement);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public boolean addAll(Collection<? extends Statement> theGraph) {
+		int aSize = size();
+
+		removeAll(theGraph);
+		super.addAll(theGraph);
+
+		return aSize != size();
 	}
 
     public boolean contains(Resource theSubj, URI thePred, Value theObj) {

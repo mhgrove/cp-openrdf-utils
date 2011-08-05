@@ -24,32 +24,27 @@ import org.openrdf.query.algebra.Difference;
 import org.openrdf.query.algebra.Intersection;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.algebra.ProjectionElemList;
-import org.openrdf.query.algebra.ProjectionElem;
-import org.openrdf.query.algebra.OrderElem;
 import org.openrdf.query.algebra.Var;
-import org.openrdf.query.algebra.BinaryTupleOperator;
-import org.openrdf.query.algebra.UnaryTupleOperator;
-import org.openrdf.query.algebra.QueryModelNode;
+
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
 import com.clarkparsia.openrdf.query.BaseTupleExprRenderer;
 import com.clarkparsia.openrdf.query.SesameQueryUtils;
-import com.clarkparsia.utils.BasicUtils;
+
+import com.google.common.base.Strings;
 
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * <p>Extends the BaseTupleExprRenderer to provide support for rendering tuple expressions as SPARQL queries.</p>
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.2.1
+ * @version 0.4
  */
-public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
+public final class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 
 	private StringBuffer mJoinBuffer = new StringBuffer();
 	private Map<TupleExpr,Var> mContexts = new HashMap<TupleExpr, Var>();
@@ -78,7 +73,7 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	}
 
 	private String indent() {
-		return BasicUtils.repeat(' ', mIndent);
+		return Strings.repeat(" ", mIndent);
 	}
 
 	/**
@@ -254,11 +249,5 @@ public class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 			   renderValueExpr(thePattern.getPredicateVar()) + " " +
 			   "" + renderValueExpr(thePattern.getObjectVar()) + ".\n";
 
-	}
-
-	public static void main(String[] args) throws Exception {
-		ParsedQuery q = new SPARQLParser().parseQuery("ask { ?s ?p ?o }", "http://foo.com");
-
-		System.err.println(new SPARQLQueryRenderer().render(q));
 	}
 }
