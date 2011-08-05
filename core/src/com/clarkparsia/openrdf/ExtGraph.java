@@ -139,6 +139,10 @@ public class ExtGraph extends DelegatingGraph {
 		}
 	}
 
+	public boolean addType(final Resource theSubject, Resource theType) {
+		return add(theSubject, RDF.TYPE, theType);
+	}
+
 	/**
 	 * Returns all the instances of the specified type
 	 * @param theType the type for instances to return

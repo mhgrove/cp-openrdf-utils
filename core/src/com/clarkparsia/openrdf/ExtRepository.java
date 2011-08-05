@@ -70,6 +70,7 @@ import static com.clarkparsia.openrdf.OpenRdfUtil.close;
 import static com.clarkparsia.openrdf.OpenRdfUtil.asGraph;
 import com.clarkparsia.openrdf.util.IterationIterator;
 import com.clarkparsia.openrdf.util.IterationIterable;
+import com.clarkparsia.openrdf.util.AdunaIterations;
 import com.clarkparsia.openrdf.query.SesameQueryUtils;
 import com.clarkparsia.openrdf.query.builder.BasicGroup;
 import com.google.common.base.Charsets;
@@ -84,6 +85,7 @@ import com.google.common.collect.Collections2;
 import info.aduna.iteration.EmptyIteration;
 import info.aduna.iteration.CloseableIteration;
 import info.aduna.iteration.Iteration;
+import info.aduna.iteration.Iterations;
 
 /**
  * <p>Extends the normal Sesame Repository, via RepositoryWrapper, with some additional utility functions.</p>
@@ -199,14 +201,15 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @param theSubj the subject to search for, or null for any
 	 * @param thePred the predicate to search for, or null for any
 	 * @param theObj the object to search for, or null for any
+	 * @param theContext the contexts for the statement(s)
 	 * @return an Iterable over the matching statements
 	 */
-	public RepositoryResult<Statement> getStatements(Resource theSubj, URI thePred, Value theObj) {
+	public RepositoryResult<Statement> getStatements(Resource theSubj, URI thePred, Value theObj, final Resource... theContext) {
 		RepositoryConnection aConn = null;
 		try {
 			aConn = getConnection();
 
-			final RepositoryResult<Statement> aResult = aConn.getStatements(theSubj, thePred, theObj, true);
+			final RepositoryResult<Statement> aResult = aConn.getStatements(theSubj, thePred, theObj, true, theContext);
             return new ConnectionClosingRepositoryResult<Statement>(aConn, aResult);
 		}
 		catch (Exception ex) {
@@ -216,6 +219,23 @@ public class ExtRepository extends RepositoryWrapper {
 
 			return new RepositoryResult<Statement>(emptyStatementIteration());
 		}
+	}
+
+	public boolean contains(final Statement theStatement) throws RepositoryException {
+		return contains(theStatement.getSubject(), theStatement.getPredicate(), theStatement.getObject(), theStatement.getContext());
+	}
+
+	public boolean contains(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContext) throws RepositoryException {
+		RepositoryResult aResult = null;
+
+		try {
+			aResult = getStatements(theSubject, thePredicate, theObject, theContext);
+			return aResult.hasNext();
+		}
+		finally {
+			AdunaIterations.closeQuietly(aResult);
+		}
+
 	}
 
 	/**
@@ -478,7 +498,7 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @param theGraph the graph to remove
 	 * @throws RepositoryException if there is an error while removing the graph
 	 */
-	public void removeGraph(final Graph theGraph) throws RepositoryException {
+	public void remove(final Graph theGraph) throws RepositoryException {
 		RepositoryConnection aConn = null;
 
 		try {
