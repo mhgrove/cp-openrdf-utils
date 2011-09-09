@@ -78,6 +78,7 @@ import com.clarkparsia.openrdf.query.serql.SeRQLQueryRenderer;
 import com.clarkparsia.openrdf.query.util.DescribeVisitor;
 import com.clarkparsia.openrdf.query.util.DescribeRewriter;
 import com.clarkparsia.openrdf.ExtGraph;
+import com.google.common.base.Predicate;
 
 import java.util.HashSet;
 import java.util.Collection;
@@ -142,7 +143,7 @@ public final class SesameQueryUtils {
 	}
 
 	/**
-	 * Create a Sesame graph from the GraphQueryResult
+	 * Create a Sesame graph from the GraphQueryResult.  If the invocation is successful, the query result is closed before returning the result.
 	 * @param theResult the result of the query
 	 * @return the graph built from the result
 	 * @throws QueryEvaluationException if there was an error while creating the graph from the query result
@@ -153,6 +154,8 @@ public final class SesameQueryUtils {
 		while (theResult.hasNext()) {
 			aGraph.add(theResult.next());
 		}
+
+		theResult.close();
 
 		return aGraph;
 	}
@@ -320,6 +323,7 @@ public final class SesameQueryUtils {
 	 * Close the iteration, ignoring any thrown exception and instead just logging it.
 	 * @param theResults the iteration to close
 	 */
+	@Deprecated
 	public static void closeQuietly(final CloseableIteration<?, ? extends Exception> theResults) {
 		try {
 			if (theResults != null) {

@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 
 import info.aduna.iteration.CloseableIteration;
 import info.aduna.iteration.Iterations;
+import com.google.common.base.Predicate;
 
 /**
  * <p>Utility methods for Aduna {@link info.aduna.iteration.Iteration Iterations} not already present in {@link Iterations}</p>
@@ -38,7 +39,7 @@ public class AdunaIterations {
 	 * Quietly close the iteration
 	 * @param theCloseableIteration the iteration to close
 	 */
-	public static void closeQuietly(final CloseableIteration theCloseableIteration) {
+	public static void closeQuietly(final CloseableIteration<?,?> theCloseableIteration) {
 		try {
 			if (theCloseableIteration != null) {
 				Iterations.closeCloseable(theCloseableIteration);
@@ -46,6 +47,25 @@ public class AdunaIterations {
 		}
 		catch (Exception e) {
 			LOGGER.warn("Ignoring error while closing iteration.", e);
+		}
+	}
+
+	/**
+	 * Apply the predicate to everything in the Iteration
+	 * @param theIter the iteratino
+	 * @param theEach the predicate to apply
+	 * @param <T> the type of objects in the iteration
+	 * @param <E> the type of exception that can be thrown
+	 * @throws E the exception
+	 */
+	public static <T, E extends Exception> void each(final CloseableIteration<T, E> theIter, final Predicate<T> theEach) throws E {
+		try {
+			while (theIter.hasNext()) {
+				theEach.apply(theIter.next());
+			}
+		}
+		finally {
+			theIter.close();
 		}
 	}
 }
