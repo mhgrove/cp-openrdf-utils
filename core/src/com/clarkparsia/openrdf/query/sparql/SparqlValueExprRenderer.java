@@ -322,7 +322,7 @@ final class SparqlValueExprRenderer extends QueryModelVisitorBase<Exception> {
 	 */
 	@Override
 	public void meet(IsBNode theOp) throws Exception {
-		unaryMeet("isBNode", theOp);
+		unaryMeet("isBlank", theOp);
 	}
 
 	/**
