@@ -79,6 +79,7 @@ import com.clarkparsia.openrdf.query.util.DescribeVisitor;
 import com.clarkparsia.openrdf.query.util.DescribeRewriter;
 import com.clarkparsia.openrdf.ExtGraph;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 import java.util.Collection;
@@ -90,7 +91,7 @@ import info.aduna.iteration.CloseableIteration;
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.3.1
+ * @version 0.4
  */
 public final class SesameQueryUtils {
 	/**
@@ -102,14 +103,16 @@ public final class SesameQueryUtils {
 	}
 
 	public static Collection<String> getProjection(TupleExpr theExpr) {
-		final Collection<String> aVars = new HashSet<String>();
+		final Collection<String> aVars = Sets.newHashSet();
 
 		try {
 			theExpr.visit(new QueryModelVisitorBase<Exception>() {
 				@Override
 				public void meet(final ProjectionElem theProjectionElem) throws Exception {
 					super.meet(theProjectionElem);
+
 					aVars.add(theProjectionElem.getTargetName());
+					aVars.add(theProjectionElem.getSourceName());
 				}
 			});
 		}
