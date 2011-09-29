@@ -15,11 +15,14 @@
 
 package com.clarkparsia.openrdf.util;
 
+import java.util.Iterator;
+
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 import info.aduna.iteration.CloseableIteration;
 import info.aduna.iteration.Iterations;
+import info.aduna.iteration.Iteration;
 import com.google.common.base.Predicate;
 
 /**
@@ -29,11 +32,40 @@ import com.google.common.base.Predicate;
  * @version 0.4
  * @since 0.4
  */
-public class AdunaIterations {
+public final class AdunaIterations {
 	/**
 	 * the logger
 	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdunaIterations.class);
+
+	/**
+	 * Private constructor, no instances
+	 */
+	private AdunaIterations() {
+	}
+
+	/**
+	 * Conver the Sesame Iteration to a Java Iterator
+	 * @param theIteration the iteration
+	 * @param <T> the type returned from the iteration
+	 * @return the Iteration as an iterator
+	 */
+	public static <T> Iterator<T> iterator(Iteration<T, ?> theIteration) {
+		return new IterationIterator<T>(theIteration);
+	}
+
+	/**
+	 * Return the RepositoryResult as an {@link Iterable}.
+	 * @param theResult the RepositoryResult to wrap
+	 * @return the RepositoryResult as an Iterable
+	 */
+	public static <T, E extends Exception> Iterable<T> iterable(final Iteration<T, E> theResult) {
+		return new Iterable<T>() {
+			public Iterator<T> iterator() {
+				return AdunaIterations.iterator(theResult);
+			}
+		};
+	}
 
 	/**
 	 * Quietly close the iteration

@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.Arrays;
 
 import com.clarkparsia.openrdf.util.IterationIterator;
+import com.clarkparsia.openrdf.util.AdunaIterations;
 import com.google.common.collect.Lists;
 
 /**
@@ -48,7 +49,7 @@ import com.google.common.collect.Lists;
  *
  * @author Michael Grove
  * @since 0.1
- * @version 0.3.1
+ * @version 0.4
  */
 public class OpenRdfUtil {
 	/**
@@ -73,40 +74,18 @@ public class OpenRdfUtil {
 			throw new RuntimeException(e);
 		}
 	}
-	/**
-	 * Return the RepositoryResult as an {@link Iterable}.
-	 * @param theResult the RepositoryResult to wrap
-	 * @return the RepositoryResult as an Iterable
-	 */
-	public static <T, E extends Exception> Iterable<T> iterable(final Iteration<T, E> theResult) {
-		return new Iterable<T>() {
-			public Iterator<T> iterator() {
-				return toIterator(theResult);
-			}
-		};
-	}
 
 	/**
 	 * Return the TupleQueryResult as an {@link Iterable} of {@link BindingSet BindingSets}
 	 * @param theResult the TupleQueryResult to wrap
 	 * @return the TupleQueryResult as an Iterable
 	 */
-	public static Iterable<BindingSet> iterable(final TupleQueryResult theResult) {
-		return new Iterable<BindingSet>() {
-			public Iterator<BindingSet> iterator() {
-				return toIterator(theResult);
+	public static <T, E extends Exception> Iterable<T> iterable(final Iteration<T,E> theResult) {
+		return new Iterable<T>() {
+			public Iterator<T> iterator() {
+				return AdunaIterations.iterator(theResult);
 			}
 		};
-	}
-
-	/**
-	 * Conver the Sesame Iteration to a Java Iterator
-	 * @param theIteration the iteration
-	 * @param <T> the type returned from the iteration
-	 * @return the Iteration as an iterator
-	 */
-	public static <T> Iterator<T> toIterator(Iteration<T, ?> theIteration) {
-		return new IterationIterator<T>(theIteration);
 	}
 
 	/**
@@ -118,6 +97,21 @@ public class OpenRdfUtil {
 		ExtGraph aGraph = new ExtGraph();
 
 		aGraph.addAll(Arrays.asList(theStatements));
+
+		return aGraph;
+	}
+
+	/**
+	 * Return the Iterable of Statements as a Graph
+	 * @param theStatements the statements that will make up the Graph
+	 * @return a Graph containing all the provided statements
+	 */
+	public static ExtGraph asGraph(final Iterable<Statement> theStatements) {
+		final ExtGraph aGraph = new ExtGraph();
+
+		for (Statement aStmt : theStatements) {
+			aGraph.add(aStmt);
+		}
 
 		return aGraph;
 	}
