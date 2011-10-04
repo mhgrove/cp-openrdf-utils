@@ -25,7 +25,7 @@ import org.openrdf.model.impl.ValueFactoryImpl;
  * @author Michael Grove
  * @since 0.1
  */
-public abstract class Vocabulary {
+public class Vocabulary {
     protected static final ValueFactory FACTORY = new ValueFactoryImpl();
 
     private String mURI;

@@ -51,7 +51,7 @@ public class ResourceBuilder {
         this(new ExtGraph(), theRes);
     }
 
-    ResourceBuilder(ExtGraph theGraph, Resource theRes) {
+    protected ResourceBuilder(ExtGraph theGraph, Resource theRes) {
         mRes = theRes;
         mGraph = theGraph;
     }
