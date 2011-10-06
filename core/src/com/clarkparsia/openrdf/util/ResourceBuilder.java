@@ -32,7 +32,6 @@ import com.clarkparsia.openrdf.ExtGraph;
 
 import com.google.common.collect.Sets;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.DatatypeConfigurationException;
 
@@ -190,6 +189,7 @@ public class ResourceBuilder {
 		}
     }
 
+	@SuppressWarnings("unchecked")
 	public ResourceBuilder addProperty(URI theProperty, Object theObject) {
 		if (theObject == null) {
 			return this;

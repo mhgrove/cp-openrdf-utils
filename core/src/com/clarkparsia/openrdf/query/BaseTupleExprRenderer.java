@@ -183,6 +183,15 @@ public abstract class BaseTupleExprRenderer extends QueryModelVisitorBase<Except
 		if (theValue instanceof ValueConstant) {
 			return ((ValueConstant)theValue).getValue();
 		}
+		else if (theValue instanceof Var) {
+			Var aVar = (Var) theValue;
+			if (aVar.hasValue()) {
+				return aVar.getValue();
+			}
+			else {
+				return null;
+			}
+		}
 		else {
 			return null;
 		}

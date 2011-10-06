@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2011 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,15 +55,13 @@ import org.openrdf.query.parser.sparql.SPARQLParser;
 import org.openrdf.query.parser.sparql.SPARQLParserFactory;
 
 import org.openrdf.query.algebra.Compare;
-import org.openrdf.query.algebra.QueryModelVisitor;
 import org.openrdf.query.algebra.UnaryTupleOperator;
-import org.openrdf.query.algebra.BinaryTupleOperator;
-import org.openrdf.query.algebra.SingletonSet;
 import org.openrdf.query.algebra.ProjectionElem;
+import org.openrdf.query.algebra.Projection;
+import org.openrdf.query.algebra.MultiProjection;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.TupleQueryResult;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -78,10 +76,8 @@ import com.clarkparsia.openrdf.query.serql.SeRQLQueryRenderer;
 import com.clarkparsia.openrdf.query.util.DescribeVisitor;
 import com.clarkparsia.openrdf.query.util.DescribeRewriter;
 import com.clarkparsia.openrdf.ExtGraph;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 
-import java.util.HashSet;
 import java.util.Collection;
 
 import info.aduna.iteration.CloseableIteration;

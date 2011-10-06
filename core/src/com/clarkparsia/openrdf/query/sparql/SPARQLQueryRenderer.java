@@ -24,6 +24,7 @@ import org.openrdf.query.algebra.OrderElem;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.ParsedBooleanQuery;
+import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.model.URI;
 
 /**
@@ -122,7 +123,14 @@ public class SPARQLQueryRenderer implements QueryRenderer {
 
 			aQuery.append("\n");
 		}
-
+		else if (mRenderer.getProjection().isEmpty()) {
+			if (theQuery instanceof ParsedGraphQuery) {
+				aQuery.append("{ }\n");
+			}
+			else if (theQuery instanceof ParsedTupleQuery) {
+				aQuery.append("*\n");
+			}
+		}
 
 		if (theQuery.getDataset() != null) {
 			for (URI aURI : theQuery.getDataset().getDefaultGraphs()) {

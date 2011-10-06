@@ -79,7 +79,9 @@ public class OpenRdfUtil {
 	 * Return the TupleQueryResult as an {@link Iterable} of {@link BindingSet BindingSets}
 	 * @param theResult the TupleQueryResult to wrap
 	 * @return the TupleQueryResult as an Iterable
+	 * @deprecated use AdunaIterations.iterable
 	 */
+	@Deprecated
 	public static <T, E extends Exception> Iterable<T> iterable(final Iteration<T,E> theResult) {
 		return new Iterable<T>() {
 			public Iterator<T> iterator() {

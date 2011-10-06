@@ -34,7 +34,7 @@ import java.util.Collection;
  * @version 0.2.4
  */
 public class DelegatingGraph implements Graph {
-	protected Graph mGraph;
+	protected final Graph mGraph;
 
 	public DelegatingGraph() {
 		this(new GraphImpl());
@@ -168,5 +168,34 @@ public class DelegatingGraph implements Graph {
 	 */
 	public void clear() {
 		mGraph.clear();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		final DelegatingGraph that = (DelegatingGraph) o;
+
+		if (mGraph != null ? !mGraph.equals(that.mGraph) : that.mGraph != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public int hashCode() {
+		return mGraph != null ? mGraph.hashCode() : 0;
 	}
 }

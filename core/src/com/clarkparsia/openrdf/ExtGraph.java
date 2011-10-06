@@ -44,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Function;
@@ -326,4 +327,21 @@ public class ExtGraph extends DelegatingGraph {
     public void write(Writer theWriter, RDFFormat theFormat) throws IOException {
         OpenRdfIO.writeGraph(this, theWriter, theFormat);
     }
+
+	/**
+	 * Return the graph as a String serialized in the specifed RDF format
+	 * @param theFormat the format to serialize in
+	 * @return the graph as a string
+	 */
+	public String toString(final RDFFormat theFormat) {
+		try {
+			StringWriter aStringWriter = new StringWriter();
+			write(aStringWriter, theFormat);
+			return aStringWriter.toString();
+		}
+		catch (IOException e) {
+			// this should not happen w/ a StringWriter
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -28,7 +28,7 @@ import org.openrdf.query.parser.ParsedQuery;
  *
  * @author Michael Grove
  */
-public class AskVisitor extends QueryModelVisitorBase<Exception> {
+public final class AskVisitor extends QueryModelVisitorBase<Exception> {
 
 	/**
 	 * Whether or not this visitor just scanned a query model that represents an Ask query
@@ -48,7 +48,7 @@ public class AskVisitor extends QueryModelVisitorBase<Exception> {
 	 * @throws Exception if there is an error while scanning
 	 * @return this visitor
 	 */
-	public AskVisitor checkQuery(TupleExpr theExpr) throws Exception {
+	public AskVisitor checkQuery(final TupleExpr theExpr) throws Exception {
 		reset();
 		theExpr.visit(this);
 
@@ -61,7 +61,7 @@ public class AskVisitor extends QueryModelVisitorBase<Exception> {
 	 * @throws Exception if there is an error while scanning
 	 * @return this visitor
 	 */
-	public AskVisitor checkQuery(ParsedQuery theQuery) throws Exception {
+	public AskVisitor checkQuery(final ParsedQuery theQuery) throws Exception {
 		return checkQuery(theQuery.getTupleExpr());
 	}
 
@@ -80,6 +80,6 @@ public class AskVisitor extends QueryModelVisitorBase<Exception> {
 	public void meet(final ProjectionElem theProjectionElem) throws Exception {
 		super.meet(theProjectionElem);
 
-		mIsAsk = true;
+		mIsAsk = false;
 	}
 }
