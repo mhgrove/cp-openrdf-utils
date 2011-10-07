@@ -263,7 +263,9 @@ public abstract class BaseTupleExprRenderer extends QueryModelVisitorBase<Except
 	 */
 	@Override
 	public void meet(final ProjectionElemList theProjectionElemList) throws Exception {
-		mProjection.add(theProjectionElemList.clone());
+		if (!theProjectionElemList.getElements().isEmpty()) {
+			mProjection.add(theProjectionElemList.clone());
+		}
 
 		theProjectionElemList.visitChildren(this);
 	}
