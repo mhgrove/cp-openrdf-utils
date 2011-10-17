@@ -29,7 +29,6 @@ import org.openrdf.model.URI;
 
 import org.openrdf.model.Statement;
 
-import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.BindingSet;
 
 import org.slf4j.LoggerFactory;
@@ -40,8 +39,8 @@ import info.aduna.iteration.Iteration;
 import java.util.Iterator;
 import java.util.Arrays;
 
-import com.clarkparsia.openrdf.util.IterationIterator;
 import com.clarkparsia.openrdf.util.AdunaIterations;
+
 import com.google.common.collect.Lists;
 
 /**
@@ -94,7 +93,9 @@ public class OpenRdfUtil {
 	 * Return the list of Statements as a Graph
 	 * @param theStatements the statements that will make up the Graph
 	 * @return a Graph containing all the provided statements
+	 * @deprecated use {@link Graphs#newGraph}
 	 */
+	@Deprecated
 	public static ExtGraph asGraph(final Statement... theStatements) {
 		ExtGraph aGraph = new ExtGraph();
 
@@ -104,10 +105,29 @@ public class OpenRdfUtil {
 	}
 
 	/**
+	 * Return the Iterator of Statements as a Graph
+	 * @param theStatements the statements that will make up the Graph
+	 * @return a Graph containing all the provided statements
+	 * @deprecated use {@link Graphs#newGraph}
+	 */
+	@Deprecated
+	public static ExtGraph asGraph(final Iterator<Statement> theStatements) {
+		final ExtGraph aGraph = new ExtGraph();
+
+		while (theStatements.hasNext()) {
+			aGraph.add(theStatements.next());
+		}
+
+		return aGraph;
+	}
+
+	/**
 	 * Return the Iterable of Statements as a Graph
 	 * @param theStatements the statements that will make up the Graph
 	 * @return a Graph containing all the provided statements
+	 * @deprecated use {@link Graphs#newGraph}
 	 */
+	@Deprecated
 	public static ExtGraph asGraph(final Iterable<Statement> theStatements) {
 		final ExtGraph aGraph = new ExtGraph();
 

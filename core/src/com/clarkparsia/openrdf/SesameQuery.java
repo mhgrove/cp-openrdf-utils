@@ -25,12 +25,13 @@ import org.openrdf.query.parser.ParsedQuery;
  *
  * @author Michael Grove
  * @since 0.1
+ * @version 0.4
  */
-public class SesameQuery {
-	private QueryLanguage mLang;
-	private String mQuery;
+public final class SesameQuery {
+	private final QueryLanguage mLang;
+	private final String mQuery;
 
-	public SesameQuery(QueryLanguage theLang, String theQuery) {
+	SesameQuery(QueryLanguage theLang, String theQuery) {
 		mLang = theLang;
 		mQuery = theQuery;
 	}
@@ -39,18 +40,9 @@ public class SesameQuery {
 		return mLang;
 	}
 
-	public void setLanguage(QueryLanguage theLang) {
-		mLang = theLang;
-	}
-
 	public String getQueryString() {
 		return mQuery;
 	}
-
-	public void setQueryString(String theQuery) {
-		mQuery = theQuery;
-	}
-
 
     public static SesameQuery sparql(ParsedQuery theQuery) {
         try {

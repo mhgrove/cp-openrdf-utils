@@ -472,7 +472,7 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @throws RepositoryException thrown if there is an error while adding
 	 */
 	public void add(Statement... theStatement) throws RepositoryException {
-		add(asGraph(theStatement));
+		add(Graphs.newGraph(theStatement));
 	}
 
 	/**

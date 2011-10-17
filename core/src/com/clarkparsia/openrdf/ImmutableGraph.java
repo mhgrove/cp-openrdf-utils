@@ -57,7 +57,16 @@ public final class ImmutableGraph extends DelegatingGraph {
 	 * @return an immutable version of the statements
 	 */
 	public static ImmutableGraph of(final Statement... theStatements) {
-		return new ImmutableGraph(OpenRdfUtil.asGraph(theStatements));
+		return new ImmutableGraph(Graphs.newGraph(theStatements));
+	}
+
+	/**
+	 * Return an immutable version of the statements
+	 * @param theStatements the graph
+	 * @return an immutable version of the statements
+	 */
+	public static ImmutableGraph of(final Iterator<Statement> theStatements) {
+		return new ImmutableGraph(Graphs.newGraph(theStatements));
 	}
 
 	/**
@@ -66,7 +75,7 @@ public final class ImmutableGraph extends DelegatingGraph {
 	 * @return an immutable version of the statements
 	 */
 	public static ImmutableGraph of(final Iterable<Statement> theStatements) {
-		return new ImmutableGraph(OpenRdfUtil.asGraph(theStatements));
+		return new ImmutableGraph(Graphs.newGraph(theStatements));
 	}
 
 	/**
