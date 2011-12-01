@@ -1,0 +1,138 @@
+// Copyright (c) 2010 - 2011 -- Clark & Parsia, LLC. <http://www.clarkparsia.com>
+// For more information about licensing and copyright of this software, please contact
+// inquiries@clarkparsia.com or visit http://stardog.com
+
+package com.clarkparsia.openrdf;
+
+import org.openrdf.model.Statement;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Value;
+import org.openrdf.model.URI;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Objects;
+
+/**
+ * <p>Implementation of a Sesame {@link Statement} which takes into account the context for {@link #equals} and {@link #hashCode}</p>
+ *
+ * @author Michael Grove
+ * @version 0.4.1
+ * @since 0.4.1
+ */
+public final class ContextAwareStatement implements Statement {
+
+	/**
+	 * The subject
+	 */
+	private final Resource mSubject;
+
+	/**
+	 * The predicate
+	 */
+	private final URI mPredicate;
+
+	/**
+	 * The object
+	 */
+	private final Value mObject;
+
+	/**
+	 * The context
+	 */
+	private final Resource mContext;
+
+	/**
+	 * Create a new StatementWithContext
+	 *
+	 * @param theSubject	the subject
+	 * @param thePredicate	the predicate
+	 * @param theObject		the object
+	 * @param theContext	the context, or null
+	 */
+	public ContextAwareStatement(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource theContext) {
+		Preconditions.checkNotNull(theSubject);
+		Preconditions.checkNotNull(thePredicate);
+		Preconditions.checkNotNull(theObject);
+		
+		mSubject = theSubject;
+		mPredicate = thePredicate;
+		mObject = theObject;
+		mContext = theContext;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public Resource getSubject() {
+		return mSubject;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public URI getPredicate() {
+		return mPredicate;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public Value getObject() {
+		return mObject;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public Resource getContext() {
+		return mContext;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public boolean equals(final Object theObj) {
+		if (this == theObj) {
+			return true;
+		}
+		if (theObj == null || !(theObj instanceof Statement)) {
+			return false;
+		}
+
+		final Statement that = (Statement) theObj;
+
+		return mObject.equals(that.getObject())
+			   && mSubject.equals(that.getSubject())
+			   && mPredicate.equals(that.getPredicate())
+			   && Objects.equal(mContext, that.getContext());
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public int hashCode() {
+		return 961 * mSubject.hashCode() + 31 * mPredicate.hashCode() + mObject.hashCode() + (mContext == null ? 0 : 17 * mContext.hashCode());
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public String toString() {
+		StringBuilder aStringBuilder = new StringBuilder(256);
+
+		aStringBuilder.append("(");
+		aStringBuilder.append(getSubject());
+		aStringBuilder.append(", ");
+		aStringBuilder.append(getPredicate());
+		aStringBuilder.append(", ");
+		aStringBuilder.append(getObject());
+		aStringBuilder.append(")");
+
+		aStringBuilder.append(" [").append(getContext()).append("]");
+
+		return aStringBuilder.toString();
+	}
+}

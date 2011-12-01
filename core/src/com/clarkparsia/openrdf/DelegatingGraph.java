@@ -198,4 +198,12 @@ public class DelegatingGraph implements Graph {
 	public int hashCode() {
 		return mGraph != null ? mGraph.hashCode() : 0;
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public String toString() {
+		return mGraph.toString();
+	}
 }

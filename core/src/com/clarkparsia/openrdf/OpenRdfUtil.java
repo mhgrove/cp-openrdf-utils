@@ -50,12 +50,18 @@ import com.google.common.collect.Lists;
  * @since 0.1
  * @version 0.4
  */
-public class OpenRdfUtil {
+public final class OpenRdfUtil {
 	/**
 	 * the logger
 	 */
 	private static final Logger LOGGER = LoggerFactory.getLogger(OpenRdfUtil.class);
-	
+
+	/**
+	 * No instances
+	 */
+	private OpenRdfUtil() {
+	}
+
 	/**
 	 * Create a simple in-memory {@link Repository}
 	 * @return an in memory Repository

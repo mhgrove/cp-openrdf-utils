@@ -18,20 +18,23 @@ package com.clarkparsia.openrdf;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Graph;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.impl.GraphImpl;
 import com.google.common.base.Objects;
+import com.google.common.collect.Sets;
 
 /**
  * <p>Utility methods for working with Graph objects</p>
  *
  * @author Michael Grove
  * @version 0.4
- * @since 0.4
+ * @since 0.4.1
  */
 public final class Graphs {
 
@@ -50,8 +53,7 @@ public final class Graphs {
 	 * @return the list as RDF
 	 */
 	public static ExtGraph toList(final List<Resource> theResources) {
-		Resource aHead = ValueFactoryImpl.getInstance().createBNode();
-		Resource aCurr = aHead;
+		Resource aCurr = ValueFactoryImpl.getInstance().createBNode();
 
 		int i = 0;
 		ExtGraph aGraph = new ExtGraph();
@@ -109,7 +111,9 @@ public final class Graphs {
 	}
 
 	/**
-	 * Returns a copy of the provided graph where all the statements belong to the specified context.  This will overwrite any existing contexts on the statements in the graph.
+	 * Returns a copy of the provided graph where all the statements belong to the specified context.
+	 * This will overwrite any existing contexts on the statements in the graph.
+	 * 
 	 * @param theGraph the graph
 	 * @param theResource the context for all the statements in the graph
 	 * @return the new graph
@@ -130,5 +134,24 @@ public final class Graphs {
 		}
 
 		return aGraph;
+	}
+
+	/**
+	 * Return a new Graph which is the union of all the provided graphs.  Be careful if you are using statements w/ a context as the equals method for Statement
+	 * does not take into account context, so two statements with the same SPO, but different contexts will be considered the same statement and only one will
+	 * be included in the union.  You can use {@link ContextAwareStatement} which implements equals & hashcode taking into account the context if you need to use
+	 * Statements with contexts where context is considered in this way.
+	 * 
+	 * @param theGraphs the graphs to union
+	 * @return			the union of the graphs
+	 */
+	public static Graph union(final Graph... theGraphs) {
+		Set<Statement> aStmts = Sets.newHashSet();
+
+		for (Graph aGraph : theGraphs) {
+			aStmts.addAll(aGraph);
+		}
+
+		return new GraphImpl(aStmts);
 	}
 }

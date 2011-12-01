@@ -52,6 +52,10 @@ public final class IterationIterator<T> implements Iterator<T> {
 		mIteration = theIteration;
 	}
 
+	/**
+	 * Return the underlying iteration
+	 * @return the iteratino
+	 */
 	public Iteration<T,?> getIteration() {
 		return mIteration;
 	}

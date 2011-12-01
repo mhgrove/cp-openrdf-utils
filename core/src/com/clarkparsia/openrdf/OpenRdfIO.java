@@ -53,7 +53,14 @@ import com.google.common.base.Charsets;
  * @since 0.1
  * @version 0.4
  */
-public class OpenRdfIO {
+public final class OpenRdfIO {
+
+	/**
+	 * No instances
+	 */
+	private OpenRdfIO() {
+	}
+
 	/**
 	 * Read an RDF graph from the stream using the specified format
 	 * @param theInput the stream to read from

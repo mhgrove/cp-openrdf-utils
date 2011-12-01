@@ -27,7 +27,7 @@
     <property name="dist" location="dist" />
 
     <property name="project.name" value="cp-common-openrdf" />
-    <property name="project.version" value="0.4" />
+    <property name="project.version" value="0.4.1" />
 
     <path id="project.class.path">
         <pathelement location="${core.lib}" />
