@@ -107,7 +107,7 @@ public final class ContextAwareStatement implements Statement {
 		if (this == theObj) {
 			return true;
 		}
-		if (theObj == null || !(theObj instanceof Statement)) {
+		if (theObj == null || getClass() != theObj.getClass()) {
 			return false;
 		}
 
