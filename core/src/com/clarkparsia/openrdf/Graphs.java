@@ -23,6 +23,7 @@ import java.util.Set;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Graph;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.impl.GraphImpl;
@@ -118,18 +119,18 @@ public final class Graphs {
 	 * @param theResource the context for all the statements in the graph
 	 * @return the new graph
 	 */
-	public static ExtGraph withContext(final Graph theGraph, final Resource theResource) {
-		final ExtGraph aGraph = new ExtGraph();
+	public static Graph withContext(final Graph theGraph, final Resource theResource) {
+		final Graph aGraph = contextGraph();
 
 		for (Statement aStmt : theGraph) {
 			if (Objects.equal(aStmt.getContext(), theResource)) {
 				aGraph.add(aStmt);
 			}
 			else {
-				aGraph.add(ValueFactoryImpl.getInstance().createStatement(aStmt.getSubject(),
-																		  aStmt.getPredicate(),
-																		  aStmt.getObject(),
-																		  theResource));
+				aGraph.add(aStmt.getSubject(),
+						   aStmt.getPredicate(),
+						   aStmt.getObject(),
+						   theResource);
 			}
 		}
 
@@ -153,5 +154,19 @@ public final class Graphs {
 		}
 
 		return new GraphImpl(aStmts);
+	}
+
+	/**
+	 * Return a new (empty) graph whose ValueFactory is an instance of {@link com.clarkparsia.openrdf.ContextAwareValueFactory}
+	 * @return a new "context aware" graph
+	 */
+	public static Graph contextGraph() {
+		return new DelegatingGraph() {
+			private final ValueFactory mValueFactory = new ContextAwareValueFactory();
+			@Override
+			public ValueFactory getValueFactory() {
+				return mValueFactory;
+			}
+		};
 	}
 }
