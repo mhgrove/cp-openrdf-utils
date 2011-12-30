@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,8 @@ import com.clarkparsia.openrdf.ExtGraph;
 import com.google.common.collect.Sets;
 
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import info.aduna.iteration.CloseableIteration;
 
@@ -87,7 +89,7 @@ import info.aduna.iteration.CloseableIteration;
  *
  * @author Michael Grove
  * @since 0.2
- * @version 0.4
+ * @version 0.4.2
  */
 public final class SesameQueryUtils {
 	/**
@@ -98,6 +100,11 @@ public final class SesameQueryUtils {
 	private SesameQueryUtils() {
 	}
 
+	/**
+	 * Return the list of vars used in the projection of the provided TupleExpr
+	 * @param theExpr	the query expression
+	 * @return			the vars in the projectino
+	 */
 	public static Collection<String> getProjection(TupleExpr theExpr) {
 		final Collection<String> aVars = Sets.newHashSet();
 
@@ -260,14 +267,23 @@ public final class SesameQueryUtils {
 
 
 	/**
-	 * Properly escape out any " characters in the query string
-	 * @param theString the query string to escape quotes in
-	 * @return the query string with quotes escaped
+	 * Properly escape out any special characters in the query string.  Replaces unescaped double quotes with \" and replaces slashes '\' which
+	 * are not a valid escape sequence such as \t or \n with a double slash '\\' so they are unescaped correctly by a SPARQL parser.
+	 * 
+	 * @param theString the query string to escape chars in
+	 * @return the escaped query string
 	 */
 	public static String escape(String theString) {
 		theString = theString.replaceAll("\"", "\\\\\"");
+		
+		StringBuffer aBuffer = new StringBuffer();
+		Matcher aMatcher = Pattern.compile("\\\\([^tnrbf\"'\\\\])").matcher(theString);
+		while (aMatcher.find()) {
+			aMatcher.appendReplacement(aBuffer, String.format("\\\\\\\\%s", aMatcher.group(1)));
+		}
+		aMatcher.appendTail(aBuffer);
 
-		return theString;
+		return aBuffer.toString();
 	}
 
     /**
