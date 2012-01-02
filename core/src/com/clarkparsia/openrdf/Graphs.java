@@ -162,11 +162,33 @@ public final class Graphs {
 	 */
 	public static Graph contextGraph() {
 		return new DelegatingGraph() {
+			@Override
+			public boolean add(final Statement e) {
+				return super.add(e.getSubject(), e.getPredicate(), e.getObject(), e.getContext());
+			}
+
 			private final ValueFactory mValueFactory = new ContextAwareValueFactory();
 			@Override
 			public ValueFactory getValueFactory() {
 				return mValueFactory;
 			}
 		};
+	}
+
+	/**
+	 * Return a new {@link #contextGraph context graph} copying the contents of the provided graph into the new graph so that alll of its
+	 * statements are instances of {@link com.clarkparsia.openrdf.ContextAwareStatement}.
+	 *
+	 * @param theGraph	the graph to copy
+	 * @return			the copied graph, but context aware
+	 */
+	public static Graph contextGraph(final Graph theGraph) {
+		Graph aGraph = contextGraph();
+
+		for (Statement aStmt : theGraph) {
+			aGraph.add(aStmt);
+		}
+
+		return aGraph;
 	}
 }

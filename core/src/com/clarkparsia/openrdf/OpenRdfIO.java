@@ -100,7 +100,8 @@ public final class OpenRdfIO {
 	}
 
 	/**
-	 * Read an RDF graph from the Reader using the specified format
+	 * Read an RDF graph from the Reader using the specified format.  The reader is closed after parsing.
+	 *
 	 * @param theInput the reader to read from
 	 * @param theFormat the format the data is in
 	 * @param theBase the base url for parsing
@@ -133,7 +134,8 @@ public final class OpenRdfIO {
 	}
 
 	/**
-	 * Read an RDF graph from the Reader using the specified format
+	 * Read an RDF graph from the Reader using the specified format.  The reader is closed after parsing.
+	 *
 	 * @param theHandler the handler for the results of reading the data
 	 * @param theInput the reader to read from
 	 * @param theFormat the format the data is in
