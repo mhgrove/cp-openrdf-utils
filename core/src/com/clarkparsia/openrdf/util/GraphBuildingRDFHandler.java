@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,37 @@ package com.clarkparsia.openrdf.util;
 import org.openrdf.rio.helpers.RDFHandlerBase;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.model.Statement;
+import org.openrdf.model.Graph;
 import com.clarkparsia.openrdf.ExtGraph;
 
 /**
  * <p>Implementation of an RDFHandler which collects statements from the handler events and puts them into a Graph object.</p>
+ *
  * @author Michael Grove
  * @since 0.1
+ * @version 0.4.2
  */
-public class GraphBuildingRDFHandler extends RDFHandlerBase {
+public final class GraphBuildingRDFHandler extends RDFHandlerBase {
 
 	/**
 	 * The graph to collect statements in
 	 */
-	private ExtGraph mGraph = new ExtGraph();
+	private final Graph mGraph;
+
+	/**
+	 * Create a new GraphBuildingRDFHandler
+	 */
+	public GraphBuildingRDFHandler() {
+		this(new ExtGraph());
+	}
+
+	/**
+	 * Create a new GraphBuildingRDFHandler that will insert statements into the supplied Graph
+	 * @param theGraph the graph to insert into
+	 */
+	public GraphBuildingRDFHandler(final Graph theGraph) {
+		mGraph = theGraph;
+	}
 
 	/**
 	 * @inheritDoc
@@ -44,7 +62,7 @@ public class GraphBuildingRDFHandler extends RDFHandlerBase {
 	 * Return the graph built from events fired to this handler
 	 * @return the graph
 	 */
-	public ExtGraph getGraph() {
+	public Graph getGraph() {
 		return mGraph;
 	}
 

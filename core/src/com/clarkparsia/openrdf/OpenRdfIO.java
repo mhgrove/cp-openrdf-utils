@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ public final class OpenRdfIO {
 	 * @throws IOException if there is an error while reading
 	 * @throws RDFParseException if there is an error while trying to parse the data as the specified format
 	 */
-	public static ExtGraph readGraph(Reader theInput, RDFFormat theFormat) throws IOException, RDFParseException {
+	public static Graph readGraph(Reader theInput, RDFFormat theFormat) throws IOException, RDFParseException {
 		return readGraph(theInput, theFormat, "http://openrdf.clarkparsia.com/");
 	}
 
@@ -109,7 +109,7 @@ public final class OpenRdfIO {
 	 * @throws IOException if there is an error while reading
 	 * @throws RDFParseException if there is an error while trying to parse the data as the specified format
 	 */
-	public static ExtGraph readGraph(Reader theInput, RDFFormat theFormat, String theBase) throws IOException, RDFParseException {
+	public static Graph readGraph(Reader theInput, RDFFormat theFormat, String theBase) throws IOException, RDFParseException {
 		RDFParser aParser = Rio.createParser(theFormat);
 		aParser.setDatatypeHandling(RDFParser.DatatypeHandling.IGNORE);
 		aParser.setPreserveBNodeIDs(true);
