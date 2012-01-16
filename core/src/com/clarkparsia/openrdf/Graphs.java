@@ -29,6 +29,8 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.impl.GraphImpl;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 
 /**
  * <p>Utility methods for working with Graph objects</p>
@@ -112,6 +114,39 @@ public final class Graphs {
 	}
 
 	/**
+	 * Return a new {@link #contextGraph} whose contents are the statements contained in the array.
+	 * @param theStatements the statements for the new graph
+	 * @return the new graph
+	 */
+	public static Graph newContextGraph(final Statement... theStatements) {
+		return newContextGraph(Iterators.forArray(theStatements));
+	}
+
+	/**
+	 * Return a new {@link #contextGraph} whose contents are the statements contained in the iterator.
+	 * @param theStatements the statements for the new graph
+	 * @return the new graph
+	 */
+	public static Graph newContextGraph(final Iterator<Statement> theStatements) {
+		Graph aGraph = contextGraph();
+
+		while (theStatements.hasNext()) {
+			aGraph.add(theStatements.next());
+		}
+
+		return aGraph;
+	}
+
+	/**
+	 * Return a new {@link #contextGraph} whose contents are the statements contained in the iterable.
+	 * @param theStatements the statements for the new graph
+	 * @return the new graph
+	 */
+	public static Graph newContextGraph(final Iterable<Statement> theStatements) {
+		return newContextGraph(theStatements.iterator());
+	}
+
+	/**
 	 * Returns a copy of the provided graph where all the statements belong to the specified context.
 	 * This will overwrite any existing contexts on the statements in the graph.
 	 * 
@@ -176,7 +211,7 @@ public final class Graphs {
 	}
 
 	/**
-	 * Return a new {@link #contextGraph context graph} copying the contents of the provided graph into the new graph so that alll of its
+	 * Return a new {@link #contextGraph context graph} copying the contents of the provided graph into the new graph so that all of its
 	 * statements are instances of {@link com.clarkparsia.openrdf.ContextAwareStatement}.
 	 *
 	 * @param theGraph	the graph to copy
