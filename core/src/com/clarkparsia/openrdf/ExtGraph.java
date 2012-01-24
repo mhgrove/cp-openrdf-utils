@@ -225,8 +225,8 @@ public class ExtGraph extends DelegatingGraph {
 	 * @param theSubj the resource
 	 * @return the rdf:type, or null if it is not typed.
 	 */
-	public URI getType(Resource theSubj) {
-		return (URI) getValue(theSubj, RDF.TYPE);
+	public Resource getType(Resource theSubj) {
+		return (Resource) getValue(theSubj, RDF.TYPE);
 	}
 
 	public void read(final File theFile) throws IOException, RDFParseException {
