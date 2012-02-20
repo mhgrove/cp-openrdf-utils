@@ -59,6 +59,9 @@ import org.openrdf.query.algebra.UnaryTupleOperator;
 import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.MultiProjection;
+import org.openrdf.query.algebra.Reduced;
+import org.openrdf.query.algebra.QueryModelVisitor;
+import org.openrdf.query.algebra.QueryModelNode;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
@@ -293,7 +296,7 @@ public final class SesameQueryUtils {
      */
     public static void setLimit(final ParsedQuery theQuery, final int theLimit) {
         try {
-            SliceMutator aLimitSetter = new SliceMutator(theLimit);
+            SliceMutator aLimitSetter = SliceMutator.changeLimit(theLimit);
             theQuery.getTupleExpr().visit(aLimitSetter);
 
             if (!aLimitSetter.limitWasSet()) {
@@ -317,14 +320,13 @@ public final class SesameQueryUtils {
      */
     public static void setOffset(final ParsedQuery theQuery, final int theOffset) {
         try {
-            SliceMutator aLimitSetter = new SliceMutator(theOffset);
+            SliceMutator aLimitSetter = SliceMutator.changeOffset(theOffset);
             theQuery.getTupleExpr().visit(aLimitSetter);
 
             if (!aLimitSetter.offsetWasSet()) {
-                Slice aSlice = new Slice();
+                Slice aSlice = new Slice(theQuery.getTupleExpr());
 
                 aSlice.setOffset(theOffset);
-                aSlice.setArg(theQuery.getTupleExpr());
 
                 theQuery.setTupleExpr(aSlice);
             }
@@ -333,6 +335,18 @@ public final class SesameQueryUtils {
             e.printStackTrace();
         }
     }
+
+//	public static void setDistinct(final ParsedQuery theQuery, final boolean theDistinct) throws Exception {
+//	}
+//
+//	public static void setReduced(final ParsedQuery theQuery, final boolean theReduced) throws Exception {
+//		if (!theReduced) {
+//			theQuery.getTupleExpr().visit(new RemoveUnaryVisitor(Reduced.class));
+//		}
+//		else if (!contains(theQuery, Reduced.class)) {
+//
+//		}
+//	}
 
 	/**
 	 * Close the iteration, ignoring any thrown exception and instead just logging it.
@@ -349,6 +363,52 @@ public final class SesameQueryUtils {
 			LOGGER.warn("There was an error closing an iteration: " + e.getMessage());
 		}
 	}
+
+	private static class RemoveUnaryVisitor extends QueryModelVisitorBase<Exception> {
+		private final Class<? extends UnaryTupleOperator> mClass;
+
+		public RemoveUnaryVisitor(final Class<? extends UnaryTupleOperator> theClass) {
+			mClass = theClass;
+		}
+
+		@Override
+		protected void meetUnaryTupleOperator(final UnaryTupleOperator theUnaryTupleOperator) throws Exception {
+			if (mClass.equals(theUnaryTupleOperator.getClass())) {
+				theUnaryTupleOperator.replaceWith(theUnaryTupleOperator.getArg());
+			}
+			else {
+				super.meetUnaryTupleOperator(theUnaryTupleOperator);
+			}
+		}
+	}
+
+	private static class ContainsVisitor extends QueryModelVisitorBase<Exception> {
+		private boolean mContains = false;
+
+		private final Class<? extends QueryModelNode> mClass;
+
+		private ContainsVisitor(final Class<? extends QueryModelNode> theClass) {
+			mClass = theClass;
+		}
+
+		public boolean isContains() {
+			return mContains;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		@Override
+		protected void meetNode(final QueryModelNode theQueryModelNode) throws Exception {
+			if (mClass.equals(theQueryModelNode.getClass())) {
+				mContains = true;
+			}
+			else {
+				super.meetNode(theQueryModelNode);
+			}
+		}
+	}
+
 
 	/**
      * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit or offset of a query
@@ -368,20 +428,34 @@ public final class SesameQueryUtils {
         /**
          * The new limit for the query
          */
-        private int mNewLimit;
+        private final int mNewLimit;
 
 		/**
 		 * The new offset for the query
 		 */
-		private int mNewOffset;
+		private final int mNewOffset;
 
         /**
          * Create a new SetLimit object
-         * @param theNewLimit the new limit to use for the query
+         * @param theNewLimit 	the new limit to use for the query, or -1 to not set
+		 * @param theNewOffset	the new offset to use for the query, or -1 to not set
          */
-        private SliceMutator(final int theNewLimit) {
+        private SliceMutator(final int theNewLimit, final int theNewOffset) {
             mNewLimit = theNewLimit;
+			mNewOffset = theNewOffset;
         }
+
+		static SliceMutator changeLimit(final int theNewLimit) {
+			return new SliceMutator(theNewLimit, -1);
+		}
+
+		static SliceMutator changeOffset(final int theNewOffset) {
+			return new SliceMutator(-1, theNewOffset);
+		}
+
+		static SliceMutator changeLimitAndOffset(final int theNewLimit, final int theNewOffset) {
+			return new SliceMutator(theNewLimit, theNewOffset);
+		}
 
 		/**
          * Resets the state of this visitor so it can be re-used.
