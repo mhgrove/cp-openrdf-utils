@@ -62,6 +62,18 @@ public final class OpenRdfIO {
 	}
 
 	/**
+	 * Read an RDF graph from the specified file
+	 * @param theFile	the file to read from
+	 * @return			the RDF graph contained in the file
+	 *
+	 * @throws IOException			if there was an error reading from the file
+	 * @throws RDFParseException	if the RDF could not be parsed
+	 */
+	public static Graph readGraph(final File theFile) throws IOException, RDFParseException {
+		return readGraph(new FileInputStream(theFile), RDFFormat.forFileName(theFile.getName()));
+	}
+
+	/**
 	 * Read an RDF graph from the stream using the specified format
 	 * @param theInput the stream to read from
 	 * @param theFormat the format the data is in
