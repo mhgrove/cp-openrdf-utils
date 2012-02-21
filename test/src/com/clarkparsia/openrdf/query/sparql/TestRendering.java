@@ -5,13 +5,21 @@
 package com.clarkparsia.openrdf.query.sparql;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedBooleanQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 import org.openrdf.query.algebra.Compare;
+import org.openrdf.query.algebra.Projection;
+import org.openrdf.query.algebra.Join;
+import org.openrdf.query.algebra.LeftJoin;
+import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.Filter;
 
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.RDFS;
@@ -20,6 +28,7 @@ import org.openrdf.model.URI;
 import com.clarkparsia.openrdf.query.builder.QueryBuilder;
 import com.clarkparsia.openrdf.query.builder.QueryBuilderFactory;
 import com.clarkparsia.openrdf.query.builder.ValueExprFactory;
+import static com.clarkparsia.openrdf.TestUtils.parse;
 import com.clarkparsia.openrdf.vocabulary.FOAF;
 import com.clarkparsia.openrdf.vocabulary.DC;
 
@@ -382,5 +391,101 @@ public class TestRendering {
 								 "}";
 
 		assertEquals(aExpected, render(aBuilder.query()));
+	}
+
+	@Test
+	public void testLeftJoinScopeRender() throws Exception {
+		String aQuery = "PREFIX : <http://example/>\n" +
+						"\n" +
+						"SELECT *\n" +
+						"{ \n" +
+						"  ?X  :name \"paul\"\n" +
+						"  {?Y :name \"george\" . OPTIONAL { ?X :email ?Z } }\n" +
+						"}\n" +
+						"";
+
+		String aQuery2 = "PREFIX : <http://example/>\n" +
+						"\n" +
+						"SELECT *\n" +
+						"{ \n" +
+						"  ?X  :name \"paul\".\n" +
+						"  ?Y :name \"george\" . OPTIONAL { ?X :email ?Z }\n" +
+						"}\n" +
+						"";
+
+		final ParsedQuery aParsedQuery = new SPARQLParser().parseQuery(aQuery, "http://example.org");
+
+		final String aResult = render(aParsedQuery);
+
+		final ParsedQuery aReparsedQuery = new SPARQLParser().parseQuery(aResult, "http://example.org");
+
+		assertTrue(aReparsedQuery.getTupleExpr() instanceof Projection);
+
+		Projection p = (Projection) aReparsedQuery.getTupleExpr();
+
+		assertTrue(p.getArg() instanceof Join);
+
+		Join aJoin = (Join) p.getArg();
+
+		assertTrue(aJoin.getLeftArg() instanceof StatementPattern);
+		assertTrue(aJoin.getRightArg() instanceof LeftJoin);
+	}
+
+	@Ignore
+	@Test
+	public void testFilterScoping() throws Exception {
+		final String aQuery = "PREFIX : <http://example/> \n" +
+							  "\n" +
+							  "SELECT ?v\n" +
+							  "{ :x :p ?v . { FILTER(?v = 1) } }";
+
+
+		final ParsedQuery aParsedQuery = new SPARQLParser().parseQuery(aQuery, "http://example.org");
+
+		final String aResult = render(aParsedQuery);
+
+		final ParsedQuery aReparsedQuery = new SPARQLParser().parseQuery(aResult, "http://example.org");
+
+		assertTrue(aReparsedQuery.getTupleExpr() instanceof Projection);
+
+		Projection p = (Projection) aReparsedQuery.getTupleExpr();
+
+		assertTrue(p.getArg() instanceof Join);
+
+		Join aJoin = (Join) p.getArg();
+
+		assertTrue(aJoin.getLeftArg() instanceof StatementPattern);
+		assertTrue(aJoin.getRightArg() instanceof Filter);
+	}
+
+	@Ignore
+	@Test
+	public void testRenderConstructWithReification() throws Exception {
+		final String aQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" +
+							  "PREFIX  foaf:       <http://xmlns.com/foaf/0.1/>\n" +
+							  "\n" +
+							  "CONSTRUCT { [ rdf:subject ?s ;\n" +
+							  "              rdf:predicate ?p ;\n" +
+							  "              rdf:object ?o ] . }\n" +
+							  "WHERE {\n" +
+							  "  ?s ?p ?o .\n" +
+							  "}";
+
+		System.err.println(render(parse(aQuery)));
+		fail();
+	}
+
+	@Test
+	public void testRenderTrue() throws Exception {
+		String aQuery = "prefix : <http://example.org/ns#>\n" +
+						"select ?x where {\n" +
+						"    ?x :p \"foo\" .\n" +
+						"    FILTER (true) .\n" +
+						"}";
+
+		// verify this at least round trips
+		parse(render(parse(aQuery)));
+
+		// TODO: verify actual query model
 	}
 }

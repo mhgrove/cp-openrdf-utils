@@ -22,6 +22,9 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.query.parser.sparql.SPARQLParser;
+import org.openrdf.query.parser.ParsedQuery;
+import org.openrdf.query.MalformedQueryException;
 
 import java.util.Random;
 
@@ -35,7 +38,13 @@ import java.util.Random;
 public final class TestUtils {
 	private static final Random RANDOM = new Random();
 
+	private static final SPARQLParser parser = new SPARQLParser();
+
 	private TestUtils() {
+	}
+
+	public static ParsedQuery parse(final String theQuery) throws MalformedQueryException {
+		return parser.parseQuery(theQuery, "http://openrdf.clarkparsia.com");
 	}
 
 	public static ExtGraph createRandomGraph() {

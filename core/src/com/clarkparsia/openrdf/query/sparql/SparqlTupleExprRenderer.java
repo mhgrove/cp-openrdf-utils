@@ -25,6 +25,7 @@ import org.openrdf.query.algebra.Intersection;
 import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.ValueConstant;
 
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.sparql.SPARQLParser;
@@ -128,7 +129,14 @@ public final class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 	@Override
 	public void meet(LeftJoin theJoin) throws Exception {
 		ctxOpen(theJoin);
-		
+
+		// try and reverse engineer the original scoping intent of the query
+		final boolean aNeedsNewScope = theJoin.getParentNode() != null && (theJoin.getParentNode() instanceof Join || theJoin.getParentNode() instanceof LeftJoin);
+
+		if (aNeedsNewScope) {
+			mJoinBuffer.append("{\n");
+		}
+
 		theJoin.getLeftArg().visit(this);
 
 		mJoinBuffer.append(indent()).append("OPTIONAL {\n");
@@ -143,6 +151,10 @@ public final class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 		mIndent-=2;
 
 		mJoinBuffer.append(indent()).append("}.\n");
+
+		if (aNeedsNewScope) {
+			mJoinBuffer.append("}.\n");
+		}
 		
 		ctxClose(theJoin);
 	}
@@ -226,7 +238,30 @@ public final class SparqlTupleExprRenderer extends BaseTupleExprRenderer {
 			theFilter.getArg().visit(this);
 		}
 
-		mJoinBuffer.append(indent()).append("filter ").append(renderValueExpr(theFilter.getCondition())).append(".\n");
+		// try and reverse engineer the original scoping intent of the query
+		final boolean aNeedsNewScope = theFilter.getParentNode() != null && (theFilter.getParentNode() instanceof Join || theFilter.getParentNode() instanceof LeftJoin);		
+
+		String aFilter = renderValueExpr(theFilter.getCondition());
+		if (theFilter.getCondition() instanceof ValueConstant || theFilter.getCondition() instanceof Var) {
+			// means the filter is something like "filter (true)" or "filter (?v)" so we'll need to wrap it in parens since they can't live
+			// in the query w/o them, but we can't always wrap them in parens in the normal renderer
+			
+			aFilter = "(" + aFilter + ")";
+		}
+		
+		mJoinBuffer.append(indent());
+
+//		if (aNeedsNewScope) {
+//			mJoinBuffer.append("{ ");
+//		}
+
+		mJoinBuffer.append("filter ").append(aFilter).append(".");
+
+//		if (aNeedsNewScope) {
+//			mJoinBuffer.append("}.");
+//		}
+
+		mJoinBuffer.append("\n");
 
 		ctxClose(theFilter);
 	}

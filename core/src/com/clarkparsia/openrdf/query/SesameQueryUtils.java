@@ -409,7 +409,6 @@ public final class SesameQueryUtils {
 		}
 	}
 
-
 	/**
      * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit or offset of a query
      * object to the provided value.  If there is no slice operator specified, {@link #limitWasSet} and {@link #offsetWasSet} will return false.
