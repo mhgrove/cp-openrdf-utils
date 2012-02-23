@@ -26,6 +26,8 @@
     <property name="build" location="build" />
     <property name="dist" location="dist" />
 
+	<property name="javadoc.dir" value="${dist}/javadocs"/>
+
     <property name="project.name" value="cp-common-openrdf" />
     <property name="project.version" value="0.5" />
 
@@ -117,4 +119,19 @@
 	        </zipfileset>
 		</zip>
     </target>
+
+	<target name="javadocs" depends="init">
+		<javadoc destdir="${javadoc.dir}" access="public" use="true" notree="false"
+			nonavbar="false" noindex="false" splitindex="true" author="true"
+			version="true" nodeprecatedlist="false" nodeprecated="false"
+			doctitle="${project.name}-${project.version}"
+			bottom="Copyright &#169; 2010-2012 Clark &amp; Parsia. All Rights Reserved.">
+
+			<link href="http://guava-libraries.googlecode.com/svn/trunk/javadoc/"/>
+			<link href="http://www.openrdf.org/doc/sesame2/2.3.2/apidocs/"/>
+
+			<classpath refid="project.class.path"/>
+			<fileset dir="${core.src}" defaultexcludes="yes"/>
+		</javadoc>
+	</target>
 </project>
