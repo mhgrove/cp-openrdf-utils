@@ -15,9 +15,9 @@
 
 package com.clarkparsia.openrdf.query.builder;
 
-import org.openrdf.query.parser.ParsedQuery;
-import org.openrdf.model.Value;
 import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.query.parser.ParsedQuery;
 
 /**
  * <p>Interface for a QueryBuilder which provides a simple fluent API for constructing Sesame query
@@ -100,5 +100,8 @@ public interface QueryBuilder<T extends ParsedQuery> extends SupportsGroups {
 
 	public QueryBuilder<T> addProjectionStatement(String theSubj, String thePred, String theObj);
 	public QueryBuilder<T> addProjectionStatement(String theSubj, String thePred, Value theObj);
-	public QueryBuilder<T> addProjectionStatement(String theSubj, Value thePred, Value theObj);
+	public QueryBuilder<T> addProjectionStatement(String theSubj, URI thePred, Value theObj);
+    public QueryBuilder<T> addProjectionStatement(URI theSubj, String thePred, String theObj);
+    public QueryBuilder<T> addProjectionStatement(URI theSubj, URI thePred, String theObj);
+    public QueryBuilder<T> addProjectionStatement(String theSubj, URI thePred, String theObj);
 }

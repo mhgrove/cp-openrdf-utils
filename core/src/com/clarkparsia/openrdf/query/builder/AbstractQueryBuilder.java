@@ -15,41 +15,40 @@
 
 package com.clarkparsia.openrdf.query.builder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.BinaryTupleOperator;
+import org.openrdf.query.algebra.Distinct;
+import org.openrdf.query.algebra.EmptySet;
 import org.openrdf.query.algebra.Extension;
 import org.openrdf.query.algebra.ExtensionElem;
+import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.Join;
 import org.openrdf.query.algebra.LeftJoin;
 import org.openrdf.query.algebra.MultiProjection;
 import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.ProjectionElemList;
+import org.openrdf.query.algebra.Reduced;
 import org.openrdf.query.algebra.Slice;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.UnaryTupleOperator;
-
 import org.openrdf.query.algebra.ValueConstant;
-import org.openrdf.query.algebra.Distinct;
-import org.openrdf.query.algebra.Reduced;
 import org.openrdf.query.algebra.Var;
-import org.openrdf.query.algebra.Filter;
-import org.openrdf.query.algebra.And;
-import org.openrdf.query.algebra.EmptySet;
 import org.openrdf.query.algebra.helpers.StatementPatternCollector;
 import org.openrdf.query.algebra.helpers.VarNameCollector;
+import org.openrdf.query.impl.DatasetImpl;
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
-import org.openrdf.query.impl.DatasetImpl;
-import org.openrdf.model.Value;
-import org.openrdf.model.URI;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.HashSet;
 
 /**
  * <p>Base implementation of a QueryBuilder.</p>
@@ -302,6 +301,50 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
         return this;
     }
 
+    /**
+	 * @inheritDoc
+	 */
+    public QueryBuilder<T> addProjectionStatement(String theSubj, URI thePred, Value theObj) {
+    	if (isConstruct()) {
+        	mProjectionPatterns.add(new StatementPattern(new Var(theSubj), GroupBuilder.valueToVar(thePred), GroupBuilder.valueToVar(theObj)));
+		}
+
+        return this;
+    }
+
+    /**
+	 * @inheritDoc
+	 */
+    public QueryBuilder<T> addProjectionStatement(URI theSubj, String thePred, String theObj) {
+    	if (isConstruct()) {
+        	mProjectionPatterns.add(new StatementPattern(GroupBuilder.valueToVar(theSubj), new Var(thePred), new Var(theObj)));
+		}
+
+        return this;
+    }
+
+    /**
+	 * @inheritDoc
+	 */
+    public QueryBuilder<T> addProjectionStatement(URI theSubj, URI thePred, String theObj) {
+    	if (isConstruct()) {
+        	mProjectionPatterns.add(new StatementPattern(GroupBuilder.valueToVar(theSubj), GroupBuilder.valueToVar(thePred), new Var(theObj)));
+		}
+
+        return this;
+    }
+
+    /**
+	 * @inheritDoc
+	 */
+    public QueryBuilder<T> addProjectionStatement(String theSubj, URI thePred, String theObj) {
+    	if (isConstruct()) {
+        	mProjectionPatterns.add(new StatementPattern(new Var(theSubj), GroupBuilder.valueToVar(thePred), new Var(theObj)));
+		}
+
+        return this;
+    }
+    
 	private TupleExpr join() {
 		if (mQueryAtoms.isEmpty()) {
 			throw new RuntimeException("Can't have an empty or missing join.");
@@ -518,4 +561,5 @@ public class AbstractQueryBuilder<T extends ParsedQuery> implements QueryBuilder
 			return theExpr;
 		}
 	}
+
 }
