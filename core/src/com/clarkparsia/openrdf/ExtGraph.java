@@ -62,6 +62,7 @@ import com.google.common.collect.Sets;
  */
 public class ExtGraph extends DelegatingGraph {
 	public ExtGraph() {
+		super(new SetGraph());
 	}
 
 	public ExtGraph(final Graph theGraph) {
@@ -262,27 +263,6 @@ public class ExtGraph extends DelegatingGraph {
 
 	public void read(final InputStream theStream, RDFFormat theFormat) throws IOException, RDFParseException {
 		addAll(OpenRdfIO.readGraph(theStream, theFormat));
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	@Override
-	public boolean add(Statement theStatement) {
-		return !contains(theStatement) && super.add(theStatement);
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	@Override
-	public boolean addAll(Collection<? extends Statement> theGraph) {
-		int aSize = size();
-
-		removeAll(theGraph);
-		super.addAll(theGraph);
-
-		return aSize != size();
 	}
 
     public boolean contains(Resource theSubj, URI thePred, Value theObj) {

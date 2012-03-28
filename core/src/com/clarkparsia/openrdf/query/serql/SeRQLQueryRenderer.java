@@ -28,7 +28,7 @@ import org.openrdf.query.parser.ParsedQuery;
  */
 public class SeRQLQueryRenderer implements QueryRenderer {
 
-	public static boolean SERQL_ONE_X_COMPATIBILITY_MODE = false;
+	public final static boolean SERQL_ONE_X_COMPATIBILITY_MODE = false;
 
 	/**
 	 * The renderer object

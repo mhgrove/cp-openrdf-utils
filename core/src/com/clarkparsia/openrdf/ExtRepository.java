@@ -553,11 +553,16 @@ public class ExtRepository extends RepositoryWrapper {
 		return (Literal) getValue(theSubject, theProperty);
 	}
 
-    private class ConnectionClosingGraphResult implements GraphQueryResult {
+    private static class ConnectionClosingGraphResult implements GraphQueryResult {
         private GraphQueryResult mResult;
         private RepositoryConnection mConn;
 
-        /**
+		private ConnectionClosingGraphResult(final RepositoryConnection theConn, final GraphQueryResult theResult) {
+			mConn = theConn;
+			mResult = theResult;
+		}
+
+		/**
          * @inheritDoc
          */
         public Map<String, String> getNamespaces() {
@@ -599,7 +604,7 @@ public class ExtRepository extends RepositoryWrapper {
         }
     }
 
-    private class ConnectionClosingTupleQueryResult implements TupleQueryResult {
+    private static class ConnectionClosingTupleQueryResult implements TupleQueryResult {
         private TupleQueryResult mResult;
         private RepositoryConnection mConn;
 
@@ -650,7 +655,7 @@ public class ExtRepository extends RepositoryWrapper {
         }
     }
 
-	private class ConnectionClosingRepositoryResult<T> extends RepositoryResult<Statement> {
+	private static class ConnectionClosingRepositoryResult<T> extends RepositoryResult<Statement> {
 		RepositoryConnection mConn;
 
 		public ConnectionClosingRepositoryResult(final RepositoryConnection theConn, final RepositoryResult<Statement> theResult) {

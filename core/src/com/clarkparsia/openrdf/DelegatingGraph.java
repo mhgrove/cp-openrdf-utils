@@ -31,14 +31,10 @@ import java.util.Collection;
  *
  * @author Michael Grove
  * @since 0.1
- * @version 0.2.4
+ * @version 0.5
  */
-public class DelegatingGraph implements Graph {
+public abstract class DelegatingGraph implements Graph {
 	protected final Graph mGraph;
-
-	public DelegatingGraph() {
-		this(new GraphImpl());
-	}
 
 	public DelegatingGraph(final Graph theGraph) {
 		mGraph = theGraph;
@@ -116,7 +112,7 @@ public class DelegatingGraph implements Graph {
 	 * @inheritDoc
 	 */
 	public boolean add(final Statement e) {
-		return !mGraph.contains(e) ? mGraph.add(e) : false;
+		return mGraph.add(e);
 	}
 
 	/**
