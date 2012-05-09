@@ -107,7 +107,13 @@ public final class ContextAwareStatement implements Statement {
 		if (this == theObj) {
 			return true;
 		}
-		if (theObj == null || getClass() != theObj.getClass()) {
+
+		// this instanceof check is technically incorrect, it breaks that contract of equals since this thing
+		// could be considered equals to an instance of StatementImpl -- but for now, that's kind of desireable
+		// that lets something like ModelUtil.equal work as expected when the spo & c's are equal on the statements
+		// but the types are not strictly equal.  this should be resolved at some point, but this class exists
+		// as a workaround for the fact that StatementImpl works incorrectly for most use cases, this is probably ok.
+		if (theObj == null || !(theObj instanceof Statement)) {
 			return false;
 		}
 
