@@ -182,13 +182,13 @@ public final class Graphs {
 	 * @return			the union of the graphs
 	 */
 	public static Graph union(final Graph... theGraphs) {
-		Set<Statement> aStmts = Sets.newHashSet();
+		SetGraph aSetGraph = new SetGraph();
 
 		for (Graph aGraph : theGraphs) {
-			aStmts.addAll(aGraph);
+			aSetGraph.addAll(aGraph);
 		}
 
-		return new GraphImpl(aStmts);
+		return aSetGraph;
 	}
 
 	/**
@@ -196,7 +196,7 @@ public final class Graphs {
 	 * @return a new "context aware" graph
 	 */
 	public static Graph contextGraph() {
-		return new DelegatingGraph(new ExtGraph()) {
+		return new ExtGraph() {
 			@Override
 			public boolean add(final Statement e) {
 				return super.add(e.getSubject(), e.getPredicate(), e.getObject(), e.getContext());

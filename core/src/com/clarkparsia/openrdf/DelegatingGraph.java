@@ -51,12 +51,7 @@ public abstract class DelegatingGraph implements Graph {
 	 * @inheritDoc
 	 */
 	public boolean add(final Resource theResource, final URI theURI, final Value theValue, final Resource... theContexts) {
-		if (!mGraph.match(theResource, theURI, theValue, theContexts).hasNext()) {
-			return mGraph.add(theResource,  theURI, theValue, theContexts);
-		}
-		else {
-			return false;
-		}
+		return mGraph.add(theResource,  theURI, theValue, theContexts);
 	}
 
 	/**

@@ -168,7 +168,7 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @return the graph which describes the URI
 	 */
 	public ExtGraph describe(Resource theResource) {
-		Graph aGraph = new GraphImpl();
+		Graph aGraph = new SetGraph();
 
 		RepositoryConnection aConn = null;
 
