@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,20 @@ import org.openrdf.model.impl.ValueFactoryImpl;
  *
  * @author Michael Grove
  * @since 0.1
+ * @version 0.6
  */
 public class Vocabulary {
-    protected static final ValueFactory FACTORY = new ValueFactoryImpl();
+    protected final ValueFactory FACTORY;
 
     private String mURI;
 
     public Vocabulary(String theURI) {
+		this(theURI, ValueFactoryImpl.getInstance());
+	}
+
+	public Vocabulary(String theURI, final ValueFactory theValueFactory) {
         mURI = theURI;
+		FACTORY = theValueFactory;
     }
 
     public URI term(String theName) {
