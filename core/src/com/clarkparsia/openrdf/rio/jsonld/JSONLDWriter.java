@@ -1,0 +1,159 @@
+package com.clarkparsia.openrdf.rio.jsonld;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.Map;
+
+import org.openrdf.model.Statement;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFWriter;
+
+import de.dfki.km.json.jsonld.JSONLDSerializer;
+import de.dfki.km.json.jsonld.impl.SesameJSONLDSerializer;
+
+public class JSONLDWriter implements RDFWriter {
+	
+	protected Writer mWriter;
+	protected SesameJSONLDSerializer mSerializer;
+	protected Map<String, String> mNamespaceTable;
+	
+	protected String mBaseURI;
+	protected boolean mWritingStarted;
+	
+	/*--------------*
+	 * Constructors *
+	 *--------------*/
+	
+	public JSONLDWriter(OutputStream out) {
+		this(new OutputStreamWriter(out, Charset.forName("UTF-8")));
+	}
+	
+	public JSONLDWriter(Writer writer) {
+		mWriter = writer;
+		mSerializer = new SesameJSONLDSerializer();
+		mWritingStarted = false;
+	}
+	
+	/*---------*
+	 * Methods *
+	 *---------*/
+	
+	public JSONLDSerializer getSerializer() {
+		return this.mSerializer;
+	}
+	
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public void startRDF() throws RDFHandlerException {
+		
+		if (mWritingStarted) {
+			throw new RuntimeException("Document writing has already started");
+		}
+		
+		mWritingStarted = true;
+		
+		try {
+			// Add namespace declarations.
+			for (Map.Entry<String, String> entry : mNamespaceTable.entrySet()) {
+				String name = entry.getKey();
+				String prefix = entry.getValue();
+				
+				mSerializer.setPrefix(name, prefix);
+			}
+		}
+		catch (Exception e) {
+			throw new RDFHandlerException(e);
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public void endRDF() throws RDFHandlerException {
+		
+		if (!mWritingStarted) {
+			throw new RuntimeException("Document writing has not yet started");
+		}
+		
+		try {
+			// Dump serialization in writer.
+			mSerializer.toWriter(mWriter);
+			mWriter.flush();
+		}
+		catch(IOException ioe) {
+			throw new RDFHandlerException(ioe);
+		}
+		finally {
+			mWritingStarted = false;
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public void handleComment(String arg0) throws RDFHandlerException {
+		// No support for comments.
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public void handleNamespace(String prefix, String name)
+			throws RDFHandlerException {
+		
+		try {
+			if (!mNamespaceTable.containsKey(name)) {
+				
+				boolean isLegalPrefix = prefix.length() == 0;
+				
+				if (!isLegalPrefix || mNamespaceTable.containsValue(prefix)) {
+					prefix = "ns";
+				
+					
+					int number = 1;
+					
+					while (mNamespaceTable.containsValue(prefix + number)) {
+						number++;
+					}
+					
+					prefix += number;
+				}
+				mNamespaceTable.put(name, prefix);
+				
+				if (mWritingStarted) {
+					mSerializer.setPrefix(name, prefix);
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new RDFHandlerException(e);
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public void handleStatement(Statement theStatement) throws RDFHandlerException {
+		// TODO Auto-generated method stub
+		mSerializer.handleStatement(theStatement);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public RDFFormat getRDFFormat() {
+		return JSONLDRDFFormat.FORMAT;
+	}
+
+}
