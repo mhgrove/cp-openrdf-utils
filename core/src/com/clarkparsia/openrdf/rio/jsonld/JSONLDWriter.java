@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.openrdf.model.Statement;
@@ -21,7 +22,6 @@ public class JSONLDWriter implements RDFWriter {
 	protected SesameJSONLDSerializer mSerializer;
 	protected Map<String, String> mNamespaceTable;
 	
-	protected String mBaseURI;
 	protected boolean mWritingStarted;
 	
 	/*--------------*
@@ -34,6 +34,7 @@ public class JSONLDWriter implements RDFWriter {
 	
 	public JSONLDWriter(Writer writer) {
 		mWriter = writer;
+		mNamespaceTable = new LinkedHashMap<String, String>();
 		mSerializer = new SesameJSONLDSerializer();
 		mWritingStarted = false;
 	}
@@ -144,7 +145,6 @@ public class JSONLDWriter implements RDFWriter {
 	 */
 	@Override
 	public void handleStatement(Statement theStatement) throws RDFHandlerException {
-		// TODO Auto-generated method stub
 		mSerializer.handleStatement(theStatement);
 	}
 

@@ -2,7 +2,6 @@ package com.clarkparsia.openrdf.rio.jsonld;
 
 import java.io.OutputStream;
 import java.io.Writer;
-import java.nio.charset.Charset;
 
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFWriter;
@@ -13,7 +12,7 @@ import org.openrdf.rio.RDFWriterFactory;
  * 
  * @author Edgar Rodriguez <edgar@clarkparsia.com>
  */
-public class JSONLDWriterFactory {
+public class JSONLDWriterFactory implements RDFWriterFactory {
 	
 	/**
 	 * Returns a JSON-LD RDFFormat object.
@@ -29,7 +28,7 @@ public class JSONLDWriterFactory {
 	 * @return the RDFWriter instance.
 	 */
 	public RDFWriter getWriter(OutputStream out) {
-		return null;
+		return new JSONLDWriter(out);
 	}
 	
 	/**
@@ -38,6 +37,6 @@ public class JSONLDWriterFactory {
 	 * @return the RDFWriter instance.
 	 */
 	public RDFWriter getWriter(Writer writer) {
-		return null;
+		return new JSONLDWriter(writer);
 	}
 }

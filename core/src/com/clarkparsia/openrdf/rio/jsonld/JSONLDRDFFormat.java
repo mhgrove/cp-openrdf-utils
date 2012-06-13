@@ -4,19 +4,22 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFWriterRegistry;
 
 public class JSONLDRDFFormat {
 	
     public static final RDFFormat FORMAT = new RDFFormat(
             "JSON-LD",
-            Arrays.asList("application/json"),
+            Arrays.asList("application/ld+json", "application/json"),
             Charset.forName("UTF-8"),
-            Arrays.asList("json","js"),
+            Arrays.asList("jsonld","js", "json"),
             false,
-                        false
+            false
     );
     
     static {
-        FORMAT.register(FORMAT);
+        RDFFormat.register(FORMAT);
+        RDFWriterRegistry registry = RDFWriterRegistry.getInstance();
+        registry.add(new JSONLDWriterFactory());
     }
 }
