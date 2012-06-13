@@ -11,6 +11,7 @@ import org.openrdf.rio.RDFWriterFactory;
  * An {@link RDFWriterFactory} for JSON-LD writers.
  * 
  * @author Edgar Rodriguez <edgar@clarkparsia.com>
+ * @since 0.7
  */
 public class JSONLDWriterFactory implements RDFWriterFactory {
 	

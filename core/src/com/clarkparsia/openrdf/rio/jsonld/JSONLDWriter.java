@@ -16,6 +16,16 @@ import org.openrdf.rio.RDFWriter;
 import de.dfki.km.json.jsonld.JSONLDSerializer;
 import de.dfki.km.json.jsonld.impl.SesameJSONLDSerializer;
 
+/**
+ * An implementation of the RDFWriter interface that writes RDF documents in
+ * JSON-LD format. The JSON-LD format is defined in <a
+ * href="http://json-ld.org/spec/latest/json-ld-syntax/">in this document</a> 
+ * and is using the <a href="https://github.com/edgarRd/jsonld-java.git">jsonld-java</a> 
+ * implementation of its <a href="http://json-ld.org/spec/latest/json-ld-api/">API</a>.
+ * 
+ * @author Edgar Rodriguez <edgar@clarkparsia.com>
+ * @since 0.7
+ */
 public class JSONLDWriter implements RDFWriter {
 	
 	protected Writer mWriter;
