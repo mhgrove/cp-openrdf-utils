@@ -142,7 +142,18 @@ public final class SesameQueryUtils {
 
 	public static void rewriteDescribe(final TupleExpr theExpr) {
 		try {
-			DescribeRewriter aRewriter = new DescribeRewriter();
+			DescribeRewriter aRewriter = new DescribeRewriter(false);
+			theExpr.visit(aRewriter);
+			theExpr.visit(new DescribeRewriter.Clean());
+		}
+		catch (Exception e) {
+			// no-op
+		}
+	}
+
+	public static void rewriteDescribeWithNamedGraphs(final TupleExpr theExpr) {
+		try {
+			DescribeRewriter aRewriter = new DescribeRewriter(true);
 			theExpr.visit(aRewriter);
 			theExpr.visit(new DescribeRewriter.Clean());
 		}

@@ -24,7 +24,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Objects;
 
 /**
- * <p>Implementation of a Sesame {@link Statement} which takes into account the context for {@link #equals} and {@link #hashCode}</p>
+ * <p>Implementation of a Sesame {@link Statement} which takes into account the context for {@link #equals} but not 
+ * {@link #hashCode} so it is still compatible with default Sesame implementations.</p>
  *
  * @author Michael Grove
  * @version 0.4.1
@@ -130,7 +131,7 @@ public final class ContextAwareStatement implements Statement {
 	 */
 	@Override
 	public int hashCode() {
-		return 961 * mSubject.hashCode() + 31 * mPredicate.hashCode() + mObject.hashCode() + (mContext == null ? 0 : 17 * mContext.hashCode());
+		return 961 * mSubject.hashCode() + 31 * mPredicate.hashCode() + mObject.hashCode();// + (mContext == null ? 0 : 17 * mContext.hashCode());
 	}
 
 	/**
