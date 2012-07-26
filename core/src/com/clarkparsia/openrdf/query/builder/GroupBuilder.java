@@ -106,7 +106,7 @@ public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
 		return aBuilder;
 	}
 
-	public GroupBuilder setScope(StatementPattern.Scope theScope) {
+	public GroupBuilder<T,E> setScope(StatementPattern.Scope theScope) {
 		mScope = theScope;
 
 		for (StatementPattern aPattern : mGroup.getPatterns()) {
@@ -116,12 +116,12 @@ public class GroupBuilder<T extends ParsedQuery, E extends SupportsGroups> {
 		return this;
 	}
 
-	public GroupBuilder setContext(String theContextVar) {
+	public GroupBuilder<T,E> setContext(String theContextVar) {
 		mContext = new Var(theContextVar);
 		return this;
 	}
 
-	public GroupBuilder setContext(Value theContextValue) {
+	public GroupBuilder<T,E> setContext(Value theContextValue) {
 		mContext = valueToVar(theContextValue);
 
 		for (StatementPattern aPattern : mGroup.getPatterns()) {
