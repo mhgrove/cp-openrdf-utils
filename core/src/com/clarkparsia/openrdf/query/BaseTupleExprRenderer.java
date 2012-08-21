@@ -74,12 +74,12 @@ public abstract class BaseTupleExprRenderer extends QueryModelVisitorBase<Except
 	/**
 	 * The limit of results for the query, or -1 for no limit
 	 */
-	protected int mLimit = -1;
+	protected long mLimit = -1;
 
 	/**
 	 * The query offset, or -1 for no offset
 	 */
-	protected int mOffset = -1;
+	protected long mOffset = -1;
 
 	/**
 	 * Reset the state of the renderer
@@ -113,11 +113,11 @@ public abstract class BaseTupleExprRenderer extends QueryModelVisitorBase<Except
 		return mReduced;
 	}
 
-	public int getLimit() {
+	public long getLimit() {
 		return mLimit;
 	}
 
-	public int getOffset() {
+	public long getOffset() {
 		return mOffset;
 	}
 

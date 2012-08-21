@@ -19,9 +19,9 @@ import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
-
-import info.aduna.collections.iterators.FilterIterator;
 
 import org.openrdf.model.Graph;
 import org.openrdf.model.Resource;
@@ -123,9 +123,9 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	 * @inheritDoc
 	 */
 	public Iterator<Statement> match(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContexts) {
-		return new FilterIterator<Statement>(iterator()) {
+		return Iterators.filter(iterator(), new Predicate<Statement>() {
 			@Override
-			protected boolean accept(final Statement theStatement) {
+			public boolean apply(final Statement theStatement) {
 				if (theSubject != null && !theSubject.equals(theStatement.getSubject())) {
 					return false;
 				}
@@ -155,6 +155,6 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 					return false;
 				}
 			}
-		};
+		});
 	}
 }

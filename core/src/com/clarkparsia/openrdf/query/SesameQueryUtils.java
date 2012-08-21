@@ -393,33 +393,6 @@ public final class SesameQueryUtils {
 		}
 	}
 
-	private static class ContainsVisitor extends QueryModelVisitorBase<Exception> {
-		private boolean mContains = false;
-
-		private final Class<? extends QueryModelNode> mClass;
-
-		private ContainsVisitor(final Class<? extends QueryModelNode> theClass) {
-			mClass = theClass;
-		}
-
-		public boolean isContains() {
-			return mContains;
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		@Override
-		protected void meetNode(final QueryModelNode theQueryModelNode) throws Exception {
-			if (mClass.equals(theQueryModelNode.getClass())) {
-				mContains = true;
-			}
-			else {
-				super.meetNode(theQueryModelNode);
-			}
-		}
-	}
-
 	/**
      * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit or offset of a query
      * object to the provided value.  If there is no slice operator specified, {@link #limitWasSet} and {@link #offsetWasSet} will return false.

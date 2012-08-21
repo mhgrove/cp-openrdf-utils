@@ -15,6 +15,8 @@
 
 package com.clarkparsia.openrdf;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -31,13 +33,14 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import org.openrdf.rio.RDFParseException;
 
 /**
  * <p>Utility methods for working with Graph objects</p>
  *
- * @author Michael Grove
- * @version 0.4
- * @since 0.4.1
+ * @author	Michael Grove
+ * @since	0.4
+ * @version	0.4.2
  */
 public final class Graphs {
 
@@ -48,6 +51,10 @@ public final class Graphs {
 	 */
 	public static ExtGraph toList(final Resource... theResources) {
 		return toList(Arrays.asList(theResources));
+	}
+
+	public static ExtGraph of(final File theFile) throws IOException, RDFParseException {
+		return (ExtGraph) OpenRdfIO.readGraph(theFile);
 	}
 
 	/**

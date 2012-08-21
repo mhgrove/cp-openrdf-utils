@@ -15,6 +15,7 @@
 
 package com.clarkparsia.openrdf;
 
+import com.clarkparsia.openrdf.query.sparql.TestQueryUtils;
 import org.junit.runners.Suite;
 import org.junit.runner.RunWith;
 import com.clarkparsia.openrdf.query.sparql.TestRendering;
@@ -24,11 +25,11 @@ import com.clarkparsia.openrdf.rio.jsonld.TestJSONLD;
  * <p>Master test suite</p>
  *
  * @author Michael Grove
- * @version 0.4
- * @since 0.4
+ * @since	0.4
+ * @version	0.7
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ TestExtGraph.class, TestExtRepository.class, TestRendering.class, TestJSONLD.class})
+@Suite.SuiteClasses({ TestExtGraph.class, TestExtRepository.class, TestRendering.class, TestJSONLD.class, TestQueryUtils.class})
 public class OpenRdfTestSuite {
 
 }
