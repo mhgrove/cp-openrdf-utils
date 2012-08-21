@@ -35,7 +35,6 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
 
-import org.openrdf.model.impl.GraphImpl;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
 import org.openrdf.query.TupleQueryResult;
@@ -67,32 +66,29 @@ import java.io.Reader;
 import java.util.Map;
 
 import static com.clarkparsia.openrdf.OpenRdfUtil.close;
-import static com.clarkparsia.openrdf.OpenRdfUtil.asGraph;
+
 import com.clarkparsia.openrdf.util.IterationIterator;
 import com.clarkparsia.openrdf.util.IterationIterable;
 import com.clarkparsia.openrdf.util.AdunaIterations;
 import com.clarkparsia.openrdf.query.SesameQueryUtils;
-import com.clarkparsia.openrdf.query.builder.BasicGroup;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
-import com.google.common.base.Functions;
+
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Collections2;
 
 import info.aduna.iteration.EmptyIteration;
 import info.aduna.iteration.CloseableIteration;
-import info.aduna.iteration.Iteration;
-import info.aduna.iteration.Iterations;
 
 /**
  * <p>Extends the normal Sesame Repository, via RepositoryWrapper, with some additional utility functions.</p>
  *
- * @author Michael Grove
- * @since 0.1
- * @since 0.4
+ * @author	Michael Grove
+ * @since	0.1
+ * @version	0.4
  */
 public class ExtRepository extends RepositoryWrapper {
 	/**

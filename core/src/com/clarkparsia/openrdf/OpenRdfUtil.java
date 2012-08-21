@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
 
 package com.clarkparsia.openrdf;
 
-import org.openrdf.model.vocabulary.RDF;
-
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryConnection;
@@ -25,30 +23,15 @@ import org.openrdf.repository.sail.SailRepository;
 
 import org.openrdf.sail.memory.MemoryStore;
 
-import org.openrdf.model.URI;
-
-import org.openrdf.model.Statement;
-
-import org.openrdf.query.BindingSet;
-
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-
-import info.aduna.iteration.Iteration;
-
-import java.util.Iterator;
-import java.util.Arrays;
-
-import com.clarkparsia.openrdf.util.AdunaIterations;
-
-import com.google.common.collect.Lists;
 
 /**
  * <p>Utility methods for working with the OpenRDF Sesame API.</p>
  *
- * @author Michael Grove
- * @since 0.1
- * @version 0.4
+ * @author	Michael Grove
+ * @since	0.1
+ * @version	0.7
  */
 public final class OpenRdfUtil {
 	/**
@@ -81,70 +64,6 @@ public final class OpenRdfUtil {
 	}
 
 	/**
-	 * Return the TupleQueryResult as an {@link Iterable} of {@link BindingSet BindingSets}
-	 * @param theResult the TupleQueryResult to wrap
-	 * @return the TupleQueryResult as an Iterable
-	 * @deprecated use AdunaIterations.iterable
-	 */
-	@Deprecated
-	public static <T, E extends Exception> Iterable<T> iterable(final Iteration<T,E> theResult) {
-		return new Iterable<T>() {
-			public Iterator<T> iterator() {
-				return AdunaIterations.iterator(theResult);
-			}
-		};
-	}
-
-	/**
-	 * Return the list of Statements as a Graph
-	 * @param theStatements the statements that will make up the Graph
-	 * @return a Graph containing all the provided statements
-	 * @deprecated use {@link Graphs#newGraph}
-	 */
-	@Deprecated
-	public static ExtGraph asGraph(final Statement... theStatements) {
-		ExtGraph aGraph = new ExtGraph();
-
-		aGraph.addAll(Arrays.asList(theStatements));
-
-		return aGraph;
-	}
-
-	/**
-	 * Return the Iterator of Statements as a Graph
-	 * @param theStatements the statements that will make up the Graph
-	 * @return a Graph containing all the provided statements
-	 * @deprecated use {@link Graphs#newGraph}
-	 */
-	@Deprecated
-	public static ExtGraph asGraph(final Iterator<Statement> theStatements) {
-		final ExtGraph aGraph = new ExtGraph();
-
-		while (theStatements.hasNext()) {
-			aGraph.add(theStatements.next());
-		}
-
-		return aGraph;
-	}
-
-	/**
-	 * Return the Iterable of Statements as a Graph
-	 * @param theStatements the statements that will make up the Graph
-	 * @return a Graph containing all the provided statements
-	 * @deprecated use {@link Graphs#newGraph}
-	 */
-	@Deprecated
-	public static ExtGraph asGraph(final Iterable<Statement> theStatements) {
-		final ExtGraph aGraph = new ExtGraph();
-
-		for (Statement aStmt : theStatements) {
-			aGraph.add(aStmt);
-		}
-
-		return aGraph;
-	}
-
-	/**
 	 * Quietly close the connection object
 	 * @param theConn the connection to close
 	 */
@@ -160,12 +79,4 @@ public final class OpenRdfUtil {
 			}
 		}
 	}
-
-    public static boolean isType(final ExtGraph theGraph, final URI theSubj, final URI theType) {
-        return theGraph.getValues(theSubj, RDF.TYPE).contains(theType);
-    }
-
-    public static boolean isType(final ExtRepository theRepository, final URI theSubj, final URI theType) {
-        return Lists.newArrayList(theRepository.getValues(theSubj, RDF.TYPE)).contains(theType);
-    }
 }

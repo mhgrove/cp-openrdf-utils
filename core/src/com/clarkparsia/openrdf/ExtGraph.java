@@ -324,4 +324,12 @@ public class ExtGraph extends DelegatingGraph {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public boolean isType(final Resource theSubj, final Resource theType) {
+		return getValues(theSubj, RDF.TYPE).contains(theType);
+	}
+
+	public Literal comment(final Resource theRes) {
+		return getLiteral(theRes, RDFS.COMMENT);
+	}
 }

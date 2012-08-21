@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Predicate;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Graph;
@@ -55,6 +56,15 @@ public final class Graphs {
 
 	public static ExtGraph of(final File theFile) throws IOException, RDFParseException {
 		return (ExtGraph) OpenRdfIO.readGraph(theFile);
+	}
+
+	public static ExtGraph forSubject(final Graph theGraph, final Resource theSubject) {
+		return newGraph(Iterables.filter(theGraph, new Predicate<Statement>() {
+			@Override
+			public boolean apply(final Statement theStatement) {
+				return theStatement.getSubject().equals(theSubject);
+			}
+		}));
 	}
 
 	/**

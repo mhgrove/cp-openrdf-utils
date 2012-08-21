@@ -68,7 +68,7 @@ public class TestExtGraph {
 
 		assertEquals(1, aGraph.size());
 
-		assertFalse(aGraph.addAll(OpenRdfUtil.asGraph(aStmt)));
+		assertFalse(aGraph.addAll(Graphs.newGraph(aStmt)));
 
 		assertEquals(1, aGraph.size());
 	}
