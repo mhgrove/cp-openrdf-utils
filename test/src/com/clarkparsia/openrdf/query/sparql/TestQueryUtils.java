@@ -1,5 +1,6 @@
 package com.clarkparsia.openrdf.query.sparql;
 
+import com.clarkparsia.openrdf.TestUtils;
 import com.clarkparsia.openrdf.query.SesameQueryUtils;
 import org.junit.Test;
 
@@ -10,7 +11,6 @@ import org.openrdf.query.algebra.QueryModelNode;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.algebra.Slice;
-import static com.clarkparsia.openrdf.query.SesameQueryUtils.parse;
 
 /**
  * <p></p>
@@ -25,7 +25,7 @@ public class TestQueryUtils {
 	public void testSetLimit() throws Exception {
 		String aQuery = "select * where {?s ?p ?o }";
 
-		ParsedQuery aParsedQuery = parse(aQuery);
+		ParsedQuery aParsedQuery = TestUtils.parse(aQuery);
 
 		assertTrue(!contains(aParsedQuery, Slice.class));
 
@@ -38,7 +38,7 @@ public class TestQueryUtils {
 	public void testSetOffset() throws Exception {
 		String aQuery = "select * where {?s ?p ?o }";
 
-		ParsedQuery aParsedQuery = parse(aQuery);
+		ParsedQuery aParsedQuery = TestUtils.parse(aQuery);
 
 		assertTrue(!contains(aParsedQuery, Slice.class));
 

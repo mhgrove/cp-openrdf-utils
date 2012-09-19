@@ -90,9 +90,9 @@ import info.aduna.iteration.CloseableIteration;
 /**
  * <p>Collection of utility methods for working with the OpenRdf Sesame Query API.</p>
  *
- * @author Michael Grove
- * @since 0.2
- * @version 0.4.2
+ * @author	Michael Grove
+ * @since	0.2
+ * @version 0.8
  */
 public final class SesameQueryUtils {
 	/**
@@ -106,7 +106,7 @@ public final class SesameQueryUtils {
 	/**
 	 * Return the list of vars used in the projection of the provided TupleExpr
 	 * @param theExpr	the query expression
-	 * @return			the vars in the projectino
+	 * @return			the vars in the projection
 	 */
 	public static Collection<String> getProjection(TupleExpr theExpr) {
 		final Collection<String> aVars = Sets.newHashSet();
@@ -129,6 +129,17 @@ public final class SesameQueryUtils {
 		return aVars;
 	}
 
+	/**
+	 * <p>Return whether or not the TupleExpr represents a parsed describe query.</p>
+	 *
+	 * <p>This is not foolproof and depends on the inspection of variable names in the query model.
+	 * Sesame's parser uses regular names for generated variables in describe queries, so we're
+	 * sniffing the model looking for these names to make an educated guess as to whether or not
+	 * this represents a parsed describe query.</p>
+	 *
+	 * @param theExpr	the expression
+	 * @return			true if a describe query, false otherwise
+	 */
 	public static boolean isDescribe(final TupleExpr theExpr) {
 		try {
 			DescribeVisitor aVisitor = new DescribeVisitor();
@@ -140,6 +151,11 @@ public final class SesameQueryUtils {
 		}
 	}
 
+	/**
+	 * <p>Simplify the parsed model for a describe query.</p>
+	 *
+	 * @param theExpr	the describe algebra
+	 */
 	public static void rewriteDescribe(final TupleExpr theExpr) {
 		try {
 			DescribeRewriter aRewriter = new DescribeRewriter(false);
@@ -151,6 +167,11 @@ public final class SesameQueryUtils {
 		}
 	}
 
+	/**
+	 * <p>Simplify the parsed model for a describe query.  Handles named graphs.</p>
+	 *
+	 * @param theExpr	the describe algebra
+	 */
 	public static void rewriteDescribeWithNamedGraphs(final TupleExpr theExpr) {
 		try {
 			DescribeRewriter aRewriter = new DescribeRewriter(true);
@@ -178,21 +199,6 @@ public final class SesameQueryUtils {
 		theResult.close();
 
 		return aGraph;
-	}
-
-	/**
-	 * Return a parsed query object from the query string
-	 * @param theQuery the query string to parse
-	 * @return the parsed query object
-	 * @throws MalformedQueryException if the query string is not in a known query format.
-	 */
-	public static ParsedQuery parse(String theQuery) throws MalformedQueryException {
-		try {
-			return new SPARQLParserFactory().getParser().parseQuery(theQuery, "http://openrdf.clarkparsia.com");
-		}
-		catch (MalformedQueryException e) {
-			return new SeRQLParserFactory().getParser().parseQuery(theQuery, "http://openrdf.clarkparsia.com");
-		}
 	}
 
 	/**
@@ -347,52 +353,6 @@ public final class SesameQueryUtils {
         }
     }
 
-//	public static void setDistinct(final ParsedQuery theQuery, final boolean theDistinct) throws Exception {
-//	}
-//
-//	public static void setReduced(final ParsedQuery theQuery, final boolean theReduced) throws Exception {
-//		if (!theReduced) {
-//			theQuery.getTupleExpr().visit(new RemoveUnaryVisitor(Reduced.class));
-//		}
-//		else if (!contains(theQuery, Reduced.class)) {
-//
-//		}
-//	}
-
-	/**
-	 * Close the iteration, ignoring any thrown exception and instead just logging it.
-	 * @param theResults the iteration to close
-	 */
-	@Deprecated
-	public static void closeQuietly(final CloseableIteration<?, ? extends Exception> theResults) {
-		try {
-			if (theResults != null) {
-				theResults.close();
-			}
-		}
-		catch (Exception e) {
-			LOGGER.warn("There was an error closing an iteration: " + e.getMessage());
-		}
-	}
-
-	private static class RemoveUnaryVisitor extends QueryModelVisitorBase<Exception> {
-		private final Class<? extends UnaryTupleOperator> mClass;
-
-		public RemoveUnaryVisitor(final Class<? extends UnaryTupleOperator> theClass) {
-			mClass = theClass;
-		}
-
-		@Override
-		protected void meetUnaryTupleOperator(final UnaryTupleOperator theUnaryTupleOperator) throws Exception {
-			if (mClass.equals(theUnaryTupleOperator.getClass())) {
-				theUnaryTupleOperator.replaceWith(theUnaryTupleOperator.getArg());
-			}
-			else {
-				super.meetUnaryTupleOperator(theUnaryTupleOperator);
-			}
-		}
-	}
-
 	/**
      * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit or offset of a query
      * object to the provided value.  If there is no slice operator specified, {@link #limitWasSet} and {@link #offsetWasSet} will return false.
@@ -481,39 +441,6 @@ public final class SesameQueryUtils {
         }
     }
 
-    /**
-     * Apply a set of built-in sesame query optimizers to the given Query object.  This reflects most of the
-     * optimizations applied to queries by the standard Sesame MemoryStore.
-     * @param theQuery the query to optimize
-     * @return the query after optimization
-     */
-    public static <T extends ParsedQuery> T optimize(T theQuery) {
-        QueryOptimizerList aList = new QueryOptimizerList();
-
-        aList.add(new BindingAssigner());
-        aList.add(new CompareOptimizer());
-		// we're not currently using these since they don't seem to make sense from a client's perspective.  for example,
-		// they split OR value expressions into unioned queries.  this might make sense for the eval of the sesame query
-		// algebra internally, but the point of this method is to apply general purpose optimizations that make sense
-		// for everyone.  i dont think unioned queries is a way to achieve that.  so we'll disable them here and
-		// use the other "standard" optimizers.
-//        aList.add(new ConjunctiveConstraintSplitter());
-//        aList.add(new DisjunctiveConstraintOptimizer());
-        aList.add(new SameTermFilterOptimizer());
-        aList.add(new QueryModelNormalizer());
-        aList.add(new IterativeEvaluationOptimizer());
-        aList.add(new FilterOptimizer());
-        aList.add(new OrderLimitOptimizer());
-
-        TupleExpr aExpr = theQuery.getTupleExpr().clone();
-
-        aList.optimize(aExpr, theQuery.getDataset(), new MapBindingSet());
-
-        theQuery.setTupleExpr(aExpr);
-
-        return theQuery;
-    }
-
 	public static void main(String[] args) throws Exception {
 		String aGroupedQuery = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n" +
 							   "SELECT ?name ?mbox\n" +
@@ -529,7 +456,6 @@ public final class SesameQueryUtils {
 
 
 		ParsedQuery pq = aBuilder.query();
-        optimize(pq);
 
 		System.err.println("---------------------------");
 		System.err.println(pq);
@@ -557,7 +483,6 @@ public final class SesameQueryUtils {
 						.atom("x",FOAF.ontology().surname,"ln");
 
 		pq = aBuilder.query();
-        optimize(pq);
 
 		System.err.println("---------------------------");
 		System.err.println(pq);
@@ -591,7 +516,6 @@ public final class SesameQueryUtils {
 						.filter().bound("d");
 
 		pq = aBuilder.query();
-        optimize(pq);
 
 		System.err.println("---------------------------");
 		System.err.println(pq);
@@ -612,7 +536,6 @@ public final class SesameQueryUtils {
                         .atom("x", FOAF.ontology().mbox, "mbox");
 
 		pq = aBuilder.query();
-        optimize(pq);
 
 		System.err.println("---------------------------");
 		System.err.println(pq);
