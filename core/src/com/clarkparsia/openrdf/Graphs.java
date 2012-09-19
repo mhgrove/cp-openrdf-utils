@@ -247,7 +247,7 @@ public final class Graphs {
 	 * @return a new "context aware" graph
 	 */
 	public static Graph contextGraph() {
-		return new SetGraph() {
+		return new DelegatingGraph(new SetGraph()) {
 			@Override
 			public boolean add(final Statement e) {
 				return super.add(e.getSubject(), e.getPredicate(), e.getObject(), e.getContext());
