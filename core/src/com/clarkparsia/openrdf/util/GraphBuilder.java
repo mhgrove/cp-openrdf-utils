@@ -19,7 +19,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
-import com.clarkparsia.openrdf.ExtGraph;
+import com.clarkparsia.openrdf.ExtGraphImpl;
 
 /**
  * <p>Utility class for creating a set of statements using {@link ResourceBuilder ResourceBuilders}.</p>
@@ -28,13 +28,13 @@ import com.clarkparsia.openrdf.ExtGraph;
  * @since 0.1
  */
 public class GraphBuilder {
-    private ExtGraph mGraph;
+    private ExtGraphImpl mGraph;
 
     public GraphBuilder() {
-        mGraph = new ExtGraph();
+        mGraph = new ExtGraphImpl();
     }
 
-    public ExtGraph graph() {
+    public ExtGraphImpl graph() {
         return mGraph;
     }
 

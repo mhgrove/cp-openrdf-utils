@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,321 +15,127 @@
 
 package com.clarkparsia.openrdf;
 
-import org.openrdf.model.Graph;
-import org.openrdf.model.Value;
-import org.openrdf.model.URI;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
-
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.util.GraphUtil;
-import org.openrdf.model.vocabulary.RDFS;
-import org.openrdf.model.vocabulary.XMLSchema;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.Rio;
-import org.openrdf.rio.RDFParseException;
-
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.ArrayList;
 import java.util.List;
 
-import java.io.FileInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.StringWriter;
+import com.google.common.base.Optional;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
+import org.openrdf.model.Graph;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 
-import com.google.common.collect.Sets;
 
 /**
- * <p>Extends the {@link DelegatingGraph} class to provide additional convenience methods for working with a graph
- * object.</p>
+ * <p>Extends the basic Sesame {@link Graph} interface to provide more concise access to various utility methods defined
+ * in {@link Graphs} or other interfaces as well as safer access to some methods that are functionally equivalent to
+ * what is defined in {@link org.openrdf.model.util.GraphUtil}; nulls are not returned nor is GraphUtilException thrown
+ * for these methods.</p>
  *
- * @author Michael Grove
- * @since 0.1
- * @version 0.4
+ * <p>Also provides convenient accessors to common RDF & RDFS properties.</p>
+ *
+ * @author	Michael Grove
+ * @since	0.8
+ * @version 0.8
+ *
+ * @see Graphs
+ * @see IOGraph
+ * @see FunctionalGraph
  */
-public class ExtGraph extends DelegatingGraph {
-	public ExtGraph() {
-		super(new SetGraph());
-	}
-
-	public ExtGraph(final Graph theGraph) {
-		super(theGraph);
-	}
+public interface ExtGraph extends IOGraph, FunctionalGraph {
 
 	/**
-	 * Return a sub-graph where all the statements pass the supplied Predicate filter
-	 * @param thePredicate the filter
-	 * @return the graph of statements that pass the filter
+	 * <p>Return whether or the graph contains any {@link Statement statements} matching the given SPO and optionally C pattern.</p>
+	 *
+	 * <p>This is functionally equivalent to calling <code>Graph.match(...).hasNext()</code></p>
+	 *
+	 * @param theSubj		the subject, or null for wildcard
+	 * @param thePred		the predicate, or null for wildcard
+	 * @param theObj		the object, or null for wildcard
+	 * @param theContexts	optionally, the contexts to check
+	 * @return				true if the Graph contains at least one statement matching the pattern, false otherwise
 	 */
-	public ExtGraph filter(Predicate<Statement> thePredicate) {
-		ExtGraph aFilteredGraph = new ExtGraph();
-
-		aFilteredGraph.addAll(Collections2.filter(this, thePredicate));
-
-		return aFilteredGraph;
-	}
-	
-	/**
-	 * Alias for the {@link #match} method
-	 * @param theSubj the subject to match, or null for wildcard
-	 * @param thePred the predicate to match, or null for wildcard
-	 * @param theObject the object to match, or null for wildcard
-	 * @return an iterator over all the statements which match the given spo pattern
-	 */
-	public Iterator<Statement> getStatements(Resource theSubj, URI thePred, Value theObject) {
-		return match(theSubj, thePred, theObject);
-	}
-	
-	/**
-	 * Return the value of the property for the given subject.  If there are multiple values, only the first value will
-	 * be returned.  Use {@link #getValues} if you want all values for the property.
-	 * @param theSubj the subject
-	 * @param thePred the property of the subject whose value should be retrieved
-	 * @return the value of the the property for the subject, or null if there is no value.
-	 */
-	public Value getValue(Resource theSubj, URI thePred) {
-		Collection<Value> aCollection = getValues(theSubj, thePred);
-		if (!aCollection.isEmpty()) {
-			return aCollection.iterator().next();
-		}
-		else {
-			return null;
-		}
-	}
-
-	/**
-	 * Return an Iterable over all the values of the property on the given resource
-	 * @param theSubj the resource
-	 * @param thePred the property
-	 * @return all values of the property on the resource.
-	 */
-	public Collection<Value> getValues(Resource theSubj, URI thePred) {
-		return Collections2.transform(Sets.newHashSet(getStatements(theSubj, thePred, null)), new Function<Statement, Value>() {
-			public Value apply(final Statement theIn) {
-				return theIn.getObject();
-			}
-		});
-	}
-
-	/**
-	 * Return the value of of the property as a Literal
-	 * @param theSubj the resource
-	 * @param thePred the property whose value is to be retrieved
-	 * @return the property value as a literal, or null if the value is not a literal, or the property does not have a value
-	 */
-	public Literal getLiteral(Resource theSubj, URI thePred) {
-		Value aVal = getValue(theSubj, thePred);
-
-		if (aVal instanceof Literal) {
-			return (Literal) aVal;
-		}
-		else {
-			return null;
-		}
-	}
-
-	public boolean addType(final Resource theSubject, Resource theType) {
-		return add(theSubject, RDF.TYPE, theType);
-	}
+	public boolean contains(final Resource theSubj, final URI thePred, final Value theObj, final Resource... theContexts);
 
 	/**
 	 * Returns all the instances of the specified type
-	 * @param theType the type for instances to return
-	 * @return all instances in the graph rdf:type'd to the given type.
+	 *
+	 * @param theType	the type for instances to return
+	 * @return			all instances in the graph rdf:type'd to the given type.
 	 */
-    public Collection<Resource> instancesOf(URI theType) {
-        return GraphUtil.getSubjects(this, RDF.TYPE, theType);
-    }
-
-    /**
-     * Return a collection of all the individuals in the graph
-     * @return all individuals
-     */
-    public Collection<Resource> listIndividuals() {
-        return GraphUtil.getSubjects(this, RDF.TYPE, null);
-    }
+	public Iterable<Resource> getInstancesOf(final URI theType);
 
 	/**
-	 * Returns the value of the property on the given resource as a boolean.
-	 * @param theSubj the resource
-	 * @param thePred the property
-	 * @return the value of the property as a boolean, or null if it doesnt have a value, or if the value is not a boolean.
+	 * Return a collection of all the individuals in the graph
+	 * @return all individuals
 	 */
-    public Boolean getBooleanValue(Resource theSubj, URI thePred) {
-        Literal aLiteral = getLiteral(theSubj, thePred);
+	public Iterable<Resource> getIndividuals();
 
-        if (aLiteral != null && ((aLiteral.getDatatype() != null && aLiteral.getDatatype().equals(XMLSchema.BOOLEAN))
-            || (aLiteral.getLabel().equalsIgnoreCase("true") || aLiteral.getLabel().equalsIgnoreCase("false")))) {
-            return Boolean.valueOf(aLiteral.getLabel());
-        }
-        else {
-            return null;
-        }
-    }
+	/**
+	 * Return the value of the property for the given subject.  If there are multiple values, only the first value will
+	 * be returned.  Use {@link org.openrdf.model.util.GraphUtil#getObjectIterator} if you want all values for the property.
+	 *
+	 * @param theSubj	the subject
+	 * @param thePred	the property of the subject whose value should be retrieved
+	 *
+	 * @return 			optionally, the value of the the property for the subject
+	 *
+	 * @see Graphs#getObject
+	 */
+	public Optional<Value> getObject(final Resource theSubj, final URI thePred);
+
+	/**
+	 * Return the value of of the property as a Literal
+	 *
+	 * @param theSubj	the resource
+	 * @param thePred	the property whose value is to be retrieved
+	 * @return 			Optionally, the property value as a literal.  Value will be absent of the SP does not have an O, or the O is not a literal
+	 *
+	 * @see Graphs#getLiteral(org.openrdf.model.Graph, org.openrdf.model.Resource, org.openrdf.model.URI)
+	 */
+	public Optional<Literal> getLiteral(final Resource theSubj, final URI thePred);
+
+	/**
+	 * Return the value of of the property as a Resource
+	 *
+	 * @param theSubj	the resource
+	 * @param thePred	the property whose value is to be retrieved
+	 * @return 			Optionally, the property value as a Resource.  Value will be absent of the SP does not have an O, or the O is not a Resource
+	 *
+	 * @see Graphs#getResource
+	 */
+	public Optional<Resource> getResource(final Resource theSubj, final URI thePred);
 
 	/**
 	 * Returns whether or not the given resource is a rdf:List
-	 * @param theRes the resource to check
-	 * @return true if its a list, false otherwise
+	 * @param theRes	the resource to check
+	 * @return			true if its a list, false otherwise
+	 * @see Graphs#isList
 	 */
-	public boolean isList(Resource theRes) {
-        Iterator<Statement> sIter = getStatements(theRes, RDF.FIRST, null);
-
-		return theRes != null && theRes.equals(RDF.NIL) || sIter.hasNext();
-	}
+	public boolean isList(final Resource theRes);
 
 	/**
 	 * Return the contents of the given list by following the rdf:first/rdf:rest structure of the list
-	 * @param theRes the resouce which is the head of the list
-	 * @return the contents of the list.
+	 * @param theRes	the resource which is the head of the list
+	 * @return 			the contents of the list.
+	 *
+	 * @see Graphs#asList(org.openrdf.model.Graph, org.openrdf.model.Resource)
 	 */
-	public List<Value> asList(Resource theRes) {
-        List<Value> aList = new ArrayList<Value>();
-
-        Resource aListRes = theRes;
-
-        while (aListRes != null) {
-
-            Resource aFirst = (Resource) getValue(aListRes, RDF.FIRST);
-            Resource aRest = (Resource) getValue(aListRes, RDF.REST);
-
-            if (aFirst != null) {
-               aList.add(aFirst);
-            }
-
-            if (aRest == null || aRest.equals(RDF.NIL)) {
-               aListRes = null;
-            }
-            else {
-                aListRes = aRest;
-            }
-        }
-
-        return aList;
-	}
+	public List<Value> asList(final Resource theRes);
 
 	/**
-	 * Return the rdf:type of the resource
-	 * @param theSubj the resource
-	 * @return the rdf:type, or null if it is not typed.
+	 * Return the types of the provided instance
+	 * @param theRes	the instance
+	 * @return			the types
 	 */
-	public Resource getType(Resource theSubj) {
-		return (Resource) getValue(theSubj, RDF.TYPE);
-	}
-
-	public void read(final File theFile) throws IOException, RDFParseException {
-		read(new FileInputStream(theFile), Rio.getParserFormatForFileName(theFile.getName()));
-	}
-
-    public void read(final InputStream theStream) throws IOException, RDFParseException {
-        read(new InputStreamReader(theStream));
-    }
-
-    public void read(final Reader theReader) throws IOException, RDFParseException {
-        Graph aGraph;
-
-        try {
-            aGraph = OpenRdfIO.readGraph(theReader, RDFFormat.TURTLE);
-        }
-        catch (Exception ex) {
-            try {
-                aGraph = OpenRdfIO.readGraph(theReader, RDFFormat.RDFXML);
-            }
-            catch (Exception e) {
-                try {
-                    aGraph = OpenRdfIO.readGraph(theReader, RDFFormat.NTRIPLES);
-                }
-                catch (Exception exc) {
-                    throw new RDFParseException("Cannot read data from stream.");
-                }
-            }
-        }
-
-        addAll(aGraph);
-    }
-
-	public void read(final InputStream theStream, RDFFormat theFormat) throws IOException, RDFParseException {
-		addAll(OpenRdfIO.readGraph(theStream, theFormat));
-	}
-
-    public boolean contains(Resource theSubj, URI thePred, Value theObj) {
-        return getStatements(theSubj, thePred, theObj).hasNext();
-    }
+	public Iterable<Resource> getTypes(final Resource theRes);
 
 	/**
-	 * Return whether or not the resource has the specified property
-	 * @param theSubj the resource
-	 * @param thePred the property
-	 * @return true if the resource has at least one assertion of the given property.
+	 * Return whether or not the instances is asserted to be of the provided type
+	 * @param theRes	the instance
+	 * @param theType	the type
+	 * @return			true if the instance is asserted to be of the provided type, false otherwise
 	 */
-    public boolean hasProperty(Resource theSubj, URI thePred) {
-        return !getValues(theSubj, thePred).isEmpty();
-    }
-    
-	/**
-	 * Return the rdfs:label of the given resource
-	 * @param theRes the resource to get a label for
-	 * @return the rdfs:label of the resource, or null if it does not have one
-	 */
-    public Literal label(Resource theRes) {
-        return getLiteral(theRes, RDFS.LABEL);
-    }
-
-    /**
-     * Write the contents of this graph in the specified format to the output stream
-     * @param theStream the stream to write to
-     * @param theFormat the format to write the data in
-     * @throws IOException if there is an error while writing to the stream
-     */
-    public void write(OutputStream theStream, RDFFormat theFormat) throws IOException {
-        write(new OutputStreamWriter(theStream), theFormat);
-    }
-
-	/**
-	 * Write the contents of this graph in the specified format to the output
-	 * @param theWriter the output to write to
-	 * @param theFormat the format to write the graph data in
-	 * @throws IOException thrown if there is an error while writing the data
-	 */
-    public void write(Writer theWriter, RDFFormat theFormat) throws IOException {
-        OpenRdfIO.writeGraph(this, theWriter, theFormat);
-    }
-
-	/**
-	 * Return the graph as a String serialized in the specifed RDF format
-	 * @param theFormat the format to serialize in
-	 * @return the graph as a string
-	 */
-	public String toString(final RDFFormat theFormat) {
-		try {
-			StringWriter aStringWriter = new StringWriter();
-			write(aStringWriter, theFormat);
-			return aStringWriter.toString();
-		}
-		catch (IOException e) {
-			// this should not happen w/ a StringWriter
-			throw new RuntimeException(e);
-		}
-	}
-
-	public boolean isType(final Resource theSubj, final Resource theType) {
-		return getValues(theSubj, RDF.TYPE).contains(theType);
-	}
-
-	public Literal comment(final Resource theRes) {
-		return getLiteral(theRes, RDFS.COMMENT);
-	}
+	public boolean isInstanceOf(final Resource theRes, final Resource theType);
 }

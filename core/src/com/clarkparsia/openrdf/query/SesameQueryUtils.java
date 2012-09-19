@@ -15,79 +15,30 @@
 
 package com.clarkparsia.openrdf.query;
 
-import com.clarkparsia.openrdf.query.builder.QueryBuilderFactory;
-
 import org.openrdf.model.Resource;
 import org.openrdf.model.Value;
 import org.openrdf.model.URI;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 
-import org.openrdf.model.impl.ValueFactoryImpl;
-
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.vocabulary.RDFS;
-
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.algebra.Slice;
 
 import org.openrdf.query.algebra.TupleExpr;
 
-import org.openrdf.query.algebra.evaluation.impl.BindingAssigner;
-import org.openrdf.query.algebra.evaluation.impl.CompareOptimizer;
-
-import org.openrdf.query.algebra.evaluation.impl.FilterOptimizer;
-import org.openrdf.query.algebra.evaluation.impl.IterativeEvaluationOptimizer;
-import org.openrdf.query.algebra.evaluation.impl.OrderLimitOptimizer;
-import org.openrdf.query.algebra.evaluation.impl.QueryModelNormalizer;
-import org.openrdf.query.algebra.evaluation.impl.SameTermFilterOptimizer;
-
-import org.openrdf.query.algebra.evaluation.util.QueryOptimizerList;
-
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 
-import org.openrdf.query.impl.MapBindingSet;
-
-import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
-import org.openrdf.query.parser.ParsedTupleQuery;
-import org.openrdf.query.parser.serql.SeRQLParserFactory;
 
-import org.openrdf.query.parser.sparql.SPARQLParser;
-import org.openrdf.query.parser.sparql.SPARQLParserFactory;
-
-import org.openrdf.query.algebra.Compare;
-import org.openrdf.query.algebra.UnaryTupleOperator;
 import org.openrdf.query.algebra.ProjectionElem;
-import org.openrdf.query.algebra.Projection;
-import org.openrdf.query.algebra.MultiProjection;
-import org.openrdf.query.algebra.Reduced;
-import org.openrdf.query.algebra.QueryModelVisitor;
-import org.openrdf.query.algebra.QueryModelNode;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.GraphQueryResult;
-import org.openrdf.query.QueryEvaluationException;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
-import com.clarkparsia.openrdf.vocabulary.FOAF;
-import com.clarkparsia.openrdf.vocabulary.DC;
-
-import com.clarkparsia.openrdf.query.builder.ValueExprFactory;
-import com.clarkparsia.openrdf.query.builder.QueryBuilder;
-
-import com.clarkparsia.openrdf.query.sparql.SPARQLQueryRenderer;
-import com.clarkparsia.openrdf.query.serql.SeRQLQueryRenderer;
 import com.clarkparsia.openrdf.query.util.DescribeVisitor;
 import com.clarkparsia.openrdf.query.util.DescribeRewriter;
-import com.clarkparsia.openrdf.ExtGraph;
 import com.google.common.collect.Sets;
 
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import info.aduna.iteration.CloseableIteration;
 
 /**
  * <p>Collection of utility methods for working with the OpenRdf Sesame Query API.</p>

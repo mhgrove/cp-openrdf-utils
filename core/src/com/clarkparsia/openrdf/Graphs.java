@@ -18,22 +18,29 @@ package com.clarkparsia.openrdf;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Graph;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.util.GraphUtil;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import org.openrdf.model.impl.GraphImpl;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.rio.RDFParseException;
@@ -52,7 +59,7 @@ public final class Graphs {
 	 * @param theResources	the list
 	 * @return				the list as RDF
 	 */
-	public static ExtGraph toList(final Resource... theResources) {
+	public static Graph toList(final Resource... theResources) {
 		return toList(Arrays.asList(theResources));
 	}
 
@@ -65,8 +72,8 @@ public final class Graphs {
 	 * @throws IOException			if there was an error reading the file
 	 * @throws RDFParseException	if the file did not contain valid RDF
 	 */
-	public static ExtGraph of(final File theFile) throws IOException, RDFParseException {
-		return (ExtGraph) OpenRdfIO.readGraph(theFile);
+	public static Graph of(final File theFile) throws IOException, RDFParseException {
+		return OpenRdfIO.readGraph(theFile);
 	}
 
 	/**
@@ -76,8 +83,8 @@ public final class Graphs {
 	 *
 	 * @throws org.openrdf.query.QueryEvaluationException if there was an error while creating the graph from the query result
 	 */
-	public static ExtGraph newGraph(GraphQueryResult theResult) throws QueryEvaluationException {
-		ExtGraph aGraph = new ExtGraph();
+	public static Graph newGraph(GraphQueryResult theResult) throws QueryEvaluationException {
+		Graph aGraph = new SetGraph();
 
 		while (theResult.hasNext()) {
 			aGraph.add(theResult.next());
@@ -93,11 +100,11 @@ public final class Graphs {
 	 * @param theResources	the list
 	 * @return				the list as RDF
 	 */
-	public static ExtGraph toList(final List<Resource> theResources) {
+	public static Graph toList(final List<Resource> theResources) {
 		Resource aCurr = ValueFactoryImpl.getInstance().createBNode();
 
 		int i = 0;
-		ExtGraph aGraph = new ExtGraph();
+		Graph aGraph = new SetGraph();
 		for (Resource r : theResources) {
 			Resource aNext = ValueFactoryImpl.getInstance().createBNode();
 			aGraph.add(aCurr, RDF.FIRST, r);
@@ -109,12 +116,13 @@ public final class Graphs {
 	}
 
 	/**
-	 * Return the list of Statements as a Graph
-	 * @param theStatements the statements that will make up the Graph
-	 * @return a Graph containing all the provided statements
+	 * Return the {@link Statement statements} as a {@link Graph}
+	 *
+	 * @param theStatements	the statements that will make up the Graph
+	 * @return 				a Graph containing all the provided statements
 	 */
-	public static ExtGraph newGraph(final Statement... theStatements) {
-		ExtGraph aGraph = new ExtGraph();
+	public static Graph newGraph(final Statement... theStatements) {
+		Graph aGraph = new SetGraph();
 
 		aGraph.addAll(Arrays.asList(theStatements));
 
@@ -122,12 +130,13 @@ public final class Graphs {
 	}
 
 	/**
-	 * Return the Iterator of Statements as a Graph
-	 * @param theStatements the statements that will make up the Graph
-	 * @return a Graph containing all the provided statements
+	 * Return the {@link Iterator} of {@link Statement statements} as a new {@link Graph}
+	 *
+	 * @param theStatements	the statements that will make up the Graph
+	 * @return				a Graph containing all the provided statements
 	 */
-	public static ExtGraph newGraph(final Iterator<Statement> theStatements) {
-		final ExtGraph aGraph = new ExtGraph();
+	public static Graph newGraph(final Iterator<Statement> theStatements) {
+		final Graph aGraph = new SetGraph();
 
 		while (theStatements.hasNext()) {
 			aGraph.add(theStatements.next());
@@ -137,12 +146,13 @@ public final class Graphs {
 	}
 
 	/**
-	 * Return the Iterable of Statements as a Graph
-	 * @param theStatements the statements that will make up the Graph
-	 * @return a Graph containing all the provided statements
+	 * Return the {@link Iterable} of {@link Statement statements} as a {@link Graph}
+	 *
+	 * @param theStatements	the statements that will make up the Graph
+	 * @return 				a Graph containing all the provided statements
 	 */
-	public static ExtGraph newGraph(final Iterable<Statement> theStatements) {
-		final ExtGraph aGraph = new ExtGraph();
+	public static ExtGraphImpl newGraph(final Iterable<Statement> theStatements) {
+		final ExtGraphImpl aGraph = new ExtGraphImpl();
 
 		for (Statement aStmt : theStatements) {
 			aGraph.add(aStmt);
@@ -153,8 +163,9 @@ public final class Graphs {
 
 	/**
 	 * Return a new {@link #contextGraph} whose contents are the statements contained in the array.
-	 * @param theStatements the statements for the new graph
-	 * @return the new graph
+	 *
+	 * @param theStatements	the statements for the new graph
+	 * @return				the new graph
 	 */
 	public static Graph newContextGraph(final Statement... theStatements) {
 		return newContextGraph(Iterators.forArray(theStatements));
@@ -162,8 +173,9 @@ public final class Graphs {
 
 	/**
 	 * Return a new {@link #contextGraph} whose contents are the statements contained in the iterator.
+	 *
 	 * @param theStatements the statements for the new graph
-	 * @return the new graph
+	 * @return 				the new graph
 	 */
 	public static Graph newContextGraph(final Iterator<Statement> theStatements) {
 		Graph aGraph = contextGraph();
@@ -176,9 +188,10 @@ public final class Graphs {
 	}
 
 	/**
-	 * Return a new {@link #contextGraph} whose contents are the statements contained in the iterable.
-	 * @param theStatements the statements for the new graph
-	 * @return the new graph
+	 * Return a new {@link #contextGraph} whose contents are the statements contained in the {@link Iterable}.
+	 *
+	 * @param theStatements	the statements for the new graph
+	 * @return				the new graph
 	 */
 	public static Graph newContextGraph(final Iterable<Statement> theStatements) {
 		return newContextGraph(theStatements.iterator());
@@ -188,9 +201,9 @@ public final class Graphs {
 	 * Returns a copy of the provided graph where all the statements belong to the specified context.
 	 * This will overwrite any existing contexts on the statements in the graph.
 	 * 
-	 * @param theGraph the graph
-	 * @param theResource the context for all the statements in the graph
-	 * @return the new graph
+	 * @param theGraph		the graph
+	 * @param theResource	the context for all the statements in the graph
+	 * @return 				the new graph
 	 */
 	public static Graph withContext(final Graph theGraph, final Resource theResource) {
 		final Graph aGraph = contextGraph();
@@ -234,7 +247,7 @@ public final class Graphs {
 	 * @return a new "context aware" graph
 	 */
 	public static Graph contextGraph() {
-		return new ExtGraph() {
+		return new SetGraph() {
 			@Override
 			public boolean add(final Statement e) {
 				return super.add(e.getSubject(), e.getPredicate(), e.getObject(), e.getContext());
@@ -263,5 +276,276 @@ public final class Graphs {
 		}
 
 		return aGraph;
+	}
+
+	/**
+	 * Create a {@link Predicate filtered} copy of the provided {@link Graph}
+	 *
+	 * @param theGraph		the graph to filter
+	 * @param thePredicate	the predicate to use for filtering
+	 * @return				the filtered graph
+	 */
+	public static Graph filter(final Graph theGraph, final Predicate<Statement> thePredicate) {
+		final SetGraph aGraph = new SetGraph();
+		for (Statement aStmt : theGraph) {
+			if (thePredicate.apply(aStmt)) {
+				aGraph.add(aStmt);
+			}
+		}
+		return aGraph;
+	}
+
+	/**
+	 * {@link Function Transform} the contents of the {@link Graph}.  This returns a copy of the original
+	 * graph with the transformation applied
+	 *
+	 * @param theGraph		the graph to transform
+	 * @param theFunction	the function for the transform
+	 * @return				the transformed graph
+	 */
+	public static Graph transform(final Graph theGraph, final Function<Statement, Statement> theFunction) {
+		final SetGraph aGraph = new SetGraph();
+		for (Statement aStmt : theGraph) {
+			aGraph.add(theFunction.apply(aStmt));
+		}
+		return aGraph;
+	}
+
+	/**
+	 * Find a {@link Statement} which satisfies the given {@link Predicate}
+	 *
+	 * @param theGraph		the Graph
+	 * @param thePredicate	the predicate
+	 * @return				{@link Optional Optionally}, the first Statement to satisfy the Predicate, or an absent Optional if none do
+	 */
+	public static Optional<Statement> find(final Graph theGraph, final Predicate<Statement> thePredicate) {
+		for (Statement aStmt : theGraph) {
+			if (thePredicate.apply(aStmt)) {
+				return Optional.of(aStmt);
+			}
+		}
+		return Optional.absent();
+	}
+
+	/**
+	 * Return whether or not at least one {@link Statement} satisfies the {@link Predicate}
+	 *
+	 * @param theGraph		the graph
+	 * @param thePredicate	the predicate
+	 * @return				true if at least one Statement satisfies the Predicate, false otherwise
+	 */
+	public static boolean any(final Graph theGraph, final Predicate<Statement> thePredicate) {
+		for (Statement aStmt : theGraph) {
+			if (thePredicate.apply(aStmt)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return whether or not all {@link Statement statements} satisfy the {@link Predicate}
+	 *
+	 * @param theGraph		the graph
+	 * @param thePredicate	the predicate
+	 * @return				true if at all Statements satisfy the Predicate, false otherwise
+	 */
+	public static boolean all(final Graph theGraph, final Predicate<Statement> thePredicate) {
+		for (Statement aStmt : theGraph) {
+			if (!thePredicate.apply(aStmt)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Collect the results of the {@link Function} as it is applied to each {@link Statement}.  {@link Optional Absent}
+	 * values are not collected; the provided function should never return a null value.
+	 *
+	 * @param theGraph		the statements
+	 * @param theFunction	the function
+	 * @return				the collected values
+	 */
+	public static <T> Collection<T> collect(final Iterable<Statement> theGraph, final Function<Statement, Optional<T>> theFunction) {
+		final Set<T> aSet = Sets.newHashSet();
+		for (Statement aStmt : theGraph) {
+			final Optional<T> aResult = theFunction.apply(aStmt);
+			if (aResult.isPresent()) {
+				aSet.add(aResult.get());
+			}
+		}
+		return aSet;
+	}
+
+	/**
+	 * Collect the results of the {@link Function} as it is applied to each {@link Statement}.  {@link Optional Absent}
+	 * values are not collected; the provided function should never return a null value.
+	 *
+	 * @param theStatementIterator		the statements
+	 * @param theFunction	the function
+	 * @return				the collected values
+	 */
+	public static <T> Collection<T> collect(final Iterator<Statement> theStatementIterator, final Function<Statement, Optional<T>> theFunction) {
+		final Set<T> aSet = Sets.newHashSet();
+		while (theStatementIterator.hasNext()) {
+			final Statement aStmt = theStatementIterator.next();
+
+			Optional<T> aResult = theFunction.apply(aStmt);
+			if (aResult.isPresent()) {
+				aSet.add(aResult.get());
+			}
+		}
+		return aSet;
+	}
+
+	/**
+	 * Return the value of the property for the given subject.  If there are multiple values, only the first value will
+	 * be returned.  Use {@link GraphUtil#getObjectIterator} if you want all values for the property.
+	 *
+	 * @param theGraph	the graph
+	 * @param theSubj	the subject
+	 * @param thePred	the property of the subject whose value should be retrieved
+	 *
+	 * @return 			optionally, the value of the the property for the subject
+	 *
+	 * @see org.openrdf.model.util.GraphUtil#getOptionalObject
+	 */
+	public static Optional<Value> getObject(final Graph theGraph, final Resource theSubj, final URI thePred) {
+		Iterator<Value> aCollection = GraphUtil.getObjectIterator(theGraph, theSubj, thePred);
+
+		if (aCollection.hasNext()) {
+			return Optional.of(aCollection.next());
+		}
+		else {
+			return Optional.absent();
+		}
+	}
+
+	/**
+	 * Return the value of of the property as a Literal
+	 *
+	 * @param theGraph	the graph
+	 * @param theSubj	the resource
+	 * @param thePred	the property whose value is to be retrieved
+	 * @return 			Optionally, the property value as a literal.  Value will be absent of the SP does not have an O, or the O is not a literal
+	 *
+	 * @see #getObject(org.openrdf.model.Graph, org.openrdf.model.Resource, org.openrdf.model.URI)
+	 */
+	public static Optional<Literal> getLiteral(final Graph theGraph, final Resource theSubj, final URI thePred) {
+		Optional<Value> aVal = getObject(theGraph, theSubj, thePred) ;
+
+		if (aVal.isPresent() && aVal.get() instanceof Literal) {
+			return Optional.of((Literal) aVal.get());
+		}
+		else {
+			return Optional.absent();
+		}
+	}
+
+	/**
+	 * Return the value of of the property as a Resource
+	 *
+	 * @param theGraph	the graph
+	 * @param theSubj	the resource
+	 * @param thePred	the property whose value is to be retrieved
+	 * @return 			Optionally, the property value as a Resource.  Value will be absent of the SP does not have an O, or the O is not a Resource
+	 *
+	 * @see #getObject(org.openrdf.model.Graph, org.openrdf.model.Resource, org.openrdf.model.URI)
+	 * @see GraphUtil#getOptionalObjectResource
+	 */
+	public static Optional<Resource> getResource(final Graph theGraph, final Resource theSubj, final URI thePred) {
+		Optional<Value> aVal = getObject(theGraph, theSubj, thePred) ;
+
+		if (aVal.isPresent() && aVal.get() instanceof Resource) {
+			return Optional.of((Resource) aVal.get());
+		}
+		else {
+			return Optional.absent();
+		}
+	}
+
+	/**
+	 * Returns the value of the property on the given resource as a boolean.
+	 *
+	 * @param theGraph	the graph
+	 * @param theSubj	the resource
+	 * @param thePred	the property
+	 * @return 			Optionally, the value of the property as a boolean.  Value will be absent if the SP does not have an O,
+	 * 					or that O is not a literal or not a valid boolean value
+	 */
+	public static Optional<Boolean> getBooleanValue(final Graph theGraph, final Resource theSubj, final URI thePred) {
+		Optional<Literal> aLitOpt = getLiteral(theGraph, theSubj, thePred);
+
+		if (!aLitOpt.isPresent()) {
+			return Optional.absent();
+		}
+
+		Literal aLiteral = aLitOpt.get();
+
+		if (((aLiteral.getDatatype() != null && aLiteral.getDatatype().equals(XMLSchema.BOOLEAN))
+			 || (aLiteral.getLabel().equalsIgnoreCase("true") || aLiteral.getLabel().equalsIgnoreCase("false")))) {
+			return Optional.of(Boolean.valueOf(aLiteral.getLabel()));
+		}
+		else {
+			return Optional.absent();
+		}
+	}
+
+	/**
+	 * Returns whether or not the given resource is a rdf:List
+	 *
+	 * @param theGraph	the graph
+	 * @param theRes	the resource to check
+	 *
+	 * @return			true if its a list, false otherwise
+	 */
+	public static boolean isList(final Graph theGraph, final Resource theRes) {
+		Iterator<Statement> sIter = theGraph.match(theRes, RDF.FIRST, null);
+
+		return theRes != null && theRes.equals(RDF.NIL) || sIter.hasNext();
+	}
+
+	/**
+	 * Return the contents of the given list by following the rdf:first/rdf:rest structure of the list
+	 * @param theGraph	the graph
+	 * @param theRes	the resource which is the head of the list
+	 *
+	 * @return 			the contents of the list.
+	 */
+	public static List<Value> asList(final Graph theGraph, final Resource theRes) {
+		List<Value> aList = Lists.newArrayList();
+
+		Resource aListRes = theRes;
+
+		while (aListRes != null) {
+
+			Optional<Resource> aFirst = getResource(theGraph, aListRes, RDF.FIRST);
+			Optional<Resource> aRest = getResource(theGraph, aListRes, RDF.REST);
+
+			if (aFirst.isPresent()) {
+				aList.add(aFirst.get());
+			}
+
+			if (aRest.or(RDF.NIL).equals(RDF.NIL)) {
+				aListRes = null;
+			}
+			else {
+				aListRes = aRest.get();
+			}
+		}
+
+		return aList;
+	}
+
+	/**
+	 * Return an {@link Iterable} of the types of the {@link Resource} in the specified {@link Graph}
+	 *
+	 * @param theGraph	the graph
+	 * @param theRes	the resource
+	 * @return			the asserted rdf:type's of the resource
+	 */
+	public static Iterable<Resource> getTypes(final Graph theGraph, final Resource theRes) {
+		return collect(theGraph.match(theRes, RDF.TYPE, null), Statements.objectAsResource());
 	}
 }

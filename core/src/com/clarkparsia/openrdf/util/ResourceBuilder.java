@@ -15,6 +15,7 @@
 
 package com.clarkparsia.openrdf.util;
 
+import com.clarkparsia.openrdf.ExtGraphImpl;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -27,8 +28,6 @@ import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.GregorianCalendar;
-
-import com.clarkparsia.openrdf.ExtGraph;
 
 import com.google.common.collect.Sets;
 
@@ -43,14 +42,14 @@ import javax.xml.datatype.DatatypeConfigurationException;
  * @version 0.4
  */
 public class ResourceBuilder {
-    private ExtGraph mGraph;
+    private ExtGraphImpl mGraph;
     private Resource mRes;
 
     public ResourceBuilder(Resource theRes) {
-        this(new ExtGraph(), theRes);
+        this(new ExtGraphImpl(), theRes);
     }
 
-    protected ResourceBuilder(ExtGraph theGraph, Resource theRes) {
+    protected ResourceBuilder(ExtGraphImpl theGraph, Resource theRes) {
         mRes = theRes;
         mGraph = theGraph;
     }
@@ -92,7 +91,7 @@ public class ResourceBuilder {
         return mRes;
     }
 
-    public ExtGraph graph() {
+    public ExtGraphImpl graph() {
         return mGraph;
     }
 

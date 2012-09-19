@@ -23,11 +23,9 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParseException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 /**
  * <p>Tests for ExtRepository</p>
@@ -127,7 +125,7 @@ public class TestExtRepository {
 	public void testAddFromStream() throws Exception {
 		ExtRepository aRepo = OpenRdfUtil.createInMemoryRepo();
 
-		ExtGraph aGraph = TestUtils.createRandomGraph(25);
+		ExtGraphImpl aGraph = TestUtils.createRandomGraph(25);
 
 		ByteArrayOutputStream aOut = new ByteArrayOutputStream();
 

@@ -15,11 +15,11 @@
 
 package com.clarkparsia.openrdf.util;
 
+import com.clarkparsia.openrdf.SetGraph;
 import org.openrdf.rio.helpers.RDFHandlerBase;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Graph;
-import com.clarkparsia.openrdf.ExtGraph;
 
 /**
  * <p>Implementation of an RDFHandler which collects statements from the handler events and puts them into a Graph object.</p>
@@ -39,7 +39,7 @@ public final class GraphBuildingRDFHandler extends RDFHandlerBase {
 	 * Create a new GraphBuildingRDFHandler
 	 */
 	public GraphBuildingRDFHandler() {
-		this(new ExtGraph());
+		this(new SetGraph());
 	}
 
 	/**

@@ -31,6 +31,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.util.RDFInserter;
 
+import java.io.StringWriter;
 import java.io.Writer;
 import java.io.IOException;
 import java.io.File;
@@ -47,11 +48,12 @@ import static com.clarkparsia.openrdf.OpenRdfUtil.close;
 import com.google.common.base.Charsets;
 
 /**
- * <p>Collection of utility methods for doing IO operations with RIO and the OpenRdf API</p>
+ * <p>Collection of utility methods for doing IO operations with RIO and the OpenRdf API.  Provides convenience
+ * methods to add data to {@link Graph} and {@link Repository} objects and to write them out to a stream.</p>
  *
- * @author Michael Grove
- * @since 0.1
- * @version 0.4
+ * @author	Michael Grove
+ * @since	0.1
+ * @version	0.4
  */
 public final class OpenRdfIO {
 
@@ -210,6 +212,24 @@ public final class OpenRdfIO {
 	 */
 	public static void writeGraph(Graph theGraph, Writer theWriter, RDFFormat theFormat) throws IOException {
 		writeGraph(theGraph, Rio.createWriter(theFormat, theWriter));
+	}
+
+	/**
+	 * Write the Graph to a String in the given format
+	 * @param theGraph	the graph to write
+	 * @param theFormat	the RDF format to write in
+	 * @return			the Graph as RDF
+	 */
+	public static String toString(final Graph theGraph, final RDFFormat theFormat) {
+		try {
+			StringWriter aStringWriter = new StringWriter();
+			writeGraph(theGraph, aStringWriter, theFormat);
+			return aStringWriter.toString();
+		}
+		catch (IOException e) {
+			// this should not happen w/ a StringWriter
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static void addData(Repository theRepo, File theFile) throws RDFParseException, IOException {

@@ -19,6 +19,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
@@ -32,25 +34,10 @@ import java.util.Set;
  * <p>Tests for ExtGraph</p>
  *
  * @author Michael Grove
- * @version 0.4
- * @since 0.4
+ * @since	0.4
+ * @version 0.8
  */
 public class TestExtGraph {
-
-	/**
-	 * Test for clear
-	 */
-	@Test
-	public void testClear() {
-		ExtGraph aGraph = TestUtils.createRandomGraph();
-
-		assertTrue(aGraph.size() > 0);
-
-		aGraph.clear();
-
-		assertEquals(0, aGraph.size());
-	}
-
 
 	/**
 	 * Test methods dealing with getting individuals from the graph
@@ -69,23 +56,24 @@ public class TestExtGraph {
 		}
 
 		for (Resource aInd: aInds) {
-			assertTrue(aGraph.addType(aInd, aType));
+			assertTrue(aGraph.add(aInd, RDF.TYPE, aType));
 		}
 
 		Set<Resource> aIndsOfType = Sets.newHashSet(aInds);
 
 		Statement aStmt = TestUtils.createRandomStatement();
 		aInds.add(aStmt.getSubject());
+
 		assertTrue(aGraph.add(aStmt));
-		assertTrue(aGraph.addType(aStmt.getSubject(), aOtherType));
+		assertTrue(aGraph.add(aStmt.getSubject(), RDF.TYPE, aOtherType));
 
 		assertEquals(aInds,
-					 aGraph.listIndividuals());
+					 aGraph.getIndividuals());
 
 		assertEquals(aIndsOfType,
-					 aGraph.instancesOf(aType));
+					 aGraph.getInstancesOf(aType));
 
 		assertEquals(Sets.newHashSet(aStmt.getSubject()),
-					 aGraph.instancesOf(aOtherType));
+					 aGraph.getInstancesOf(aOtherType));
 	}
 }

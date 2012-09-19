@@ -52,12 +52,12 @@ public final class TestUtils {
 		return parser.parseQuery(theQuery, "http://openrdf.clarkparsia.com");
 	}
 
-	public static ExtGraph createRandomGraph() {
+	public static ExtGraphImpl createRandomGraph() {
 		return createRandomGraph(RANDOM.nextInt(500));
 	}
 
-	public static ExtGraph createRandomGraph(final int theSize) {
-		ExtGraph aGraph = new ExtGraph();
+	public static ExtGraphImpl createRandomGraph(final int theSize) {
+		ExtGraphImpl aGraph = new ExtGraphImpl();
 
 		for (int i = 0; i < theSize; i++) {
 			aGraph.add(createRandomStatement());

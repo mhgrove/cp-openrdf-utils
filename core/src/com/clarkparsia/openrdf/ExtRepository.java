@@ -163,7 +163,7 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @param theResource the resource to describe
 	 * @return the graph which describes the URI
 	 */
-	public ExtGraph describe(Resource theResource) {
+	public ExtGraphImpl describe(Resource theResource) {
 		Graph aGraph = new SetGraph();
 
 		RepositoryConnection aConn = null;
@@ -180,7 +180,7 @@ public class ExtRepository extends RepositoryWrapper {
 			close(aConn);
 		}
 
-		return new ExtGraph(aGraph);
+		return new ExtGraphImpl(aGraph);
 	}
 
 	/**
@@ -272,13 +272,13 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @throws MalformedQueryException if the query cannot be parsed
 	 * @throws QueryEvaluationException if there is an error while querying
 	 */
-	public ExtGraph constructQuery(QueryLanguage theLang, String theQuery) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+	public ExtGraphImpl constructQuery(QueryLanguage theLang, String theQuery) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 		RepositoryConnection aConn = null;
 
 		try {
 			aConn = getConnection();
 
-			ExtGraph aGraph = new ExtGraph();
+			ExtGraphImpl aGraph = new ExtGraphImpl();
 
 			GraphQueryResult aResult = aConn.prepareGraphQuery(theLang, theQuery).evaluate();
 			while (aResult.hasNext()) {
