@@ -27,9 +27,9 @@ import com.google.common.base.Objects;
  * <p>Implementation of a Sesame {@link Statement} which takes into account the context for {@link #equals} but not 
  * {@link #hashCode} so it is still compatible with default Sesame implementations.</p>
  *
- * @author Michael Grove
+ * @author	Michael Grove
+ * @since	0.4.1
  * @version 0.4.1
- * @since 0.4.1
  */
 public final class ContextAwareStatement implements Statement {
 

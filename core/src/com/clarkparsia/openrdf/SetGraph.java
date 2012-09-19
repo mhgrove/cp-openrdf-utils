@@ -36,8 +36,8 @@ import org.openrdf.model.ValueFactory;
  * statements.</p>
  *
  * @author Michael Grove
+ * @since	0.5
  * @version 0.5
- * @since 0.5
  */
 public final class SetGraph extends AbstractCollection<Statement> implements Graph {
 

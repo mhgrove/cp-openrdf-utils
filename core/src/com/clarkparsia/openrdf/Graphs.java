@@ -34,6 +34,8 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.rio.RDFParseException;
 
 /**
@@ -41,36 +43,55 @@ import org.openrdf.rio.RDFParseException;
  *
  * @author	Michael Grove
  * @since	0.4
- * @version	0.4.2
+ * @version	0.8
  */
 public final class Graphs {
 
 	/**
 	 * Return the contents of the list serialized as an RDF list
-	 * @param theResources the list
-	 * @return the list as RDF
+	 * @param theResources	the list
+	 * @return				the list as RDF
 	 */
 	public static ExtGraph toList(final Resource... theResources) {
 		return toList(Arrays.asList(theResources));
 	}
 
+	/**
+	 * Create a Graph from the RDF in the specified file
+	 *
+	 * @param theFile	the file to read the RDF from
+	 * @return			a new graph containing the RDF from the file
+	 *
+	 * @throws IOException			if there was an error reading the file
+	 * @throws RDFParseException	if the file did not contain valid RDF
+	 */
 	public static ExtGraph of(final File theFile) throws IOException, RDFParseException {
 		return (ExtGraph) OpenRdfIO.readGraph(theFile);
 	}
 
-	public static ExtGraph forSubject(final Graph theGraph, final Resource theSubject) {
-		return newGraph(Iterables.filter(theGraph, new Predicate<Statement>() {
-			@Override
-			public boolean apply(final Statement theStatement) {
-				return theStatement.getSubject().equals(theSubject);
-			}
-		}));
+	/**
+	 * Create a Sesame graph from the GraphQueryResult.  If the invocation is successful, the query result is closed before returning the result.
+	 * @param theResult	the result of the query
+	 * @return			the graph built from the result
+	 *
+	 * @throws org.openrdf.query.QueryEvaluationException if there was an error while creating the graph from the query result
+	 */
+	public static ExtGraph newGraph(GraphQueryResult theResult) throws QueryEvaluationException {
+		ExtGraph aGraph = new ExtGraph();
+
+		while (theResult.hasNext()) {
+			aGraph.add(theResult.next());
+		}
+
+		theResult.close();
+
+		return aGraph;
 	}
 
 	/**
 	 * Return the contents of the list serialized as an RDF list
-	 * @param theResources the list
-	 * @return the list as RDF
+	 * @param theResources	the list
+	 * @return				the list as RDF
 	 */
 	public static ExtGraph toList(final List<Resource> theResources) {
 		Resource aCurr = ValueFactoryImpl.getInstance().createBNode();

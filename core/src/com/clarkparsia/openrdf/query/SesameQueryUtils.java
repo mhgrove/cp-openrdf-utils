@@ -184,30 +184,12 @@ public final class SesameQueryUtils {
 	}
 
 	/**
-	 * Create a Sesame graph from the GraphQueryResult.  If the invocation is successful, the query result is closed before returning the result.
-	 * @param theResult the result of the query
-	 * @return the graph built from the result
-	 * @throws QueryEvaluationException if there was an error while creating the graph from the query result
-	 */
-	public static ExtGraph asGraph(GraphQueryResult theResult) throws QueryEvaluationException {
-		ExtGraph aGraph = new ExtGraph();
-
-		while (theResult.hasNext()) {
-			aGraph.add(theResult.next());
-		}
-
-		theResult.close();
-
-		return aGraph;
-	}
-
-	/**
 	 * Return the query string rendering of the {@link Value}
-	 * @param theValue the value to render
-	 * @return the value rendered in its query string representation
+	 * @param theValue	the value to render
+	 * @return 			the value rendered in its query string representation
 	 */
 	public static String getARQSPARQLQueryString(Value theValue) {
-        StringBuffer aBuffer = new StringBuffer();
+        StringBuilder aBuffer = new StringBuilder();
 
         if (theValue instanceof URI) {
             URI aURI = (URI) theValue;
@@ -231,11 +213,11 @@ public final class SesameQueryUtils {
 
 	/**
 	 * Return the query string rendering of the {@link Value}
-	 * @param theValue the value to render
-	 * @return the value rendered in its query string representation
+	 * @param theValue	the value to render
+	 * @return 			the value rendered in its query string representation
 	 */
 	public static String getSPARQLQueryString(Value theValue) {
-        StringBuffer aBuffer = new StringBuffer();
+        StringBuilder aBuffer = new StringBuilder();
 
         if (theValue instanceof URI) {
             URI aURI = (URI) theValue;
@@ -259,8 +241,8 @@ public final class SesameQueryUtils {
 	
 	/**
 	 * Return the query string rendering of the {@link Value}
-	 * @param theValue the value to render
-	 * @return the value rendered in its query string representation
+	 * @param theValue	the value to render
+	 * @return 			the value rendered in its query string representation
 	 */
 	public static String getSerqlQueryString(Value theValue) {
         StringBuffer aBuffer = new StringBuffer();
@@ -290,8 +272,8 @@ public final class SesameQueryUtils {
 	 * Properly escape out any special characters in the query string.  Replaces unescaped double quotes with \" and replaces slashes '\' which
 	 * are not a valid escape sequence such as \t or \n with a double slash '\\' so they are unescaped correctly by a SPARQL parser.
 	 * 
-	 * @param theString the query string to escape chars in
-	 * @return the escaped query string
+	 * @param theString	the query string to escape chars in
+	 * @return 			the escaped query string
 	 */
 	public static String escape(String theString) {
 		theString = theString.replaceAll("\"", "\\\\\"");
@@ -332,8 +314,8 @@ public final class SesameQueryUtils {
 
     /**
      * Set the value of the limit on the query object to a new value, or specify a limit if one is not specified.
-     * @param theQuery the query to alter
-     * @param theOffset the new limit
+     * @param theQuery	the query to alter
+     * @param theOffset	the new limit
      */
     public static void setOffset(final ParsedQuery theQuery, final int theOffset) {
         try {

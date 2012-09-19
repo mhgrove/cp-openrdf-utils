@@ -51,27 +51,6 @@ public class TestExtGraph {
 		assertEquals(0, aGraph.size());
 	}
 
-	/**
-	 * Test that de-duping works
-	 */
-	@Test
-	public void testAddNoDupe() {
-		ExtGraph aGraph = new ExtGraph();
-
-		Statement aStmt = TestUtils.createRandomStatement();
-
-		assertTrue(aGraph.add(aStmt));
-
-		assertEquals(1, aGraph.size());
-
-		assertFalse(aGraph.add(aStmt));
-
-		assertEquals(1, aGraph.size());
-
-		assertFalse(aGraph.addAll(Graphs.newGraph(aStmt)));
-
-		assertEquals(1, aGraph.size());
-	}
 
 	/**
 	 * Test methods dealing with getting individuals from the graph
