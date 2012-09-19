@@ -243,18 +243,6 @@ public class ExtRepository extends RepositoryWrapper {
 	}
 
 	/**
-	 * Execute a select query
-	 * @param theQuery the query to execute
-	 * @return the query result set.
-	 * @throws RepositoryException if there is an error while querying
-	 * @throws MalformedQueryException if the query cannot be parsed
-	 * @throws QueryEvaluationException if there is an error while querying
-	 */
-	public TupleQueryResult selectQuery(SesameQuery theQuery) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-		return selectQuery(theQuery.getLanguage(), theQuery.getQueryString()); 
-	}
-
-	/**
 	 * Execute a select query.
 	 * @param theLang the query language
 	 * @param theQuery the query to execute
@@ -273,18 +261,6 @@ public class ExtRepository extends RepositoryWrapper {
 			close(aConn);
 			throw e;
 		}
-	}
-
-	/**
-	 * Execute a construct query against this repository
-	 * @param theQuery the Query to execute
-	 * @return the results of the construct query
-	 * @throws RepositoryException if there is an error while querying
-	 * @throws MalformedQueryException if the query cannot be parsed
-	 * @throws QueryEvaluationException if there is an error while querying
-	 */
-	public ExtGraph constructQuery(SesameQuery theQuery) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-		return constructQuery(theQuery.getLanguage(), theQuery.getQueryString());
 	}
 
 	/**
