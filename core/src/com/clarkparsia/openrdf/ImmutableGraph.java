@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ import com.google.common.collect.Iterators;
 /**
  * <p>An immutable version of an OpenRdf {@link org.openrdf.model.Graph}</p>
  *
- * @author Michael Grove
- * @version 0.4
- * @since 0.4
+ * @author	Michael Grove
+ * @since	0.4
+ * @version	0.4
  */
 public final class ImmutableGraph extends DelegatingGraph {
 
@@ -44,17 +44,22 @@ public final class ImmutableGraph extends DelegatingGraph {
 
 	/**
 	 * Return an immutable version of the graph
-	 * @param theGraph the graph
-	 * @return an immutable version of the graph
+	 * @param theGraph	the graph
+	 * @return 			an immutable version of the graph
 	 */
 	public static ImmutableGraph of(final Graph theGraph) {
-		return new ImmutableGraph(theGraph);
+		if (theGraph instanceof ImmutableGraph) {
+			return (ImmutableGraph) theGraph;
+		}
+		else {
+			return new ImmutableGraph(theGraph);
+		}
 	}
 
 	/**
 	 * Return an immutable version of the statements
-	 * @param theStatements the graph
-	 * @return an immutable version of the statements
+	 * @param theStatements	the graph
+	 * @return				an immutable version of the statements
 	 */
 	public static ImmutableGraph of(final Statement... theStatements) {
 		return new ImmutableGraph(Graphs.newGraph(theStatements));
@@ -62,8 +67,8 @@ public final class ImmutableGraph extends DelegatingGraph {
 
 	/**
 	 * Return an immutable version of the statements
-	 * @param theStatements the graph
-	 * @return an immutable version of the statements
+	 * @param theStatements	the graph
+	 * @return 				an immutable version of the statements
 	 */
 	public static ImmutableGraph of(final Iterator<Statement> theStatements) {
 		return new ImmutableGraph(Graphs.newGraph(theStatements));
@@ -71,8 +76,8 @@ public final class ImmutableGraph extends DelegatingGraph {
 
 	/**
 	 * Return an immutable version of the statements
-	 * @param theStatements the graph
-	 * @return an immutable version of the statements
+	 * @param theStatements	the graph
+	 * @return 				an immutable version of the statements
 	 */
 	public static ImmutableGraph of(final Iterable<Statement> theStatements) {
 		return new ImmutableGraph(Graphs.newGraph(theStatements));

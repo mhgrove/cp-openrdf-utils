@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2011 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,11 @@ import com.clarkparsia.openrdf.rio.jsonld.TestJSONLD;
  *
  * @author Michael Grove
  * @since	0.4
- * @version	0.7
+ * @version	0.8
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ TestExtGraph.class, TestExtRepository.class, TestRendering.class, TestJSONLD.class, TestQueryUtils.class})
+@Suite.SuiteClasses({ TestExtGraph.class, TestExtRepository.class, TestRendering.class, TestJSONLD.class, TestQueryUtils.class,
+					  TestImmutableGraph.class})
 public class OpenRdfTestSuite {
 
 }
