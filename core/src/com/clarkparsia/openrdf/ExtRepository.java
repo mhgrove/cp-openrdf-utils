@@ -313,7 +313,7 @@ public class ExtRepository extends RepositoryWrapper {
 	 * @return the list of subjects who have properties matching the po pattern.
 	 */
 	public Collection<Resource> getSubjects(URI thePredicate, Value theObject) {
-		String aQuery = "select uri from {uri} " + (thePredicate == null ? "p" : SesameQueryUtils.getSerqlQueryString(thePredicate)) + " {" + (theObject == null ? "o" : SesameQueryUtils.getSerqlQueryString(theObject)) + "}";
+		String aQuery = "select ?uri where { ?uri " + (thePredicate == null ? "?p" : SesameQueryUtils.getSPARQLQueryString(thePredicate)) + " " + (theObject == null ? "?o" : SesameQueryUtils.getSPARQLQueryString(theObject)) + "}";
 
 		RepositoryConnection aConn = null;
 
@@ -322,7 +322,7 @@ public class ExtRepository extends RepositoryWrapper {
 
 			aConn = getConnection();
 
-			TupleQueryResult aResult = aConn.prepareTupleQuery(QueryLanguage.SERQL, aQuery).evaluate();
+			TupleQueryResult aResult = aConn.prepareTupleQuery(QueryLanguage.SPARQL, aQuery).evaluate();
 
 			while (aResult.hasNext()) {
 				aSubjects.add((Resource) aResult.next().getValue("uri"));
@@ -381,10 +381,10 @@ public class ExtRepository extends RepositoryWrapper {
 		}
 
         try {
-            String aQuery = "select value from {"+ SesameQueryUtils.getSerqlQueryString(theSubj)+"} <"+thePred+"> {value}";
+            String aQuery = "select ?value where {"+ SesameQueryUtils.getSPARQLQueryString(theSubj)+" <"+thePred+"> ?value }";
 
             // TODO: close result
-            TupleQueryResult aTable = selectQuery(QueryLanguage.SERQL, aQuery);
+            TupleQueryResult aTable = selectQuery(QueryLanguage.SPARQL, aQuery);
 
             return Iterables.transform(new IterationIterable<BindingSet>(Suppliers.ofInstance(aTable)), new Function<BindingSet, Value>() {
 				public Value apply(final BindingSet theIn) {
