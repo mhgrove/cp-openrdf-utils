@@ -6,6 +6,8 @@ package com.clarkparsia.openrdf.query.sparql;
 
 import org.junit.Test;
 import org.junit.Ignore;
+
+import static com.clarkparsia.openrdf.TestUtils.render;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -40,10 +42,6 @@ import com.clarkparsia.openrdf.vocabulary.DC;
  * @since 0.3.1
  */
 public class TestRendering {
-
-	private String render(final ParsedQuery theQuery) throws Exception {
-		return new SPARQLQueryRenderer().render(theQuery);
-	}
 
 	@Test
 	public void testRenderFromInSelect() throws Exception {
