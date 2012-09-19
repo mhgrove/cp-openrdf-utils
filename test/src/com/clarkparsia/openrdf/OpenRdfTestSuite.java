@@ -30,7 +30,7 @@ import com.clarkparsia.openrdf.rio.jsonld.TestJSONLD;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ TestExtGraph.class, TestExtRepository.class, TestRendering.class, TestJSONLD.class, TestQueryUtils.class,
-					  TestImmutableGraph.class, TestSetGraph.class, TestContextAware.class})
+					  TestImmutableGraph.class, TestSetGraph.class, TestContextAware.class, ConstrainedGraphTests.class})
 public class OpenRdfTestSuite {
 
 }
