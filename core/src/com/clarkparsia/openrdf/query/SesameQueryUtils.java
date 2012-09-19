@@ -17,6 +17,7 @@ package com.clarkparsia.openrdf.query;
 
 import com.clarkparsia.openrdf.query.builder.QueryBuilderFactory;
 
+import org.openrdf.model.Resource;
 import org.openrdf.model.Value;
 import org.openrdf.model.URI;
 import org.openrdf.model.BNode;
@@ -27,6 +28,7 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
 
+import org.openrdf.query.BindingSet;
 import org.openrdf.query.algebra.Slice;
 
 import org.openrdf.query.algebra.TupleExpr;
@@ -95,12 +97,76 @@ import info.aduna.iteration.CloseableIteration;
  * @version 0.8
  */
 public final class SesameQueryUtils {
-	/**
-	 * the logger
-	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(SesameQueryUtils.class);
 
+	/**
+	 * No instances
+	 */
 	private SesameQueryUtils() {
+	}
+
+	/**
+	 * Provide cast-exception safe access to a (@link URI} value in a {@link BindingSet}
+	 * @param theBindingSet	the BindingSet
+	 * @param theKey		the binding name
+	 * @return				the URI value for the key, or null if the key did not have a binding or if it was not a URI
+	 */
+	public static URI getURI(final BindingSet theBindingSet, final String theKey) {
+		Value aVal = theBindingSet.getValue(theKey);
+		if (aVal instanceof URI) {
+			return (URI) aVal;
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Provide cast-exception safe access to a {@link Literal} value in a {@link BindingSet}
+	 *
+	 * @param theBindingSet	the BindingSet
+	 * @param theKey		the binding name
+	 * @return				the Literal value for the key, or null if the key did not have a binding or if it was not a Literal
+	 */
+	public static Literal getLiteral(final BindingSet theBindingSet, final String theKey) {
+		Value aVal = theBindingSet.getValue(theKey);
+		if (aVal instanceof Literal) {
+			return (Literal) aVal;
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Provide cast-exception safe access to a {@link Resource} value in a {@link BindingSet}
+	 * @param theBindingSet	the BindingSet
+	 * @param theKey		the binding name
+	 * @return				the Resource value for the key, or null if the key did not have a binding or if it was not a Resource
+	 */
+	public static Resource getResource(final BindingSet theBindingSet, final String theKey) {
+		Value aVal = theBindingSet.getValue(theKey);
+		if (aVal instanceof Resource) {
+			return (Resource) aVal;
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Provide cast-exception safe access to a {@link BNode} value in a {@link BindingSet}
+	 * @param theBindingSet	the BindingSet
+	 * @param theKey		the binding name
+	 * @return				the BNode value for the key, or null if the key did not have a binding or if it was not a BNode
+	 */
+	public static BNode getBNode(final BindingSet theBindingSet, final String theKey) {
+		Value aVal = theBindingSet.getValue(theKey);
+		if (aVal instanceof BNode) {
+			return (BNode) aVal;
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**

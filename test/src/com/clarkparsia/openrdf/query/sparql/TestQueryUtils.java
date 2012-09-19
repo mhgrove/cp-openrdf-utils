@@ -7,8 +7,13 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.openrdf.model.BNode;
+import org.openrdf.model.Literal;
+import org.openrdf.model.URI;
+import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.query.algebra.QueryModelNode;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
+import org.openrdf.query.impl.MapBindingSet;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.algebra.Slice;
 
@@ -20,6 +25,31 @@ import org.openrdf.query.algebra.Slice;
  * @version	0.7
  */
 public class TestQueryUtils {
+	@Test
+	public void testBindingSetUtils() {
+		MapBindingSet aBindingSet = new MapBindingSet();
+
+		final Literal aLiteral = ValueFactoryImpl.getInstance().createLiteral("literal");
+		final URI aURI = ValueFactoryImpl.getInstance().createURI("urn:s");
+		final BNode aBNode = ValueFactoryImpl.getInstance().createBNode();
+
+		aBindingSet.addBinding("lit", aLiteral);
+		aBindingSet.addBinding("bnode", aBNode);
+		aBindingSet.addBinding("uri", aURI);
+
+		assertEquals(SesameQueryUtils.getLiteral(aBindingSet, "lit"), aLiteral);
+		assertEquals(SesameQueryUtils.getBNode(aBindingSet, "bnode"), aBNode);
+		assertEquals(SesameQueryUtils.getURI(aBindingSet, "uri"), aURI);
+
+		assertEquals(SesameQueryUtils.getResource(aBindingSet, "bnode"), aBNode);
+		assertEquals(SesameQueryUtils.getResource(aBindingSet, "uri"), aURI);
+
+		assertTrue(SesameQueryUtils.getLiteral(aBindingSet, "uri") == null);
+		assertTrue(SesameQueryUtils.getLiteral(aBindingSet, "bnode") == null);
+		assertTrue(SesameQueryUtils.getResource(aBindingSet, "lit") == null);
+		assertTrue(SesameQueryUtils.getURI(aBindingSet, "lit") == null);
+		assertTrue(SesameQueryUtils.getBNode(aBindingSet, "lit") == null);
+	}
 
 	@Test
 	public void testSetLimit() throws Exception {
