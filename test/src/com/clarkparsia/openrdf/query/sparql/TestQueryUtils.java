@@ -1,6 +1,25 @@
+/*
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.clarkparsia.openrdf.query.sparql;
 
+import java.util.NoSuchElementException;
+
 import com.clarkparsia.openrdf.TestUtils;
+import com.clarkparsia.openrdf.query.BooleanQueryResult;
+import com.clarkparsia.openrdf.query.BooleanQueryResultImpl;
 import com.clarkparsia.openrdf.query.SesameQueryUtils;
 import com.clarkparsia.openrdf.query.builder.QueryBuilder;
 import com.clarkparsia.openrdf.query.builder.QueryBuilderFactory;
@@ -15,6 +34,7 @@ import static com.clarkparsia.openrdf.TestUtils.render;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
@@ -22,25 +42,53 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.QueryModelNode;
-import org.openrdf.query.algebra.TupleExpr;
+
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 import org.openrdf.query.impl.MapBindingSet;
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.algebra.Slice;
 import org.openrdf.query.parser.ParsedTupleQuery;
-import org.openrdf.query.parser.sparql.SPARQLParser;
 
 /**
  * <p></p>
  *
  * @author	Michael Grove
  * @since	0.7
- * @version	0.7
+ * @version	0.8
  */
 public class TestQueryUtils {
+	@Test
+	public void testBooleanQueryResult() throws QueryEvaluationException {
+		BooleanQueryResult aResult = new BooleanQueryResultImpl(true);
+
+		try {
+			aResult.remove();
+			fail("Remove should not have succeeded");
+		}
+		catch (UnsupportedOperationException e) {
+			// expected
+		}
+
+		assertTrue(aResult.hasNext());
+
+		assertTrue(aResult.next());
+
+		assertFalse(aResult.hasNext());
+
+		try {
+			aResult.next();
+			fail("Should not be able to call next a second time");
+		}
+		catch (NoSuchElementException e) {
+			// expected
+		}
+
+		assertFalse(new BooleanQueryResultImpl(false).next());
+	}
 	@Test
 	public void testBuilderSimple() throws Exception {
 		String aGroupedQuery = "PREFIX foaf:    <http://xmlns.com/foaf/0.1/>\n" +
