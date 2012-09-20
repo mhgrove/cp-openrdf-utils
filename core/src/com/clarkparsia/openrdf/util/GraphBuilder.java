@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,29 @@
 
 package com.clarkparsia.openrdf.util;
 
+import com.clarkparsia.openrdf.Graphs;
+
+import org.openrdf.model.Graph;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
-import com.clarkparsia.openrdf.ExtGraphImpl;
 
 /**
  * <p>Utility class for creating a set of statements using {@link ResourceBuilder ResourceBuilders}.</p>
  *
- * @author Michael Grove
- * @since 0.1
+ * @author	Michael Grove
+ * @since	0.1
+ * @version 0.4
  */
 public class GraphBuilder {
-    private ExtGraphImpl mGraph;
+    private final Graph mGraph;
 
     public GraphBuilder() {
-        mGraph = new ExtGraphImpl();
+        mGraph = Graphs.newGraph();
     }
 
-    public ExtGraphImpl graph() {
+    public Graph graph() {
         return mGraph;
     }
 

@@ -73,7 +73,7 @@ public final class ConstrainedGraph extends DelegatingGraph {
 			@Override
 			public Statement checkElement(final Statement theStatement) {
 				if (theStatement.getObject() instanceof Literal && !OpenRdfUtil.isLiteralValid((Literal) theStatement.getObject())) {
-					throw new StatementViolatedConstraintException("Invalid literal value: " + theStatement.getObject());
+					throw new StatementViolatedConstraintException(theStatement.getObject() + " is not a well-formed literal value.");
 				}
 
 				return theStatement;

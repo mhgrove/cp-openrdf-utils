@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
 
 package com.clarkparsia.openrdf.util;
 
-import com.clarkparsia.openrdf.ExtGraphImpl;
+import com.clarkparsia.openrdf.Graphs;
+import org.openrdf.model.Graph;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -37,19 +38,19 @@ import javax.xml.datatype.DatatypeConfigurationException;
 /**
  * <p>Utility class for creating statements about a particular resource.</p>
  *
- * @author Michael Grove
- * @since 0.1
- * @version 0.4
+ * @author	Michael Grove
+ * @since	0.1
+ * @version	0.4
  */
 public class ResourceBuilder {
-    private ExtGraphImpl mGraph;
-    private Resource mRes;
+    private final Graph mGraph;
+    private final Resource mRes;
 
-    public ResourceBuilder(Resource theRes) {
-        this(new ExtGraphImpl(), theRes);
+    public ResourceBuilder(final Resource theRes) {
+        this(Graphs.newGraph(), theRes);
     }
 
-    protected ResourceBuilder(ExtGraphImpl theGraph, Resource theRes) {
+    protected ResourceBuilder(final Graph theGraph, final Resource theRes) {
         mRes = theRes;
         mGraph = theGraph;
     }
@@ -91,7 +92,7 @@ public class ResourceBuilder {
         return mRes;
     }
 
-    public ExtGraphImpl graph() {
+    public Graph graph() {
         return mGraph;
     }
 

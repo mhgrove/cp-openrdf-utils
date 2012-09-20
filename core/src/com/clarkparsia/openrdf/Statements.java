@@ -20,6 +20,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
@@ -112,6 +113,23 @@ public final class Statements {
 		return new Function<Statement, Optional<Value>>() {
 			public Optional<Value> apply(final Statement theStatement) {
 				return Optional.of(theStatement.getObject());
+			}
+		};
+	}
+
+	public static Function<Statement, Optional<Resource>> objectResourceOptional() {
+		return new Function<Statement, Optional<Resource>>() {
+			public Optional<Resource> apply(final Statement theStatement) {
+				return theStatement.getObject() instanceof Resource ? Optional.of((Resource) theStatement.getObject()) : Optional.<Resource>absent();
+			}
+		};
+	}
+
+	public static Function<Statement, Optional<Literal>> objectLiteralOptional() {
+		return new Function<Statement, Optional<Literal>>() {
+			public Optional<Literal> apply(final Statement theStatement) {
+				return theStatement.getObject() instanceof Literal
+					   ? Optional.of((Literal) theStatement.getObject()) : Optional.<Literal>absent();
 			}
 		};
 	}

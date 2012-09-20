@@ -46,9 +46,9 @@ import java.io.StringWriter;
  *
  * @author	Michael Grove
  * @since	0.1
- * @version	0.4
+ * @version	0.8
  */
-public final class ExtGraphImpl extends DelegatingGraph implements ExtGraph {
+final class ExtGraphImpl extends DelegatingGraph implements ExtGraph {
 	public ExtGraphImpl() {
 		super(new SetGraph());
 	}
@@ -232,42 +232,4 @@ public final class ExtGraphImpl extends DelegatingGraph implements ExtGraph {
 	public <T> Collection<T> collect(final Function<Statement, Optional<T>> theFunction) {
 		return Graphs.collect(this, theFunction);
 	}
-
-	//////////////////////////////////////////////////
-	//////////////////////////////////////////////////
-
-//
-//	public boolean isType(final Resource theSubj, final Resource theType) {
-//		return contains(theSubj, RDF.TYPE, theType);
-//	}
-//
-//	/**
-//	 * Return the rdfs:label of the given resource
-//	 *
-//	 * @param theRes	the resource to get a label for
-//	 * @return			optionally, the rdfs:label of the resource
-//	 */
-//	public Optional<Literal> comment(final Resource theRes) {
-//		return getLiteral(theRes, RDFS.COMMENT);
-//	}
-//
-//	/**
-//	 * Return the rdfs:label of the given resource
-//	 *
-//	 * @param theRes	the resource to get a label for
-//	 * @return			optionally, the rdfs:label of the resource
-//	 */
-//	public Optional<Literal> label(Resource theRes) {
-//		return getLiteral(theRes, RDFS.LABEL);
-//	}
-//
-//
-//	/**
-//	 * Return the rdf:type of the resource
-//	 * @param theSubj the resource
-//	 * @return the rdf:type, or null if it is not typed.
-//	 */
-//	public Resource getType(Resource theSubj) {
-//		return (Resource) getValue(theSubj, RDF.TYPE);
-//	}
 }

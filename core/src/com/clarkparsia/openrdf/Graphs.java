@@ -54,6 +54,10 @@ import org.openrdf.rio.RDFParseException;
  */
 public final class Graphs {
 
+	public static ExtGraph extend(final Graph theGraph) {
+		return new ExtGraphImpl(theGraph);
+	}
+
 	/**
 	 * Return the contents of the list serialized as an RDF list
 	 * @param theResources	the list
@@ -77,20 +81,25 @@ public final class Graphs {
 	}
 
 	/**
-	 * Create a Sesame graph from the GraphQueryResult.  If the invocation is successful, the query result is closed before returning the result.
+	 * Create a Sesame graph from the GraphQueryResult.  The query result is always closed regardless of whether or not
+	 * it was successfully transformed into a graph.
+	 *
 	 * @param theResult	the result of the query
 	 * @return			the graph built from the result
 	 *
 	 * @throws org.openrdf.query.QueryEvaluationException if there was an error while creating the graph from the query result
 	 */
-	public static Graph newGraph(GraphQueryResult theResult) throws QueryEvaluationException {
+	public static Graph newGraph(final GraphQueryResult theResult) throws QueryEvaluationException {
 		Graph aGraph = new SetGraph();
 
-		while (theResult.hasNext()) {
-			aGraph.add(theResult.next());
+		try {
+			while (theResult.hasNext()) {
+				aGraph.add(theResult.next());
+			}
 		}
-
-		theResult.close();
+		finally {
+			theResult.close();
+		}
 
 		return aGraph;
 	}
