@@ -160,7 +160,7 @@ public final class Graphs {
 	 * @param theStatements	the statements that will make up the Graph
 	 * @return 				a Graph containing all the provided statements
 	 */
-	public static ExtGraphImpl newGraph(final Iterable<Statement> theStatements) {
+	public static Graph newGraph(final Iterable<Statement> theStatements) {
 		final ExtGraphImpl aGraph = new ExtGraphImpl();
 
 		for (Statement aStmt : theStatements) {
