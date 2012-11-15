@@ -497,4 +497,218 @@ public class TestRendering {
 
 		// TODO: verify actual query model
 	}
+	
+	// ------ Testing ORDER BY ------ //
+	
+	@Test
+	public void testBuildQueryOrderBy() throws Exception {
+		URI aFrom = ValueFactoryImpl.getInstance().createURI("urn:from");
+
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o")
+			.closeGroup()
+			.orderBy("s")
+			.orderByDesc("o");
+			
+
+		final String aExpected = "select ?s ?p ?o\n" +
+								 "from <" + aFrom + ">\n" +
+								 "where {\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}\n" +
+								 "order by ?s desc(?o)";
+		
+		assertEquals(aExpected, render(aBuilder.query()));
+	}
+	
+	@Test
+	public void testBuildQueryOrderByLimitOffset() throws Exception {
+		URI aFrom = ValueFactoryImpl.getInstance().createURI("urn:from");
+
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o")
+			.closeGroup()
+			.orderBy("s")
+			.orderByDesc("o").limit(100).offset(200);
+			
+
+		final String aExpected = "select ?s ?p ?o\n" +
+								 "from <" + aFrom + ">\n" +
+								 "where {\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}\n" +
+								 "order by ?s desc(?o)\n" +
+								 "limit 100\n" +
+								 "offset 200";
+		
+		assertEquals(aExpected, render(aBuilder.query()));
+	}
+	
+	@Test
+	public void testBuildQueryOrderByLimitOffsetOther() throws Exception {
+		URI aFrom = ValueFactoryImpl.getInstance().createURI("urn:from");
+
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o")
+			.closeGroup()
+			.limit(100).offset(200)
+			.orderBy("s")
+			.orderByDesc("o");
+			
+
+		final String aExpected = "select ?s ?p ?o\n" +
+								 "from <" + aFrom + ">\n" +
+								 "where {\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}\n" +
+								 "order by ?s desc(?o)\n" +
+								 "limit 100\n" +
+								 "offset 200";
+		
+		assertEquals(aExpected, render(aBuilder.query()));
+		
+		aBuilder.reset();
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o")
+			.closeGroup()
+			.offset(200)
+			.orderByAsc("s")
+			.orderByDesc("o")
+			.limit(100);
+		
+		assertEquals(aExpected, render(aBuilder.query()));
+	}
+	
+	/**
+	 * SPARQL just ignores the ordering when using variables not in the projection.
+	 * @throws Exception
+	 */
+	@Test
+	public void testBuildQueryOrderByNonValidVars() throws Exception {
+		URI aFrom = ValueFactoryImpl.getInstance().createURI("urn:from");
+
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o")
+			.closeGroup()
+			.orderBy("x")
+			.orderByDesc("y").limit(100).offset(200);
+			
+
+		final String aExpected = "select ?s ?p ?o\n" +
+								 "from <" + aFrom + ">\n" +
+								 "where {\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}\n" +
+								 "order by ?x desc(?y)\n" +
+								 "limit 100\n" +
+								 "offset 200";
+		
+		assertEquals(aExpected, render(aBuilder.query()));
+	}
+	
+	@Test
+	public void testBuildQueryOrderByNullVars() throws Exception {
+		URI aFrom = ValueFactoryImpl.getInstance().createURI("urn:from");
+
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o")
+			.closeGroup()
+			.orderBy((String[])null)
+			.orderByDesc((String[])null).limit(100).offset(200);
+			
+
+		final String aExpected = "select ?s ?p ?o\n" +
+								 "from <" + aFrom + ">\n" +
+								 "where {\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}\n" +
+								 "limit 100\n" +
+								 "offset 200";
+		
+		assertEquals(aExpected, render(aBuilder.query()));
+	}
+	
+	@Test
+	public void testBuildQueryOrderByMultipleVars() throws Exception {
+		URI aFrom = ValueFactoryImpl.getInstance().createURI("urn:from");
+
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o")
+			.closeGroup()
+			.orderBy("s").orderByDesc("p").orderByAsc("o");
+			
+
+		final String aExpected = "select ?s ?p ?o\n" +
+								 "from <" + aFrom + ">\n" +
+								 "where {\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}\n" +
+								 "order by ?s desc(?p) ?o";
+		
+		assertEquals(aExpected, render(aBuilder.query()));
+	}
+	
+	@Test
+	public void testBuildQueryOrderByAndReset() throws Exception {
+		URI aFrom = ValueFactoryImpl.getInstance().createURI("urn:from");
+
+		QueryBuilder<ParsedTupleQuery> aBuilder = QueryBuilderFactory.select();
+
+		aBuilder.from(aFrom)
+			.group()
+			.atom("s", "p", "o")
+			.closeGroup()
+			.orderBy("s").orderByDesc("p").orderByAsc("o");
+			
+
+		final String aExpected = "select ?s ?p ?o\n" +
+								 "from <" + aFrom + ">\n" +
+								 "where {\n" +
+								 "  ?s ?p ?o.\n" +
+								 "}\n" +
+								 "order by ?s desc(?p) ?o";
+		
+		assertEquals(aExpected, render(aBuilder.query()));
+		
+		// ------ RESET ------ //
+		aBuilder.reset();
+		
+		aBuilder.from(aFrom)
+		.group()
+		.atom("s", "p", "o")
+		.closeGroup()
+		.orderBy("x")
+		.orderByDesc("y").limit(100).offset(200);
+		
+
+		final String aExpected2 = "select ?s ?p ?o\n" +
+							 "from <" + aFrom + ">\n" +
+							 "where {\n" +
+							 "  ?s ?p ?o.\n" +
+							 "}\n" +
+							 "order by ?x desc(?y)\n" +
+							 "limit 100\n" +
+							 "offset 200";
+	
+		assertEquals(aExpected2, render(aBuilder.query()));
+	}
 }
