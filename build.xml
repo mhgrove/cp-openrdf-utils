@@ -126,7 +126,7 @@
         <echo>${Class-Path}</echo>
         <!-- Make Jar file. -->
         <jar jarfile="${dist}/lib/${project.name}-${project.version}.jar"
-             basedir="${build}">
+             basedir="${build.core}">
         </jar>
     </target>
 
