@@ -26,12 +26,12 @@ import com.clarkparsia.openrdf.rio.jsonld.TestJSONLD;
  *
  * @author Michael Grove
  * @since	0.4
- * @version	0.8
+ * @version	0.9
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ TestGraphs.class, TestExtRepository.class, TestRendering.class, TestJSONLD.class, TestQueryUtils.class,
 					  TestImmutableGraph.class, TestSetGraph.class, TestContextAware.class, ConstrainedGraphTests.class,
-					  TestExtGraph.class})
+					  TestExtGraph.class, FunctionalGraphTests.class, IOGraphTests.class })
 public class OpenRdfTestSuite {
 
 }
