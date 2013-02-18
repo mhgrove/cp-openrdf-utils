@@ -157,4 +157,29 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 			}
 		});
 	}
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        else if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final SetGraph that = (SetGraph) o;
+
+        return mStatements.equals(that.mStatements);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public int hashCode() {
+        return mStatements.hashCode();
+    }
 }

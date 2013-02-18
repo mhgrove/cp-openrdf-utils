@@ -262,7 +262,7 @@ public final class SesameQueryUtils {
 	 * @return 			the value rendered in its query string representation
 	 */
 	public static String getSerqlQueryString(Value theValue) {
-        StringBuffer aBuffer = new StringBuffer();
+        StringBuilder aBuffer = new StringBuilder();
 
         if (theValue instanceof URI) {
             URI aURI = (URI) theValue;

@@ -15,8 +15,14 @@
 
 package com.clarkparsia.openrdf.util;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -100,4 +106,36 @@ public final class AdunaIterations {
 			theIter.close();
 		}
 	}
+
+    public static <T, E extends Exception> Set<T> toSet(final CloseableIteration<T, E> theIter) throws E {
+        try {
+            return Sets.newHashSet(iterable(theIter));
+        }
+        finally {
+            theIter.close();
+        }
+    }
+
+    public static <T, E extends Exception> List<T> toList(final CloseableIteration<T, E> theIter) throws E {
+        try {
+            return Lists.newArrayList(iterable(theIter));
+        }
+        finally {
+            theIter.close();
+        }
+    }
+
+    public static <T, E extends Exception> Optional<T> singleResult(final CloseableIteration<T, E> theIter) throws E {
+        try {
+            return theIter.hasNext() ? Optional.of(theIter.next()) : Optional.<T>absent();
+        }
+        finally {
+            theIter.close();
+        }
+    }
+
+    public static <T, E extends Exception, C extends Collection<? super T>> C add(final CloseableIteration<T, E> theIter, final C theCollection) throws E {
+        theCollection.addAll(toList(theIter));
+        return theCollection;
+    }
 }

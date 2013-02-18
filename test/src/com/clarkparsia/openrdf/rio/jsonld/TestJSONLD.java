@@ -15,15 +15,19 @@
 
 package com.clarkparsia.openrdf.rio.jsonld;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import org.junit.Test;
 import org.openrdf.model.Graph;
 import org.openrdf.rio.RDFFormat;
@@ -57,14 +61,14 @@ public class TestJSONLD {
 		// Get data file
 		try {
 			FileInputStream fIn = new FileInputStream("test/data/test0.ttl");
-			String aExpectedSerialization = readFileAsString("test/data/test0.jsonld");
+			String aExpectedSerialization = Files.toString(new File("test/data/test0.jsonld"), Charsets.UTF_8);
 			Graph graph = OpenRdfIO.readGraph(fIn, RDFFormat.TURTLE);
 			
 			// Once we have the data in the graph, serialize it to JSON-LD
 			StringWriter sWriter = new StringWriter();
 			OpenRdfIO.writeGraph(graph, sWriter, JSONLDRDFFormat.FORMAT);
 			
-			assertTrue("Serialization was not as expected.", aExpectedSerialization.equals(sWriter.toString()));
+			assertEquals("Serialization was not as expected.", aExpectedSerialization, sWriter.toString());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			assertTrue("Data file not found!", false);
@@ -78,22 +82,5 @@ public class TestJSONLD {
 			e.printStackTrace();
 			assertTrue("RDFFormat not correctly registered!", false);
 		}
-	}
-	
-	private static String readFileAsString(String filePath) throws java.io.IOException {
-		StringBuffer fileData = new StringBuffer(1000);
-		BufferedReader reader = new BufferedReader(new FileReader(filePath));
-		char[] buf = new char[1024];
-		int numRead=0;
-	
-		while((numRead=reader.read(buf)) != -1){
-	
-			String readData = String.valueOf(buf, 0, numRead);
-			fileData.append(readData);
-			buf = new char[1024];
-		}
-		
-		reader.close();
-		return fileData.toString();
 	}
 }

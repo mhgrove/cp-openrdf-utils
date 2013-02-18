@@ -22,23 +22,41 @@
     <!-- Global Properties -->
     <property name="core.src" location="core/src" />
     <property name="core.lib" location="core/lib" />
-    
+
+	<property name="test.src" location="test/src" />
+	<property name="test.lib" location="test/lib" />
+
     <property name="build" location="build" />
     <property name="dist" location="dist" />
+
+	<property name="build.core" location="${build}/core" />
+	<property name="build.test" location="${build}/test" />
 
 	<property name="javadoc.dir" value="${dist}/javadocs"/>
 
     <property name="project.name" value="cp-common-openrdf" />
-    <property name="project.version" value="0.8" />
+    <property name="project.version" value="0.9" />
 
     <path id="project.class.path">
         <pathelement location="${core.lib}" />
-        <pathelement location="${build}" />
         <fileset dir="${core.lib}">
             <include name="**/*.jar"/>
             <exclude name="**/${project.name}*.jar"/>
         </fileset>
     </path>
+
+	<path id="test.project.class.path">
+		<pathelement location="${core.lib}" />
+		<pathelement location="${test.lib}" />
+		<pathelement location="${build.core}" />
+		<fileset dir="${core.lib}">
+			<include name="**/*.jar"/>
+			<exclude name="**/${project.name}*.jar"/>
+		</fileset>
+		<fileset dir="${test.lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
 
     <target name="init">
         <pathconvert targetos="unix" property="classpath" refid="project.class.path" />
@@ -47,13 +65,20 @@
         <tstamp/>
         <!-- Create the build directory structure used by compile -->
         <mkdir dir="${build}"/>
+
+		<mkdir dir="${build.core}"/>
+		<mkdir dir="${build.test}"/>
     </target>
 
     <target name="compile" depends="init"
             description="Compile source files." >
-        <javac source="1.5" target="1.5" srcdir="${core.src}" destdir="${build}" debug="yes" deprecation="yes">
+        <javac source="1.5" target="1.5" srcdir="${core.src}" destdir="${build.core}" debug="yes" deprecation="yes">
             <classpath refid="project.class.path"/>
         </javac>
+
+		<javac source="1.5" target="1.5" srcdir="${test.src}" destdir="${build.test}" debug="yes" deprecation="yes">
+			<classpath refid="test.project.class.path"/>
+		</javac>
     </target>
 
     <target name="build" depends="compile"
@@ -125,13 +150,39 @@
 			nonavbar="false" noindex="false" splitindex="true" author="true"
 			version="true" nodeprecatedlist="false" nodeprecated="false"
 			doctitle="${project.name}-${project.version}"
-			bottom="Copyright &#169; 2010-2012 Clark &amp; Parsia. All Rights Reserved.">
+			bottom="Copyright &#169; 2010-2013 Clark &amp; Parsia. All Rights Reserved.">
 
 			<link href="http://guava-libraries.googlecode.com/svn/trunk/javadoc/"/>
-			<link href="http://www.openrdf.org/doc/sesame2/2.3.2/apidocs/"/>
+			<link href="http://www.openrdf.org/doc/sesame2/2.6.9/apidocs/"/>
 
 			<classpath refid="project.class.path"/>
 			<fileset dir="${core.src}" defaultexcludes="yes"/>
 		</javadoc>
+	</target>
+
+	<!-- ********************* TEST ********************** -->
+
+	<target name="test" depends="dist">
+		<mkdir dir="dist/test-reports"/>
+		<junit fork="yes" printsummary="yes" haltonfailure="yes" failureproperty="junit.failure">
+			<test name="com.clarkparsia.openrdf.OpenRdfTestSuite" />
+
+			<formatter type="xml" />
+			<formatter type="brief" usefile="false"/>
+
+			<classpath>
+				<path refid="test.project.class.path"/>
+				<pathelement path="${build.core}"/>
+				<pathelement path="${build.test}"/>
+			</classpath>
+		</junit>
+
+		<junitreport todir="dist/test-reports">
+			<fileset dir="dist/test-reports">
+				<include name="TEST-*.xml" />
+				<include name="report.xml" />
+			</fileset>
+			<report todir="dist/test-reports" />
+		</junitreport>
 	</target>
 </project>
