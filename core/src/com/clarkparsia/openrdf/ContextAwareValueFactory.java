@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2013 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  */
 
 package com.clarkparsia.openrdf;
+
+import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -31,9 +33,9 @@ import org.openrdf.model.impl.ValueFactoryImpl;
  * otherwise it delegates creation of objects to the default ValueFactory</p>
  *
  *
- * @author Michael Grove
- * @version 0.4.1
- * @since 0.4.1
+ * @author  Michael Grove
+ * @since   0.4.1
+ * @version 1.0
  */
 public final class ContextAwareValueFactory implements ValueFactory {
 	private final ValueFactory mFactory;
@@ -56,6 +58,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public URI createURI(final String theURI) {
 		return mFactory.createURI(theURI);
 	}
@@ -70,6 +73,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public BNode createBNode() {
 		return mFactory.createBNode();
 	}
@@ -77,6 +81,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public BNode createBNode(final String theId) {
 		return mFactory.createBNode(theId);
 	}
@@ -84,6 +89,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final String theValue) {
 		return mFactory.createLiteral(theValue);
 	}
@@ -91,6 +97,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final String theValue, final String theLang) {
 		return mFactory.createLiteral(theValue, theLang);
 	}
@@ -98,6 +105,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final String theValue, final URI theDatatype) {
 		return mFactory.createLiteral(theValue, theDatatype);
 	}
@@ -105,6 +113,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final boolean theValue) {
 		return mFactory.createLiteral(theValue);
 	}
@@ -112,6 +121,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final byte theValue) {
 		return mFactory.createLiteral(theValue);
 	}
@@ -119,6 +129,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final short theValue) {
 		return mFactory.createLiteral(theValue);
 	}
@@ -126,6 +137,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final int theValue) {
 		return mFactory.createLiteral(theValue);
 	}
@@ -133,6 +145,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final long theValue) {
 		return mFactory.createLiteral(theValue);
 	}
@@ -140,6 +153,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final float theValue) {
 		return mFactory.createLiteral(theValue);
 	}
@@ -147,6 +161,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final double theValue) {
 		return mFactory.createLiteral(theValue);
 	}
@@ -154,13 +169,31 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Literal createLiteral(final XMLGregorianCalendar theXMLGregorianCalendar) {
 		return mFactory.createLiteral(theXMLGregorianCalendar);
 	}
 
-	/**
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public Literal createLiteral(final Date theDate) {
+        return mFactory.createLiteral(theDate);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public Literal createLiteral(final Object theObj) {
+        return mFactory.createLiteral(theObj);
+    }
+
+    /**
 	 * @inheritDoc
 	 */
+    @Override
 	public Statement createStatement(final Resource theSubject, final URI thePredicate, final Value theObject) {
 		return createStatement(theSubject, thePredicate, theObject, null);
 	}
@@ -168,6 +201,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	/**
 	 * @inheritDoc
 	 */
+    @Override
 	public Statement createStatement(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource theContext) {
 		return new ContextAwareStatement(theSubject,  thePredicate, theObject, theContext);
 	}

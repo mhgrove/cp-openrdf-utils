@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2013 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ import info.aduna.iteration.CloseableIteration;
  *
  * @author	Michael Grove
  * @since	0.1
- * @version	0.4
+ * @version	1.0
  */
 public class ExtRepository extends RepositoryWrapper {
 	/**
@@ -537,7 +537,7 @@ public class ExtRepository extends RepositoryWrapper {
 		/**
          * @inheritDoc
          */
-        public Map<String, String> getNamespaces() {
+        public Map<String, String> getNamespaces() throws QueryEvaluationException {
             return mResult.getNamespaces();
         }
 
@@ -588,7 +588,7 @@ public class ExtRepository extends RepositoryWrapper {
         /**
          * @inheritDoc
          */
-        public List<String> getBindingNames() {
+        public List<String> getBindingNames() throws QueryEvaluationException {
             return mResult.getBindingNames();
         }
 

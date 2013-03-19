@@ -19,23 +19,21 @@
         Clark &amp; Parsia OpenRdf Utility Classes
     </description>
 
+	<property file="project.properties"/>
+
     <!-- Global Properties -->
-    <property name="core.src" location="core/src" />
-    <property name="core.lib" location="core/lib" />
+    <property name="core.src" location="${core}/src" />
+    <property name="core.lib" location="${core}/lib" />
 
 	<property name="test.src" location="test/src" />
 	<property name="test.lib" location="test/lib" />
 
     <property name="build" location="build" />
-    <property name="dist" location="dist" />
 
 	<property name="build.core" location="${build}/core" />
 	<property name="build.test" location="${build}/test" />
 
 	<property name="javadoc.dir" value="${dist}/javadocs"/>
-
-    <property name="project.name" value="cp-common-openrdf" />
-    <property name="project.version" value="0.9" />
 
     <path id="project.class.path">
         <pathelement location="${core.lib}" />

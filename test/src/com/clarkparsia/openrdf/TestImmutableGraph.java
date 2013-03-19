@@ -20,7 +20,6 @@ import java.util.Iterator;
 import org.junit.Test;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
-import org.openrdf.model.impl.GraphImpl;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -30,19 +29,19 @@ import static org.junit.Assert.fail;
  *
  * @author	Michael Grove
  * @since	0.8
- * @version 0.8
+ * @version 1.0
  */
 public class TestImmutableGraph {
 	@Test
 	public void testDontRecreateImmutable() {
-		Graph aGraph = ImmutableGraph.of(new GraphImpl());
+		Graph aGraph = ImmutableGraph.of(new SetGraph());
 
 		assertTrue(aGraph == ImmutableGraph.of(aGraph));
 	}
 
 	@Test
 	public void testCantAdd() {
-		Graph aGraph = ImmutableGraph.of(new GraphImpl());
+		Graph aGraph = ImmutableGraph.of(new SetGraph());
 
 		try {
 			aGraph.add(TestUtils.createRandomStatement());
@@ -73,7 +72,7 @@ public class TestImmutableGraph {
 
 	@Test
 	public void testCantRemove() {
-		Graph aGraph = ImmutableGraph.of(new GraphImpl());
+		Graph aGraph = ImmutableGraph.of(new SetGraph());
 
 		try {
 			aGraph.remove(TestUtils.createRandomStatement());
@@ -113,7 +112,7 @@ public class TestImmutableGraph {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testCantClear() {
-		Graph aGraph = ImmutableGraph.of(new GraphImpl());
+		Graph aGraph = ImmutableGraph.of(new SetGraph());
 
 		aGraph.clear();
 	}

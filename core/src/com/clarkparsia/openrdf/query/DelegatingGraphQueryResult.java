@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2013 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import org.openrdf.model.Statement;
 /**
  * <p>Base class for creating a GraphQueryResult decorator which delegates all calls to the child result.</p>
  *
- * @author Michael Grove
- * @since 0.5
- * @version 0.5
+ * @author  Michael Grove
+ * @since   0.5
+ * @version 1.0
  */
 public class DelegatingGraphQueryResult implements GraphQueryResult {
 
@@ -55,7 +55,7 @@ public class DelegatingGraphQueryResult implements GraphQueryResult {
 	 * @inheritDoc
 	 */
 	@Override
-	public Map<String, String> getNamespaces() {
+	public Map<String, String> getNamespaces() throws QueryEvaluationException {
 		return mResult.getNamespaces();
 	}
 
