@@ -18,7 +18,7 @@ package com.clarkparsia.openrdf;
 import com.clarkparsia.openrdf.query.sparql.TestQueryUtils;
 import org.junit.runners.Suite;
 import org.junit.runner.RunWith;
-import com.clarkparsia.openrdf.query.sparql.TestRendering;
+
 import com.clarkparsia.openrdf.rio.jsonld.TestJSONLD;
 
 /**
@@ -26,10 +26,10 @@ import com.clarkparsia.openrdf.rio.jsonld.TestJSONLD;
  *
  * @author Michael Grove
  * @since	0.4
- * @version	0.9
+ * @version	1.0
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ TestGraphs.class, TestExtRepository.class, TestRendering.class, TestJSONLD.class, TestQueryUtils.class,
+@Suite.SuiteClasses({ TestGraphs.class, TestExtRepository.class, TestJSONLD.class, TestQueryUtils.class,
 					  TestImmutableGraph.class, TestSetGraph.class, TestContextAware.class, ConstrainedGraphTests.class,
 					  TestExtGraph.class, FunctionalGraphTests.class, IOGraphTests.class })
 public class OpenRdfTestSuite {

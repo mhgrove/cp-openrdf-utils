@@ -15,7 +15,6 @@
 
 package com.clarkparsia.openrdf;
 
-import com.clarkparsia.openrdf.query.sparql.SPARQLQueryRenderer;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
@@ -42,10 +41,6 @@ public final class TestUtils {
 	private static final SPARQLParser parser = new SPARQLParser();
 
 	private TestUtils() {
-	}
-
-	public static String render(final ParsedQuery theQuery) throws Exception {
-		return new SPARQLQueryRenderer().render(theQuery);
 	}
 
 	public static ParsedQuery parse(final String theQuery) throws MalformedQueryException {
