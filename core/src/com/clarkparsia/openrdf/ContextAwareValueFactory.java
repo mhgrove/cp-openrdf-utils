@@ -183,14 +183,6 @@ public final class ContextAwareValueFactory implements ValueFactory {
     }
 
     /**
-     * @inheritDoc
-     */
-    @Override
-    public Literal createLiteral(final Object theObj) {
-        return mFactory.createLiteral(theObj);
-    }
-
-    /**
 	 * @inheritDoc
 	 */
     @Override
