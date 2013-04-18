@@ -1,0 +1,5 @@
+com.clarkparsia.openrdf
+com.clarkparsia.openrdf.query
+com.clarkparsia.openrdf.query.util
+com.clarkparsia.openrdf.util
+com.clarkparsia.openrdf.vocabulary
