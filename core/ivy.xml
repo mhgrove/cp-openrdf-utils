@@ -17,7 +17,7 @@
 	<dependencies>
 	    <dependency org="com.google.guava" name="guava" rev="12.0"/>
 	    
-	    <dependency org="dfki.km.json" name="jsonld-java" rev="1.0.0-SNAPSHOT"/>
+	    <dependency org="dfki.km.json" name="jsonld-java" rev="1.0.1-SNAPSHOT"/>
 	    
 	    <dependency org="org.openrdf.sesame" name="sesame" rev="2.7.0"/>
 	    
