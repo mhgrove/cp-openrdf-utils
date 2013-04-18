@@ -150,8 +150,8 @@
 			doctitle="${project.name}-${project.version}"
 			bottom="Copyright &#169; 2010-2013 Clark &amp; Parsia. All Rights Reserved.">
 
-			<link href="http://guava-libraries.googlecode.com/svn/trunk/javadoc/"/>
-			<link href="http://www.openrdf.org/doc/sesame2/2.6.9/apidocs/"/>
+			<link href="http://docs.guava-libraries.googlecode.com/git-history/v12.0/javadoc/index.html"/>
+			<link href="http://openrdf.callimachus.net/sesame/2.7/apidocs/"/>
 
 			<classpath refid="project.class.path"/>
 			<fileset dir="${core.src}" defaultexcludes="yes"/>
