@@ -1,13 +1,13 @@
 <ivy-module version="2.2" xmlns:cp="http//clarkparsia.com/ivy">
-	<info organisation="com.clarkparsia" module="openrdf-utils" revision="1.0">
+	<info organisation="com.complexible.common" module="openrdf">
 	    <license name="APL 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.html"/>
 	    <ivyauthor name="Michael Grove"/>
 	    <description homepage="https://github.com/mhgrove/cp-openrdf-utils">This is a small library of some basic utility classes for working with the OpenRdf Sesame API.</description>
 	</info>
 	
 	<configurations>
-	    <conf name="runtime" description="Everything required to run the module"/>
-	    <conf name="test" extends="runtime" description="Everything need to run the module and its test suite"/>
+	    <conf name="default" description="Everything required to run the module"/>
+	    <conf name="test" extends="default" description="Everything need to run the module and its test suite"/>
 	</configurations>
 	
 	<publications>
@@ -15,7 +15,7 @@
 	</publications>
 	
 	<dependencies>
-	    <dependency org="com.google.guava" name="guava" rev="12.0"/>
+	    <dependency org="com.google.guava" name="guava" rev="14.0.1"/>
 	    
 	    <dependency org="dfki.km.json" name="jsonld-java" rev="1.0.1-SNAPSHOT"/>
 	    
