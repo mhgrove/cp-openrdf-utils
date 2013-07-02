@@ -293,6 +293,10 @@ public final class Graphs {
 		return aGraph;
 	}
 
+    public static boolean contains(final Iterable<Statement> theGraph, final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContexts) {
+        return !Iterables.isEmpty(filter(theGraph, theSubject, thePredicate, theObject, theContexts));
+    }
+
     public static Iterable<Statement> filter(final Iterable<Statement> theGraph, final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContexts) {
         return Iterables.filter(theGraph, new Predicate<Statement>() {
             @Override
