@@ -20,11 +20,11 @@ import org.openrdf.model.URI;
 /**
  * <p>Constants for the concepts in the FOAF vocabulary</p>
  *
- * @author Michael Grove
- * @since 0.1
- * @version 0.3.1
+ * @author  Michael Grove
+ * @since   0.1
+ * @version 1.1
  */
-public class FOAF extends Vocabulary {
+public final class FOAF extends Vocabulary {
 	private static FOAF INSTANCE;
 	
     private static final java.net.URI FOAF_URI = java.net.URI.create("http://xmlns.com/foaf/0.1/");
@@ -48,6 +48,8 @@ public class FOAF extends Vocabulary {
 	public final URI Group = term("Group");
 	public final URI Document = term("Document");
 
+    public final URI givenName = term("givenName");
+    public final URI familyName = term("familyName");
     public final URI firstName = term("firstName");
     public final URI surname = term("surname");
 	public final URI name = term("name");

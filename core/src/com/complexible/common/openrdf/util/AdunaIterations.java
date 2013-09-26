@@ -16,11 +16,13 @@
 package com.complexible.common.openrdf.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.slf4j.LoggerFactory;
@@ -34,9 +36,9 @@ import com.google.common.base.Predicate;
 /**
  * <p>Utility methods for Aduna {@link info.aduna.iteration.Iteration Iterations} not already present in {@link Iterations}</p>
  *
- * @author Michael Grove
- * @version 0.4
- * @since 0.4
+ * @author  Michael Grove
+ * @since   0.4
+ * @version 1.1
  */
 public final class AdunaIterations {
 	/**
@@ -48,6 +50,7 @@ public final class AdunaIterations {
 	 * Private constructor, no instances
 	 */
 	private AdunaIterations() {
+        throw new AssertionError();
 	}
 
 	/**
@@ -97,6 +100,8 @@ public final class AdunaIterations {
 	 * @throws E the exception
 	 */
 	public static <T, E extends Exception> void each(final CloseableIteration<T, E> theIter, final Predicate<T> theEach) throws E {
+        Preconditions.checkNotNull(theIter, "Cannot iterate over null Iteration");
+
 		try {
 			while (theIter.hasNext()) {
 				theEach.apply(theIter.next());
@@ -107,7 +112,17 @@ public final class AdunaIterations {
 		}
 	}
 
+    /**
+     * Return the results of the Iteration as a {@link Set}
+     * @param theIter   the iteration
+     * @return          the contents of the Iteration in a Set
+     * @throws E        if there is an error while iterating
+     */
     public static <T, E extends Exception> Set<T> toSet(final CloseableIteration<T, E> theIter) throws E {
+        if (theIter == null) {
+            return Collections.emptySet();
+        }
+
         try {
             return Sets.newHashSet(iterable(theIter));
         }
@@ -116,7 +131,17 @@ public final class AdunaIterations {
         }
     }
 
+    /**
+     * Return the results of the Iteration as a {@link List}
+     * @param theIter   the iteration
+     * @return          the contents of the Iteration in a List
+     * @throws E        if there is an error while iterating
+     */
     public static <T, E extends Exception> List<T> toList(final CloseableIteration<T, E> theIter) throws E {
+        if (theIter == null) {
+            return Collections.emptyList();
+        }
+
         try {
             return Lists.newArrayList(iterable(theIter));
         }
@@ -125,7 +150,20 @@ public final class AdunaIterations {
         }
     }
 
+    /**
+     * Return the first result of the iteration.  If the Iteration is empty or null, the Optional will be absent.
+     *
+     * The Iteration is closed whether or not there is a result.
+     *
+     * @param theIter   the iteration
+     * @return          an Optional containing the first result of the iteration, if present.
+     * @throws E
+     */
     public static <T, E extends Exception> Optional<T> singleResult(final CloseableIteration<T, E> theIter) throws E {
+        if (theIter == null) {
+            return Optional.absent();
+        }
+
         try {
             return theIter.hasNext() ? Optional.of(theIter.next()) : Optional.<T>absent();
         }
@@ -134,8 +172,61 @@ public final class AdunaIterations {
         }
     }
 
+    /**
+     * Add all of the elements of the Iteration to the specified {@link Collection}.  The Iteration is closed when complete.
+     *
+     * @param theIter       the Iteration
+     * @param theCollection the collection to add the elements to
+     * @return              the Collection
+     * @throws E            if there is an error while iteration
+     */
     public static <T, E extends Exception, C extends Collection<? super T>> C add(final CloseableIteration<T, E> theIter, final C theCollection) throws E {
         theCollection.addAll(toList(theIter));
         return theCollection;
+    }
+
+    /**
+     * Consume all of the results in the Iteration and then close it when iteration is complete.
+     * @param theIter   the Iteration to consume
+     * @throws E        if there is an error while consuming the results
+     */
+    public static <T, E extends Exception> void consume(final CloseableIteration<T, E> theIter) throws E {
+        if (theIter == null) {
+            return;
+        }
+
+        try {
+            while (theIter.hasNext()) {
+                theIter.next();
+            }
+        }
+        finally {
+            theIter.close();
+        }
+    }
+
+    /**
+     * Return the number of elements left in the Iteration.  The iteration is closed when complete.
+     * @param theIter   the Iteration whose size should be computed
+     * @return          the number of elements left
+     * @throws E        if there is an error while iterating
+     */
+    public static <T, E extends Exception> long size(final CloseableIteration<T, E> theIter) throws E {
+        if (theIter == null) {
+            return 0;
+        }
+
+        try {
+            long aCount = 0;
+            while (theIter.hasNext()) {
+                theIter.next();
+                aCount++;
+            }
+
+            return aCount;
+        }
+        finally {
+            theIter.close();
+        }
     }
 }
