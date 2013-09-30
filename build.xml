@@ -1,172 +1,108 @@
 <?xml version="1.0"?>
 
-<project name="OpenRdfUtils" default="dist" basedir=".">
-    <description>
-        Complexible OpenRdf Utility Classes
-    </description>
+<project name="OpenRDF" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+	<description>
+		Complexible: OpenRdf Utility classes
+	</description>
 
 	<property file="project.properties"/>
 
-    <!-- Global Properties -->
-    <property name="core.src" location="${core}/src" />
-    <property name="core.lib" location="${core}/lib" />
+	<!-- Global Properties -->
+	<property name="build" location="build" />
 
-	<property name="test.src" location="test/src" />
-	<property name="test.lib" location="test/lib" />
-
-    <property name="build" location="build" />
-
-	<property name="build.core" location="${build}/core" />
-	<property name="build.test" location="${build}/test" />
+	<property name="dist" location="dist" />
 
 	<property name="javadoc.dir" value="${dist}/javadocs"/>
 
-    <path id="project.class.path">
-        <pathelement location="${core.lib}" />
-        <fileset dir="${core.lib}">
-            <include name="**/*.jar"/>
-            <exclude name="**/${project.name}*.jar"/>
-        </fileset>
-    </path>
+	<!-- ******************** IVY ********************** -->
 
-	<path id="test.project.class.path">
-		<pathelement location="${core.lib}" />
-		<pathelement location="${test.lib}" />
-		<pathelement location="${build.core}" />
-		<fileset dir="${core.lib}">
-			<include name="**/*.jar"/>
-			<exclude name="**/${project.name}*.jar"/>
-		</fileset>
-		<fileset dir="${test.lib}">
+	<property name="ivy.install.version" value="2.2.0" />
+	<condition property="ivy.home" value="${env.IVY_HOME}">
+		<isset property="env.IVY_HOME" />
+	</condition>
+	<property name="ivy.home" value="${user.home}/.ant" />
+	<property name="ivy.jar.dir" value="${ivy.home}/lib" />
+	<property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
+
+	<target name="download-ivy" unless="offline">
+
+		<mkdir dir="${ivy.jar.dir}"/>
+		<!-- download Ivy from web site so that it can be used even without any special installation -->
+		<get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+			 dest="${ivy.jar.file}" usetimestamp="true"/>
+	</target>
+
+	<target name="init-ivy" depends="download-ivy">
+		<!-- try to load ivy here from ivy home, in case the user has not already dropped
+				  it into ant's lib dir (note that the latter copy will always take precedence).
+				  We will not fail as long as local lib dir exists (it may be empty) and
+				  ivy is in at least one of ant's lib dir or the local lib dir. -->
+		<path id="ivy.lib.path">
+			<fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+
+		</path>
+		<taskdef resource="org/apache/ivy/ant/antlib.xml"
+				 uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+	</target>
+
+	<target name="clean-ivy-cache">
+		<ivy:cleancache/>
+		<delete dir="settings/ivy-cache" failonerror="false"/>
+		<delete dir="settings/repo" failonerror="false"/>
+	</target>
+
+	<!-- *********************************************** -->
+
+	<target name="clean" description="Clean up build files">
+		<delete dir="settings/ivy-cache"/>
+		<delete dir="settings/repo" />
+
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+
+	<target name="init" depends="init-ivy">
+		<mkdir dir="${build}"/>
+
+		<mkdir dir="${dist}"/>
+	</target>
+
+	<target name="dist" depends="init" description="master project dist">
+		<ivy:configure file="settings/ivysettings.xml" />
+
+		<ivy:buildlist reference="build-path" onMissingDescriptor="skip">
+			<fileset dir="." includes="**/build.xml"/>
+		</ivy:buildlist>
+
+		<subant buildpathref="build-path" failonerror="true">
+			<property name="ivy.settings" location="settings/ivysettings.xml"/>
+
+			<target name="clean"/>
+			<target name="publish"/>
+		</subant>
+	</target>
+
+	<path id="project.class.path">
+		<fileset dir=".">
 			<include name="**/*.jar"/>
 		</fileset>
 	</path>
 
-    <target name="init">
-        <pathconvert targetos="unix" property="classpath" refid="project.class.path" />
-        <echo>CLASSPATH=${classpath}</echo>
-        <!-- Create the time stamp -->
-        <tstamp/>
-        <!-- Create the build directory structure used by compile -->
-        <mkdir dir="${build}"/>
+	<target name="javadoc">
+		<mkdir dir="${javadoc.dir}"/>
 
-		<mkdir dir="${build.core}"/>
-		<mkdir dir="${build.test}"/>
-    </target>
-
-    <target name="compile" depends="init"
-            description="Compile source files." >
-        <javac source="1.5" target="1.5" srcdir="${core.src}" destdir="${build.core}" debug="yes" deprecation="yes">
-            <classpath refid="project.class.path"/>
-        </javac>
-
-		<javac source="1.5" target="1.5" srcdir="${test.src}" destdir="${build.test}" debug="yes" deprecation="yes">
-			<classpath refid="test.project.class.path"/>
-		</javac>
-    </target>
-
-    <target name="build" depends="compile"
-            description="Compile sources and copy data files into build directory.">
-        <copy todir="${build}">
-            <fileset dir="${core.src}">
-                <exclude name="**/*.java" />
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="distfiles">
-       <!-- Copy in lib files -->
-        <mkdir dir="${dist}/lib" />
-
-        <copy todir="${dist}/src">
-            <fileset dir="${core.src}">
-                <include name="**/*.java" />
-            </fileset>
-        </copy>
-
-        <copy todir="${dist}/lib">
-            <fileset dir="${core.lib}">
-                <include name="**/*.jar" />
-                <exclude name="**/${project.name}*.jar"/>
-            </fileset>
-        </copy>
-
-    </target>
-
-    <target name="dist" depends="build,distfiles"
-            description="Generate a distribution" >
-        <!-- Generate relative classpath for jar file -->
-        <property name="rlib" location="${core.lib}"/>
-        <pathconvert dirsep="/" pathsep=" " property="Class-Path">
-            <map from="${rlib}/" to=""/>
-                <map from="${rlib}\" to=""/>
-            <path>
-                <fileset dir="${rlib}">
-                    <include name="**/*.jar" />
-                </fileset>
-            </path>
-        </pathconvert>
-
-        <echo>${Class-Path}</echo>
-        <!-- Make Jar file. -->
-        <jar jarfile="${dist}/lib/${project.name}-${project.version}.jar"
-             basedir="${build.core}">
-        </jar>
-    </target>
-
-    <target name="clean" description="Clean up build files">
-        <delete dir="${build}" />
-        <delete dir="${dist}" />
-    </target>
-
-    <target name="dist-zip" depends="dist">
-        <zip destfile="${dist}/${project.name}-${DSTAMP}.zip">
-	    <zipfileset dir="${dist}">
-	    <include name="**/*"/>
-	    <exclude name="**/src/**"/>
-	    <exclude name="**/*.zip"/>
-	        </zipfileset>
-		</zip>
-    </target>
-
-	<target name="javadocs" depends="init">
 		<javadoc destdir="${javadoc.dir}" access="public" use="true" notree="false"
-			nonavbar="false" noindex="false" splitindex="true" author="true"
-			version="true" nodeprecatedlist="false" nodeprecated="false"
-			doctitle="${project.name}-${project.version}"
-			bottom="Copyright &#169; 2010-2013 Complexible. All Rights Reserved.">
-
-			<link href="http://docs.guava-libraries.googlecode.com/git-history/v12.0/javadoc/index.html"/>
-			<link href="http://openrdf.callimachus.net/sesame/2.7/apidocs/"/>
+				 nonavbar="false" noindex="false" splitindex="true" author="true"
+				 version="true" nodeprecatedlist="false" nodeprecated="false"
+				 packagenames="com.complexible.*"
+				 doctitle="${project.name}-${project.version}"
+				 bottom="Copyright (c) 2009-2013 Clark &amp; Parsia, LLC (http://clarkparsia.com). All Rights Reserved.">
 
 			<classpath refid="project.class.path"/>
-			<fileset dir="${core.src}" defaultexcludes="yes"/>
-		</javadoc>
-	</target>
 
-	<!-- ********************* TEST ********************** -->
-
-	<target name="test" depends="dist">
-		<mkdir dir="dist/test-reports"/>
-		<junit fork="yes" printsummary="yes" haltonfailure="yes" failureproperty="junit.failure">
-			<test name="com.complexible.common.openrdf.OpenRdfTestSuite" />
-
-			<formatter type="xml" />
-			<formatter type="brief" usefile="false"/>
-
-			<classpath>
-				<path refid="test.project.class.path"/>
-				<pathelement path="${build.core}"/>
-				<pathelement path="${build.test}"/>
-			</classpath>
-		</junit>
-
-		<junitreport todir="dist/test-reports">
-			<fileset dir="dist/test-reports">
-				<include name="TEST-*.xml" />
-				<include name="report.xml" />
+			<fileset dir="core/src" defaultexcludes="yes">
+				<include name="**/*.java"/>
 			</fileset>
-			<report todir="dist/test-reports" />
-		</junitreport>
+		</javadoc>
 	</target>
 </project>

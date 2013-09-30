@@ -19,7 +19,7 @@
 	    
 	    <dependency org="dfki.km.json" name="jsonld-java" rev="1.0.1-SNAPSHOT"/>
 	    
-	    <dependency org="org.openrdf.sesame" name="sesame" rev="2.7.0"/>
+	    <dependency org="org.openrdf.sesame" name="sesame" rev="2.7.3"/>
 	    
 	    <dependency org="junit" name="junit" rev="4.8.2" conf="test->default"/>
 	</dependencies>

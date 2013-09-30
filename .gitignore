@@ -1,4 +1,6 @@
 build
 dist
-lib
+core/lib
+settings/ivy-cache
+settings/repo
 out
