@@ -16,6 +16,7 @@
 package com.complexible.common.openrdf.query;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ObjectArrays;
 import org.openrdf.model.URI;
 import org.openrdf.query.Dataset;
 
@@ -104,13 +105,28 @@ public final class ImmutableDataset implements Dataset {
 			return this;
 		}
 
+		public ImmutableDatasetBuilder defaultGraphs(final URI theDefaultGraph, final URI... theOtherGraphs) {
+			defaultGraphs(ImmutableSet.copyOf(ObjectArrays.concat(theDefaultGraph, theOtherGraphs)));
+			return this;
+		}
+
 		public ImmutableDatasetBuilder defaultGraphs(final Set<URI> theDefaultGraphs) {
 			mDefaultGraphs = theDefaultGraphs;
 			return this;
 		}
 
+		public ImmutableDatasetBuilder removeGraphs(final URI theGraph, final URI... theOtherGraphs) {
+			removeGraphs(ImmutableSet.copyOf(ObjectArrays.concat(theGraph, theOtherGraphs)));
+			return this;
+		}
+
 		public ImmutableDatasetBuilder removeGraphs(final Set<URI> theRemoveGraphs) {
 			mRemoveGraphs = theRemoveGraphs;
+			return this;
+		}
+
+		public ImmutableDatasetBuilder namedGraphs(final URI theGraph, final URI... theOtherGraphs) {
+			namedGraphs(ImmutableSet.copyOf(ObjectArrays.concat(theGraph, theOtherGraphs)));
 			return this;
 		}
 
