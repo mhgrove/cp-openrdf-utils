@@ -98,5 +98,25 @@ public final class ImmutableDataset implements Dataset {
 		                                mInsertURI,
 		                                ImmutableSet.copyOf(mRemoveGraphs));
 		}
+
+		public ImmutableDatasetBuilder insertGraph(final URI theInsertGraph) {
+			mInsertURI = theInsertGraph;
+			return this;
+		}
+
+		public ImmutableDatasetBuilder defaultGraphs(final Set<URI> theDefaultGraphs) {
+			mDefaultGraphs = theDefaultGraphs;
+			return this;
+		}
+
+		public ImmutableDatasetBuilder removeGraphs(final Set<URI> theRemoveGraphs) {
+			mRemoveGraphs = theRemoveGraphs;
+			return this;
+		}
+
+		public ImmutableDatasetBuilder namedGraphs(final Set<URI> theNamedGraphs) {
+			mNamedGraphs = theNamedGraphs;
+			return this;
+		}
 	}
 }
