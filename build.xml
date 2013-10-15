@@ -78,7 +78,22 @@
 			<property name="ivy.settings" location="settings/ivysettings.xml"/>
 
 			<target name="clean"/>
-			<target name="publish"/>
+			<target name="dist"/>
+		</subant>
+	</target>
+	
+	<target name="test" depends="init" description="master project test">
+		<ivy:configure file="settings/ivysettings.xml" />
+
+		<ivy:buildlist reference="build-path" onMissingDescriptor="skip">
+			<fileset dir="." includes="**/build.xml"/>
+		</ivy:buildlist>
+
+		<subant buildpathref="build-path" failonerror="true">
+			<property name="ivy.settings" location="settings/ivysettings.xml"/>
+
+			<target name="clean"/>
+			<target name="test"/>
 		</subant>
 	</target>
 
