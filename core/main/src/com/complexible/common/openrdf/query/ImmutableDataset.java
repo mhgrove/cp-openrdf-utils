@@ -15,6 +15,7 @@
 
 package com.complexible.common.openrdf.query;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ObjectArrays;
 import org.openrdf.model.URI;
@@ -80,6 +81,56 @@ public final class ImmutableDataset implements Dataset {
 		return mNamedGraphs;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(mDefaultGraphs, mNamedGraphs, mInsertURI, mRemoveGraphs);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public boolean equals(final Object theObj) {
+		if (theObj == null) {
+			return false;
+		}
+		else if (theObj == this) {
+			return true;
+		}
+		else if (theObj instanceof ImmutableDataset) {
+			ImmutableDataset aDataset = (ImmutableDataset) theObj;
+			return Objects.equal(mDefaultGraphs, aDataset.mDefaultGraphs)
+				&& Objects.equal(mNamedGraphs, aDataset.mNamedGraphs)
+				&& Objects.equal(mRemoveGraphs, aDataset.mRemoveGraphs)
+				&& Objects.equal(mInsertURI, aDataset.mInsertURI);
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public String toString() {
+		final Objects.ToStringHelper aStringHelper = Objects.toStringHelper("Dataset")
+		                                                    .add("defaultGraphs", mDefaultGraphs)
+		                                                    .add("namedGraphs", mNamedGraphs);
+		if (!mRemoveGraphs.isEmpty()) {
+			aStringHelper.add("removeGraphs", mRemoveGraphs);
+		}
+
+		if (mInsertURI != null) {
+			aStringHelper.add("insertURI", mInsertURI);
+		}
+
+		return aStringHelper.toString();
+	}
+
 	public static ImmutableDatasetBuilder builder() {
 		return new ImmutableDatasetBuilder();
 	}
@@ -110,8 +161,8 @@ public final class ImmutableDataset implements Dataset {
 			return this;
 		}
 
-		public ImmutableDatasetBuilder defaultGraphs(final Set<URI> theDefaultGraphs) {
-			mDefaultGraphs = theDefaultGraphs;
+		public ImmutableDatasetBuilder defaultGraphs(final Iterable<URI> theDefaultGraphs) {
+			mDefaultGraphs = ImmutableSet.copyOf(theDefaultGraphs);
 			return this;
 		}
 
@@ -120,8 +171,8 @@ public final class ImmutableDataset implements Dataset {
 			return this;
 		}
 
-		public ImmutableDatasetBuilder removeGraphs(final Set<URI> theRemoveGraphs) {
-			mRemoveGraphs = theRemoveGraphs;
+		public ImmutableDatasetBuilder removeGraphs(final Iterable<URI> theRemoveGraphs) {
+			mRemoveGraphs = ImmutableSet.copyOf(theRemoveGraphs);
 			return this;
 		}
 
@@ -130,8 +181,8 @@ public final class ImmutableDataset implements Dataset {
 			return this;
 		}
 
-		public ImmutableDatasetBuilder namedGraphs(final Set<URI> theNamedGraphs) {
-			mNamedGraphs = theNamedGraphs;
+		public ImmutableDatasetBuilder namedGraphs(final Iterable<URI> theNamedGraphs) {
+			mNamedGraphs = ImmutableSet.copyOf(theNamedGraphs);
 			return this;
 		}
 	}
