@@ -6,8 +6,9 @@
 	</info>
 	
 	<configurations>
+	    <conf name="compile" description="Everything required to compile the module"/>
 	    <conf name="default" description="Everything required to run the module"/>
-	    <conf name="test" extends="default" description="Everything need to run the module and its test suite"/>
+	    <conf name="test" extends="default" description="Everything needed to run the module and its test suite"/>
 	</configurations>
 	
 	<publications>
@@ -15,11 +16,11 @@
 	</publications>
 	
 	<dependencies>
-	    <dependency org="com.google.guava" name="guava" rev="14.0.1"/>
+	    <dependency org="com.google.guava" name="guava" rev="14.0.1" conf="compile,default,test->default"/>
 	    
-	    <dependency org="dfki.km.json" name="jsonld-java" rev="1.0.1-SNAPSHOT"/>
+	    <dependency org="dfki.km.json" name="jsonld-java" rev="1.0.1-SNAPSHOT" conf="compile,default,test->default"/>
 	    
-	    <dependency org="org.openrdf.sesame" name="sesame" rev="2.7.3"/>
+	    <dependency org="org.openrdf.sesame" name="sesame" rev="2.7.3" conf="compile,default,test->default"/>
 	    
 	    <dependency org="junit" name="junit" rev="4.8.2" conf="test->default"/>
 	</dependencies>
