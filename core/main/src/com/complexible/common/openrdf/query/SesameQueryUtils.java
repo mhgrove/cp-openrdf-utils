@@ -53,6 +53,7 @@ public final class SesameQueryUtils {
 	 * No instances
 	 */
 	private SesameQueryUtils() {
+		throw new AssertionError();
 	}
 
 	/**
@@ -159,6 +160,7 @@ public final class SesameQueryUtils {
 	 */
 	public static boolean isDescribe(final TupleExpr theExpr) {
 		try {
+
 			DescribeVisitor aVisitor = new DescribeVisitor();
 			theExpr.visit(aVisitor);
 			return aVisitor.isDescribe();

@@ -81,6 +81,11 @@ public class TestQueryUtils {
 
 	@Test
 	public void testIsDescribe() throws Exception {
+System.err.println(parse("describe <http://google.com> <http://foo.bar.baz>").getTupleExpr());
+System.err.println(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
+                         "DESCRIBE ?x ?y <http://example.org/>\n" +
+                         "WHERE    {?x foaf:knows ?y}").getTupleExpr());
+
 		assertTrue(SesameQueryUtils.isDescribe(parse("describe <http://google.com> <http://foo.bar.baz>").getTupleExpr()));
 		assertTrue(SesameQueryUtils.isDescribe(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
 													 "DESCRIBE ?x ?y <http://example.org/>\n" +

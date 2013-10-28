@@ -15,6 +15,7 @@
 
 package com.complexible.common.openrdf.query.util;
 
+import org.openrdf.query.algebra.DescribeOperator;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.ProjectionElem;
@@ -69,8 +70,8 @@ import java.util.List;
  * describe natively, such as SeRQL.  Once you know what is being described, you could then simulate the support with
  * a construct query.</p>
  *
- * @author Michael Grove
- * @since 0.2.4
+ * @author  Michael Grove
+ * @since   0.2.4
  * @version 0.3
 */
 public final class DescribeVisitor extends QueryModelVisitorBase<Exception> {
@@ -115,16 +116,9 @@ public final class DescribeVisitor extends QueryModelVisitorBase<Exception> {
 		return mIsDescribe;
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	@Override
-	public void meet(final ProjectionElem theProjectionElem) throws Exception {
-        if (isDescribeName(theProjectionElem.getSourceName()) && (theProjectionElem.getTargetName().equals("subject")
-                                                                  || theProjectionElem.getTargetName().equals("predicate")
-                                                                  || theProjectionElem.getTargetName().equals("object"))) {
-            mIsDescribe = true;
-        }
+	public void meet(final DescribeOperator node) throws Exception {
+		mIsDescribe = true;
 	}
 
     public static boolean isDescribeName(final String theName) {

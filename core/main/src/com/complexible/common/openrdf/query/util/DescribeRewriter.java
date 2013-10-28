@@ -55,6 +55,7 @@ import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
  * @since 0.3
  * @version 0.3
 */
+@Deprecated
 public final class DescribeRewriter extends QueryModelVisitorBase<Exception> {
 	private boolean mNamedGraphs;
 	private Collection<String> mVars = new HashSet<String>();
