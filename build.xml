@@ -111,11 +111,19 @@
 				 version="true" nodeprecatedlist="false" nodeprecated="false"
 				 packagenames="com.complexible.*"
 				 doctitle="${project.name}-${project.version}"
-				 bottom="Copyright (c) 2009-2013 Clark &amp; Parsia, LLC (http://clarkparsia.com). All Rights Reserved.">
+				 bottom="Copyright (c) 2009-2013 Complexible. All Rights Reserved.">
 
-			<classpath refid="project.class.path"/>
+     			<link href="http://docs.guava-libraries.googlecode.com/git-history/v15.0/javadoc/"/>
 
-			<fileset dir="core/src" defaultexcludes="yes">
+     			<classpath>
+     				<path>
+     					<fileset dir="core/lib">
+     						<include name="**/*.jar" />
+     					</fileset>
+     				</path>
+     			</classpath>
+
+			<fileset dir="core/main/src" defaultexcludes="yes">
 				<include name="**/*.java"/>
 			</fileset>
 		</javadoc>
