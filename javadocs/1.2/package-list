@@ -1,0 +1,5 @@
+com.complexible.common.openrdf
+com.complexible.common.openrdf.query
+com.complexible.common.openrdf.query.util
+com.complexible.common.openrdf.util
+com.complexible.common.openrdf.vocabulary
