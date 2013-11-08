@@ -15,7 +15,7 @@
 
 package com.complexible.common.openrdf.util;
 
-import com.complexible.common.openrdf.SetGraph;
+import com.complexible.common.openrdf.model.SetGraph;
 import org.openrdf.rio.helpers.RDFHandlerBase;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.model.Statement;

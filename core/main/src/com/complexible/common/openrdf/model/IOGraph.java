@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.complexible.common.openrdf;
+package com.complexible.common.openrdf.model;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import org.openrdf.rio.RDFParseException;
  * @since	0.8
  * @version	0.8
  *
- * @see OpenRdfIO
+ * @see GraphIO
  */
 public interface IOGraph extends Graph {
 

@@ -15,6 +15,8 @@
 
 package com.complexible.common.openrdf;
 
+import com.complexible.common.openrdf.model.ContextAwareStatement;
+import com.complexible.common.openrdf.model.ContextAwareValueFactory;
 import org.junit.Test;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;

@@ -13,14 +13,12 @@
  * limitations under the License.
  */
 
-package com.complexible.common.openrdf;
+package com.complexible.common.openrdf.model;
 
 import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
 
 import org.openrdf.model.Graph;

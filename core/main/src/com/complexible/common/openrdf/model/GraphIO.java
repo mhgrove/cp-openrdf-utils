@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.complexible.common.openrdf;
+package com.complexible.common.openrdf.model;
 
 import com.complexible.common.openrdf.util.GraphBuildingRDFHandler;
 import org.openrdf.rio.RDFFormat;
@@ -25,13 +25,9 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
-import org.openrdf.model.Resource;
-import org.openrdf.repository.Repository;
 
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.util.RDFInserter;
-
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.io.IOException;
@@ -40,28 +36,23 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.FileOutputStream;
 
-import static com.complexible.common.openrdf.OpenRdfUtil.close;
 import com.google.common.base.Charsets;
 import org.openrdf.rio.helpers.BasicParserSettings;
 
 /**
- * <p>Collection of utility methods for doing IO operations with RIO and the OpenRdf API.  Provides convenience
- * methods to add data to {@link Graph} and {@link Repository} objects and to write them out to a stream.</p>
+ * <p>Collection of utility methods for doing IO operations with RIO and the OpenRdf API with the {@link Graph} class</p>
  *
  * @author	Michael Grove
  * @since	0.1
- * @version	1.1
+ * @version	2.0
  */
-public final class OpenRdfIO {
+public final class GraphIO {
 
 	/**
 	 * No instances
 	 */
-	private OpenRdfIO() {
+	private GraphIO() {
         throw new AssertionError();
 	}
 
@@ -210,7 +201,11 @@ public final class OpenRdfIO {
 			}
 		}
 	}
-	
+
+	public static void writeGraph(final Graph theGraph, final OutputStream theStream, final RDFFormat theFormat) throws IOException {
+		writeGraph(theGraph, new OutputStreamWriter(theStream), theFormat);
+	}
+
 	/**
 	 * Write the contents of the Graph to the writer in the specified RDF format
 	 * @param theGraph the graph to write
@@ -240,111 +235,6 @@ public final class OpenRdfIO {
 		}
 	}
 
-	public static void addData(Repository theRepo, File theFile) throws RDFParseException, IOException {
-		addData(theRepo, new FileInputStream(theFile), Rio.getParserFormatForFileName(theFile.getName()));
-	}
-
-	public static void addData(Repository theRepo, InputStream theStream, RDFFormat theFormat) throws RDFParseException, IOException {
-		addData(theRepo, new InputStreamReader(theStream, Charsets.UTF_8), theFormat);
-	}
-
-	public static void addData(Repository theRepo, Reader theStream, RDFFormat theFormat) throws RDFParseException, IOException {
-		addData(theRepo, theStream, theFormat, null, null);
-	}
-
-	public static void addData(final Repository theRepo, final Reader theStream, final RDFFormat theFormat, final Resource theContext) throws IOException, RDFParseException {
-		addData(theRepo, theStream, theFormat, theContext, null);
-	}
-
-	public static void addData(Repository theRepo, Reader theStream, RDFFormat theFormat, Resource theContext, String theBase) throws RDFParseException, IOException {
-		RDFParser aParser = Rio.createParser(theFormat);
-
-        aParser.getParserConfig().set(BasicParserSettings.VERIFY_DATATYPE_VALUES, false);
-        aParser.getParserConfig().set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false);
-        aParser.getParserConfig().set(BasicParserSettings.NORMALIZE_DATATYPE_VALUES, false);
-        aParser.getParserConfig().set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
-
-		aParser.getParserConfig().set(BasicParserSettings.VERIFY_RELATIVE_URIS, false);
-
-		RepositoryConnection aConn = null;
-
-		try {
-			aConn = theRepo.getConnection();
-
-			aConn.begin();
-
-			RDFInserter aInserter = new RDFInserter(aConn);
-
-			if (theContext != null) {
-				aInserter.enforceContext(theContext);
-			}
-
-			aParser.setRDFHandler(aInserter);
-
-			aParser.parse(theStream, theBase == null ? (theContext != null ? theContext.stringValue() : "http://openrdf.clarkparsia.com") : theBase);
-
-			aConn.commit();
-		}
-		catch (Exception e) {
-			throw new IOException(e);
-		}
-		finally {
-			close(aConn);
-			if (theStream != null) theStream.close();
-		}
-	}
-
-	/**
-	 * Write the contents of the repository to the given file in the specified format
-	 * @param theRepo the repository to write
-	 * @param theFile the file to write to
-	 * @param theFormat the format to write the RDF in
-	 * @throws RepositoryException if there is an error getting the data from the repository
-	 * @throws IOException if there is an error writing to the file
-	 */
-	public static void writeRepository(Repository theRepo, File theFile, RDFFormat theFormat) throws RepositoryException, IOException {
-		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(new FileOutputStream(theFile), Charsets.UTF_8)));
-	}
-
-	/**
-	 * Write the contents of the repository to the given stream in the specified format
-	 * @param theRepo the repository to write
-	 * @param theStream the stream to write to
-	 * @param theFormat the format to write the RDF in
-	 * @throws RepositoryException if there is an error getting the data from the repository
-	 * @throws IOException if there is an error writing to the stream
-	 */
-	public static void writeRepository(Repository theRepo, OutputStream theStream, RDFFormat theFormat) throws RepositoryException, IOException {
-		writeRepository(theRepo, Rio.createWriter(theFormat, new OutputStreamWriter(theStream, Charsets.UTF_8)));
-	}
-
-	/**
-	 * Write the contents of the repository to the given writer in the specified format
-	 * @param theRepo the repository to write
-	 * @param theWriter the writer to write to
-	 * @param theFormat the format to write the RDF in
-	 * @throws RepositoryException if there is an error getting the data from the repository
-	 * @throws IOException if there is an error writing to the writer
-	 */
-	public static void writeRepository(Repository theRepo, Writer theWriter, RDFFormat theFormat) throws RepositoryException, IOException {
-		writeRepository(theRepo, Rio.createWriter(theFormat, theWriter));
-	}
-
-	private static void writeRepository(Repository theRepo, RDFWriter theWriter) throws IOException, RepositoryException {
-		RepositoryConnection aConn = null;
-		try {
-			aConn = theRepo.getConnection();
-
-			aConn.exportStatements(null, null, null, true, theWriter);
-		}
-		catch (RDFHandlerException e) {
-			throw new IOException(e);
-		}
-		finally {
-			close(aConn);
-		}
-	}
-
 	private static void writeGraph(Graph theGraph, RDFWriter theWriter) throws IOException {
 		try {
 			theWriter.startRDF();
@@ -358,17 +248,5 @@ public final class OpenRdfIO {
 		catch (RDFHandlerException e) {
 			throw new IOException(e);
 		}
-	}
-
-	public static ExtRepository readRepository(final InputStream theStream, final RDFFormat theFormat) throws IOException, RDFParseException {
-		return readRepository(new InputStreamReader(theStream, Charsets.UTF_8), theFormat);
-	}
-
-	public static ExtRepository readRepository(final Reader theStream, final RDFFormat theFormat) throws IOException, RDFParseException {
-		ExtRepository aRepo = OpenRdfUtil.createInMemoryRepo();
-
-		aRepo.read(theStream, theFormat);
-
-		return aRepo;
 	}
 }

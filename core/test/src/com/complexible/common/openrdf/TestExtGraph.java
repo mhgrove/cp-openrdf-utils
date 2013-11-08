@@ -15,11 +15,14 @@
 
 package com.complexible.common.openrdf;
 
+import com.complexible.common.openrdf.model.ExtGraph;
+import com.complexible.common.openrdf.model.Graphs;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import org.openrdf.model.Graph;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
@@ -46,7 +49,7 @@ public class TestExtGraph {
 		URI aType = ValueFactoryImpl.getInstance().createURI("urn:some:type");
 		URI aOtherType = ValueFactoryImpl.getInstance().createURI("urn:some:other:type");
 
-		ExtGraph aGraph = TestUtils.createRandomGraph(20);
+		ExtGraph aGraph = Graphs.extend(TestUtils.createRandomGraph(20));
 
 		Set<Resource> aInds = Sets.newHashSet();
 
@@ -66,8 +69,7 @@ public class TestExtGraph {
 		assertTrue(aGraph.add(aStmt));
 		assertTrue(aGraph.add(aStmt.getSubject(), RDF.TYPE, aOtherType));
 
-		assertEquals(aInds,
-					 aGraph.getIndividuals());
+		assertEquals(aInds, aGraph.getIndividuals());
 
 		assertEquals(aIndsOfType,
 					 aGraph.getInstancesOf(aType));

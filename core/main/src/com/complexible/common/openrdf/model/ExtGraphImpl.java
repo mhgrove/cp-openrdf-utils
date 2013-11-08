@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.complexible.common.openrdf;
+package com.complexible.common.openrdf.model;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -103,7 +103,7 @@ final class ExtGraphImpl extends DelegatingGraph implements ExtGraph {
 	 */
 	@Override
 	public void read(final File theFile) throws IOException, RDFParseException {
-		addAll(OpenRdfIO.readGraph(theFile));
+		addAll(GraphIO.readGraph(theFile));
 	}
 
 	/**
@@ -111,7 +111,7 @@ final class ExtGraphImpl extends DelegatingGraph implements ExtGraph {
 	 */
 	@Override
 	public void read(final InputStream theStream, RDFFormat theFormat) throws IOException, RDFParseException {
-		addAll(OpenRdfIO.readGraph(theStream, theFormat));
+		addAll(GraphIO.readGraph(theStream, theFormat));
 	}
 
 	/**
@@ -135,7 +135,7 @@ final class ExtGraphImpl extends DelegatingGraph implements ExtGraph {
 	 */
 	@Override
     public void write(Writer theWriter, RDFFormat theFormat) throws IOException {
-        OpenRdfIO.writeGraph(this, theWriter, theFormat);
+        GraphIO.writeGraph(this, theWriter, theFormat);
     }
 
 	/**

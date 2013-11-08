@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.complexible.common.openrdf;
+package com.complexible.common.openrdf.model;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.complexible.common.openrdf.repository.Repositories;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -51,6 +52,7 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQueryResult;
+import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
@@ -60,7 +62,7 @@ import org.openrdf.rio.RDFParseException;
  *
  * @author	Michael Grove
  * @since	0.4
- * @version	1.1
+ * @version	2.0
  */
 public final class Graphs {
 
@@ -110,7 +112,7 @@ public final class Graphs {
 	 * @throws RDFParseException	if the file did not contain valid RDF
 	 */
 	public static Graph of(final File theFile) throws IOException, RDFParseException {
-		return OpenRdfIO.readGraph(theFile);
+		return GraphIO.readGraph(theFile);
 	}
 
 	/**
@@ -625,26 +627,25 @@ public final class Graphs {
     }
 
     public static void write(final Graph theGraph, final RDFFormat theFormat, final Writer theWriter) throws IOException {
-        OpenRdfIO.writeGraph(theGraph, theWriter, theFormat);
+        GraphIO.writeGraph(theGraph, theWriter, theFormat);
     }
 
-    public static TupleQueryResult select(final Graph theGraph, final String theQuery) throws MalformedQueryException, QueryEvaluationException {
-        ExtRepository aRepo = OpenRdfUtil.createInMemoryRepo();
-        try {
-            aRepo.initialize();
-            aRepo.add(theGraph);
-            return aRepo.selectQuery(QueryLanguage.SPARQL, theQuery);
-        }
-        catch (RepositoryException e) {
-            throw new QueryEvaluationException("There was an error setting up the repository to execute the query", e);
-        }
-        finally {
-            try {
-                aRepo.shutDown();
-            }
-            catch (RepositoryException e) {
-                // can probably ignore this, its just an in mem repo anyway.
-            }
-        }
-    }
+//    public static TupleQueryResult select(final Graph theGraph, final String theQuery) throws MalformedQueryException, QueryEvaluationException {
+//        Repository aRepo = Repositories.createInMemoryRepo();
+//        try {
+//	        Repositories.add(aRepo, theGraph);
+//            return aRepo.selectQuery(QueryLanguage.SPARQL, theQuery);
+//        }
+//        catch (RepositoryException e) {
+//            throw new QueryEvaluationException("There was an error setting up the repository to execute the query", e);
+//        }
+//        finally {
+//            try {
+//                aRepo.shutDown();
+//            }
+//            catch (RepositoryException e) {
+//                // can probably ignore this, its just an in mem repo anyway.
+//            }
+//        }
+//    }
 }

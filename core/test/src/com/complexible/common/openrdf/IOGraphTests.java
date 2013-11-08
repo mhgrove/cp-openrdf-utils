@@ -15,6 +15,7 @@
 
 package com.complexible.common.openrdf;
 
+import com.complexible.common.openrdf.model.Graphs;
 import org.junit.Test;
 import org.openrdf.model.Graph;
 import org.openrdf.model.impl.ValueFactoryImpl;

@@ -15,6 +15,9 @@
 
 package com.complexible.common.openrdf;
 
+import com.complexible.common.openrdf.model.ContextAwareValueFactory;
+import com.complexible.common.openrdf.model.Graphs;
+import com.complexible.common.openrdf.model.SetGraph;
 import org.junit.Test;
 import org.openrdf.model.Statement;
 

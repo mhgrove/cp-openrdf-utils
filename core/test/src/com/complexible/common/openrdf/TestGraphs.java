@@ -15,6 +15,11 @@
 
 package com.complexible.common.openrdf;
 
+import com.complexible.common.openrdf.model.ContextAwareStatement;
+import com.complexible.common.openrdf.model.ContextAwareValueFactory;
+import com.complexible.common.openrdf.model.GraphIO;
+import com.complexible.common.openrdf.model.Graphs;
+import com.complexible.common.openrdf.model.Statements;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -137,7 +142,7 @@ public class TestGraphs {
 		File aFile = File.createTempFile("foo", ".ttl");
 
 		try {
-			Files.write(OpenRdfIO.toString(aInput, RDFFormat.TURTLE), aFile, Charsets.UTF_8);
+			Files.write(GraphIO.toString(aInput, RDFFormat.TURTLE), aFile, Charsets.UTF_8);
 
 			assertTrue(ModelUtil.equals(aInput, Graphs.of(aFile)));
 		}

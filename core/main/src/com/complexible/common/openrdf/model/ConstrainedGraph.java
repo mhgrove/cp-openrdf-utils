@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.complexible.common.openrdf;
+package com.complexible.common.openrdf.model;
 
 import java.util.Collection;
 
@@ -65,7 +65,7 @@ public final class ConstrainedGraph extends DelegatingGraph {
 	}
 
 	/**
-	 * Return a {@link Constraint} which will only allow {@link OpenRdfUtil#isLiteralValid(org.openrdf.model.Literal) valid} literals into the graph.
+	 * Return a {@link Constraint} which will only allow {@link Statements#isLiteralValid(Literal) valid} literals into the graph.
 	 *
 	 * @return	a Constraint to enforce valid literals
 	 */
@@ -73,7 +73,7 @@ public final class ConstrainedGraph extends DelegatingGraph {
 		return new Constraint<Statement>() {
 			@Override
 			public Statement checkElement(final Statement theStatement) {
-				if (theStatement.getObject() instanceof Literal && !OpenRdfUtil.isLiteralValid((Literal) theStatement.getObject())) {
+				if (theStatement.getObject() instanceof Literal && !Statements.isLiteralValid((Literal) theStatement.getObject())) {
 					throw new StatementViolatedConstraintException(theStatement.getObject() + " is not a well-formed literal value.");
 				}
 

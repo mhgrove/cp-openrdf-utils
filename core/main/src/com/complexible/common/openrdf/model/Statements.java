@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.complexible.common.openrdf;
+package com.complexible.common.openrdf.model;
 
 import com.google.common.base.Function;
 
@@ -25,11 +25,13 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.model.URI;
+import org.openrdf.model.vocabulary.XMLSchema;
+import org.openrdf.rio.turtle.TurtleUtil;
 
 /**
  * <p>Some common Function implementations for working with Statements</p>
  *
- * @author Michael Grove
+ * @author  Michael Grove
  * @since	0.4.1
  * @version	0.8
  */
@@ -117,15 +119,7 @@ public final class Statements {
 		};
 	}
 
-	public static Function<Statement, Optional<Resource>> objectResourceOptional() {
-		return new Function<Statement, Optional<Resource>>() {
-			public Optional<Resource> apply(final Statement theStatement) {
-				return theStatement.getObject() instanceof Resource ? Optional.of((Resource) theStatement.getObject()) : Optional.<Resource>absent();
-			}
-		};
-	}
-
-	public static Function<Statement, Optional<Literal>> objectLiteralOptional() {
+	public static Function<Statement, Optional<Literal>> objectAsLiteral() {
 		return new Function<Statement, Optional<Literal>>() {
 			public Optional<Literal> apply(final Statement theStatement) {
 				return theStatement.getObject() instanceof Literal
@@ -149,6 +143,73 @@ public final class Statements {
 														 : Optional.<Resource>absent();
 			}
 		};
+	}
+
+	/**
+	 * Return whether or not the literal object is valid.  This will return true if the literal represented by this
+	 * object would have been parseable.  Used to validate input coming in from users from non-IO sources (which get
+	 * validated via the fact they got parsed).
+	 *
+	 * Validates the language tag is not malformed and basic XSD datatype checks.
+	 *
+	 * @param theLiteral	the literal to validate
+	 *
+	 * @return 				true if its a valid/parseable literal, false otherwise
+	 */
+	public static boolean isLiteralValid(final Literal theLiteral) {
+		if (theLiteral.getLanguage() != null && theLiteral.getLanguage().length() > 0) {
+			final String aLang = theLiteral.getLanguage();
+
+			if (!TurtleUtil.isLanguageStartChar(aLang.charAt(0))) {
+				return false;
+			}
+
+			for (int aIndex = 1; aIndex < aLang.length(); aIndex++) {
+				if (!TurtleUtil.isLanguageChar(aLang.charAt(aIndex))) {
+					return false;
+				}
+			}
+		}
+
+		// TODO: all datatypes?  all variations?
+		if (theLiteral.getDatatype() != null && theLiteral.getDatatype().getNamespace().equals(XMLSchema.NAMESPACE)) {
+			final String aTypeName = theLiteral.getDatatype().getLocalName();
+
+			try {
+				if (aTypeName.equals(XMLSchema.DATETIME.getLocalName())) {
+					theLiteral.calendarValue();
+				}
+				else if (aTypeName.equals(XMLSchema.INT.getLocalName())) {
+					theLiteral.intValue();
+				}
+				else if (aTypeName.equals(XMLSchema.FLOAT.getLocalName())) {
+					theLiteral.floatValue();
+				}
+				else if (aTypeName.equals(XMLSchema.LONG.getLocalName())) {
+					theLiteral.longValue();
+				}
+				else if (aTypeName.equals(XMLSchema.DOUBLE.getLocalName())) {
+					theLiteral.doubleValue();
+				}
+				else if (aTypeName.equals(XMLSchema.SHORT.getLocalName())) {
+					theLiteral.shortValue();
+				}
+				else if (aTypeName.equals(XMLSchema.BOOLEAN.getLocalName())) {
+					theLiteral.booleanValue();
+				}
+				else if (aTypeName.equals(XMLSchema.BYTE.getLocalName())) {
+					theLiteral.byteValue();
+				}
+				else if (aTypeName.equals(XMLSchema.DECIMAL.getLocalName())) {
+					theLiteral.decimalValue();
+				}
+			}
+			catch (Exception e) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private static class GetSubject implements Function<Statement, Resource> {

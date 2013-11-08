@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.complexible.common.openrdf;
+package com.complexible.common.openrdf.model;
 
 import org.openrdf.model.Graph;
 import org.openrdf.model.ValueFactory;

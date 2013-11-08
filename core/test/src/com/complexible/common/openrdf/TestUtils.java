@@ -15,6 +15,10 @@
 
 package com.complexible.common.openrdf;
 
+import com.complexible.common.openrdf.model.Graphs;
+import com.complexible.common.openrdf.repository.Repositories;
+import org.openrdf.model.Graph;
+import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
@@ -31,9 +35,9 @@ import java.util.Random;
 /**
  * <p></p>
  *
- * @author Michael Grove
+ * @author  Michael Grove
+ * @since   0.4
  * @version 0.4
- * @since 0.4
  */
 public final class TestUtils {
 	private static final Random RANDOM = new Random();
@@ -41,18 +45,19 @@ public final class TestUtils {
 	private static final SPARQLParser parser = new SPARQLParser();
 
 	private TestUtils() {
+		throw new AssertionError();
 	}
 
 	public static ParsedQuery parse(final String theQuery) throws MalformedQueryException {
-		return parser.parseQuery(theQuery, "http://openrdf.clarkparsia.com");
+		return parser.parseQuery(theQuery, "http://openrdf.complexible.com");
 	}
 
-	public static ExtGraphImpl createRandomGraph() {
+	public static Graph createRandomGraph() {
 		return createRandomGraph(RANDOM.nextInt(500));
 	}
 
-	public static ExtGraphImpl createRandomGraph(final int theSize) {
-		ExtGraphImpl aGraph = new ExtGraphImpl();
+	public static Graph createRandomGraph(final int theSize) {
+		Graph aGraph = Graphs.newGraph();
 
 		for (int i = 0; i < theSize; i++) {
 			aGraph.add(createRandomStatement());
@@ -61,10 +66,10 @@ public final class TestUtils {
 		return aGraph;
 	}
 
-	public static ExtRepository createRandomRepository() throws RepositoryException {
-		ExtRepository aRepo = OpenRdfUtil.createInMemoryRepo();
+	public static Repository createRandomRepository() throws RepositoryException {
+		Repository aRepo = Repositories.createInMemoryRepo();
 
-		aRepo.add(createRandomGraph());
+		Repositories.add(aRepo, createRandomGraph());
 
 		return aRepo;
 	}

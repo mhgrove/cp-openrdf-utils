@@ -17,6 +17,8 @@ package com.complexible.common.openrdf;
 
 import java.util.Iterator;
 
+import com.complexible.common.openrdf.model.ImmutableGraph;
+import com.complexible.common.openrdf.model.SetGraph;
 import org.junit.Test;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
@@ -25,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * <p>Tests for {@link com.complexible.common.openrdf.ImmutableGraph}</p>
+ * <p>Tests for {@link ImmutableGraph}</p>
  *
  * @author	Michael Grove
  * @since	0.8

@@ -15,10 +15,14 @@
 
 package com.complexible.common.openrdf;
 
+import com.complexible.common.openrdf.model.GraphIO;
+import com.complexible.common.openrdf.repository.Repositories;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
@@ -34,7 +38,7 @@ import java.io.ByteArrayOutputStream;
  * @version 0.4
  * @since 0.4
  */
-public class TestExtRepository {
+public class TestRepositories {
 
 	/**
 	 * Test for clear
@@ -42,13 +46,13 @@ public class TestExtRepository {
 	 */
 	@Test
 	public void testClear() throws RepositoryException {
-		ExtRepository aRepo = TestUtils.createRandomRepository();
+		Repository aRepo = TestUtils.createRandomRepository();
 
-		assertTrue(aRepo.size() > 0);
+		assertTrue(Repositories.size(aRepo) > 0);
 
-		aRepo.clear();
+		Repositories.clear(aRepo);
 
-		assertEquals(0, aRepo.size());
+		assertEquals(0, Repositories.size(aRepo));
 	}
 
 	/**
@@ -57,14 +61,13 @@ public class TestExtRepository {
 	 */
 	@Test
 	public void testSize() throws RepositoryException {
-		ExtRepository aRepo = OpenRdfUtil.createInMemoryRepo();
+		Repository aRepo = Repositories.createInMemoryRepo();
 
 		Graph aGraph = TestUtils.createRandomGraph(25);
 
-		aRepo.add(aGraph);
+		Repositories.add(aRepo, aGraph);
 
-		assertEquals(25,
-					 aRepo.size());
+		assertEquals(25, Repositories.size(aRepo));
 	}
 
 	/**
@@ -73,17 +76,16 @@ public class TestExtRepository {
 	 */
 	@Test
 	public void testAddGraph() throws RepositoryException {
-		ExtRepository aRepo = OpenRdfUtil.createInMemoryRepo();
+		Repository aRepo = Repositories.createInMemoryRepo();
 
 		Graph aGraph = TestUtils.createRandomGraph(25);
 
-		aRepo.add(aGraph);
+		Repositories.add(aRepo, aGraph);
 
-		assertEquals(25,
-					 aRepo.size());
+		assertEquals(25, Repositories.size(aRepo));
 
 		for (Statement aStmt : aGraph) {
-			assertTrue(aRepo.contains(aStmt));
+			assertTrue(Repositories.contains(aRepo, aStmt));
 		}
 	}
 
@@ -93,26 +95,24 @@ public class TestExtRepository {
 	 */
 	@Test
 	public void testRemoveGraph() throws RepositoryException {
-		ExtRepository aRepo = OpenRdfUtil.createInMemoryRepo();
+		Repository aRepo = Repositories.createInMemoryRepo();
 
 		Graph aGraph = TestUtils.createRandomGraph(25);
 
-		aRepo.add(aGraph);
+		Repositories.add(aRepo, aGraph);
 
-		assertEquals(25,
-					 aRepo.size());
+		assertEquals(25, Repositories.size(aRepo));
 
 		for (Statement aStmt : aGraph) {
-			assertTrue(aRepo.contains(aStmt));
+			assertTrue(Repositories.contains(aRepo, aStmt));
 		}
 
-		aRepo.remove(aGraph);
+		Repositories.remove(aRepo, aGraph);
 
-		assertEquals(0,
-					 aRepo.size());
+		assertEquals(0, Repositories.size(aRepo));
 
 		for (Statement aStmt : aGraph) {
-			assertFalse(aRepo.contains(aStmt));
+			assertFalse(Repositories.contains(aRepo, aStmt));
 		}
 	}
 
@@ -123,21 +123,20 @@ public class TestExtRepository {
 	 */
 	@Test
 	public void testAddFromStream() throws Exception {
-		ExtRepository aRepo = OpenRdfUtil.createInMemoryRepo();
+		Repository aRepo = Repositories.createInMemoryRepo();
 
-		ExtGraphImpl aGraph = TestUtils.createRandomGraph(25);
+		Graph aGraph = TestUtils.createRandomGraph(25);
 
 		ByteArrayOutputStream aOut = new ByteArrayOutputStream();
 
-		aGraph.write(aOut, RDFFormat.TURTLE);
+		GraphIO.writeGraph(aGraph, aOut, RDFFormat.TURTLE);
 
-		aRepo.add(new ByteArrayInputStream(aOut.toByteArray()), RDFFormat.TURTLE);
+		Repositories.add(aRepo, new ByteArrayInputStream(aOut.toByteArray()), RDFFormat.TURTLE);
 
-		assertEquals(25,
-					 aRepo.size());
+		assertEquals(25, Repositories.size(aRepo));
 
 		for (Statement aStmt : aGraph) {
-			assertTrue(aRepo.contains(aStmt));
+			assertTrue(Repositories.contains(aRepo, aStmt));
 		}
 	}
 }

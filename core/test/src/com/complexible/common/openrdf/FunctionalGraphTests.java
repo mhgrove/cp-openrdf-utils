@@ -17,6 +17,9 @@ package com.complexible.common.openrdf;
 
 import java.io.File;
 
+import com.complexible.common.openrdf.model.ExtGraph;
+import com.complexible.common.openrdf.model.Graphs;
+import com.complexible.common.openrdf.model.Statements;
 import org.junit.Test;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
