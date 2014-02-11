@@ -17,7 +17,7 @@ package com.complexible.common.openrdf.model;
 
 import java.util.Collection;
 
-import com.google.common.collect.Constraint;
+import com.google.common.base.Predicate;
 
 import org.openrdf.model.Graph;
 import org.openrdf.model.Literal;
@@ -28,16 +28,16 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
 /**
- * <p>A {@link Graph} which has a {@link Constraint} placed upon which statements can be added to the Graph.</p>
+ * <p>A {@link Graph} which has a {@link Predicate constraint} placed upon which statements can be added to the Graph.</p>
  *
  * @author Michael Grove
  * @since	0.8
- * @version	0.8
+ * @version	2.0.1
  */
 public final class ConstrainedGraph extends DelegatingGraph {
-	private final Constraint<Statement> mConstraint;
+	private final Predicate<Statement> mConstraint;
 
-	ConstrainedGraph(final Graph theGraph, final Constraint<Statement> theConstraint) {
+	ConstrainedGraph(final Graph theGraph, final Predicate<Statement> theConstraint) {
 		super(theGraph);
 		mConstraint = theConstraint;
 	}
@@ -48,7 +48,7 @@ public final class ConstrainedGraph extends DelegatingGraph {
 	 * @param theConstraint	the constraint to enforce
 	 * @return				the new ConstrainedGraph
 	 */
-	public static ConstrainedGraph of(final Constraint<Statement> theConstraint) {
+	public static ConstrainedGraph of(final Predicate<Statement> theConstraint) {
 		return of(new SetGraph(), theConstraint);
 	}
 
@@ -60,24 +60,24 @@ public final class ConstrainedGraph extends DelegatingGraph {
 	 * @param theConstraint		the constraint to enforce
 	 * @return					the new ConstrainedGraph
 	 */
-	public static ConstrainedGraph of(final Graph theGraph, final Constraint<Statement> theConstraint) {
+	public static ConstrainedGraph of(final Graph theGraph, final Predicate<Statement> theConstraint) {
 		return new ConstrainedGraph(theGraph, theConstraint);
 	}
 
 	/**
-	 * Return a {@link Constraint} which will only allow {@link Statements#isLiteralValid(Literal) valid} literals into the graph.
+	 * Return a {@link Predicate} which will only allow {@link Statements#isLiteralValid(Literal) valid} literals into the graph.
 	 *
 	 * @return	a Constraint to enforce valid literals
 	 */
-	public static Constraint<Statement> onlyValidLiterals() {
-		return new Constraint<Statement>() {
+	public static Predicate<Statement> onlyValidLiterals() {
+		return new Predicate<Statement>() {
 			@Override
-			public Statement checkElement(final Statement theStatement) {
+			public boolean apply(final Statement theStatement) {
 				if (theStatement.getObject() instanceof Literal && !Statements.isLiteralValid((Literal) theStatement.getObject())) {
 					throw new StatementViolatedConstraintException(theStatement.getObject() + " is not a well-formed literal value.");
 				}
 
-				return theStatement;
+				return true;
 			}
 		};
 	}
@@ -87,7 +87,7 @@ public final class ConstrainedGraph extends DelegatingGraph {
 	 */
 	@Override
 	public boolean add(final Statement e) {
-		mConstraint.checkElement(e);
+		mConstraint.apply(e);
 
 		return super.add(e);
 	}
@@ -121,14 +121,14 @@ public final class ConstrainedGraph extends DelegatingGraph {
 		return super.addAll(c);
 	}
 
-	private static <T> void all(final Iterable<? extends T> theObjects, final Constraint<T> theConstraint) {
+	private static <T> void all(final Iterable<? extends T> theObjects, final Predicate<T> theConstraint) {
 		for (T aObj : theObjects) {
-			theConstraint.checkElement(aObj);
+			theConstraint.apply(aObj);
 		}
 	}
 
 	/**
-	 * A runtime exception suitable for being thrown from a {@link Constraint} on a {@link Statement}
+	 * A runtime exception suitable for being thrown from a {@link Predicate} on a {@link Statement}
 	 */
 	public static class StatementViolatedConstraintException extends RuntimeException {
 

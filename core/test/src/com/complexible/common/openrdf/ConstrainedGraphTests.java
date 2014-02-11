@@ -16,6 +16,7 @@
 package com.complexible.common.openrdf;
 
 import com.complexible.common.openrdf.model.ConstrainedGraph;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Constraint;
 import org.junit.Test;
 import org.openrdf.model.BNode;
@@ -36,15 +37,15 @@ import static org.junit.Assert.fail;
 public class ConstrainedGraphTests {
 	@Test
 	public void testCannotAddViolatingConstraint() {
-		Constraint<Statement> noBNodes = new Constraint<Statement>() {
+		Predicate<Statement> noBNodes = new Predicate<Statement>() {
 			@Override
-			public Statement checkElement(final Statement theStatement) {
+			public boolean apply(final Statement theStatement) {
 				if (theStatement.getSubject() instanceof BNode ||
 					theStatement.getObject() instanceof BNode) {
 					throw new ConstrainedGraph.StatementViolatedConstraintException("Cannot add statements with bnodes to this graph");
 				}
 
-				return theStatement;
+				return true;
 			}
 		};
 
