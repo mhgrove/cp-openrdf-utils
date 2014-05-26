@@ -4,3 +4,4 @@ core/lib
 settings/ivy-cache
 settings/repo
 out
+*.iml
