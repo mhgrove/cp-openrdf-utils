@@ -33,7 +33,7 @@ import org.openrdf.rio.turtle.TurtleUtil;
  *
  * @author  Michael Grove
  * @since	0.4.1
- * @version	0.8
+ * @version	2.0.3
  */
 public final class Statements {
 	private static final GetSubject GET_SUBJECT = new GetSubject();
@@ -45,6 +45,7 @@ public final class Statements {
 	 * No instances
 	 */
 	private Statements() {
+		throw new AssertionError();
 	}
 
 	public static Predicate<Statement> subjectIs(final Resource theSubj) {
@@ -61,6 +62,10 @@ public final class Statements {
 
 	public static Predicate<Statement> contextIs(final Resource theContext) {
 		return Predicates.compose(Predicates.equalTo(theContext), context());
+	}
+
+	public static Predicate<Statement> objectIs(final Class<? extends Value> theValue) {
+		return Predicates.compose(Predicates.instanceOf(theValue), object());
 	}
 
 	/**

@@ -10,7 +10,7 @@
   <groupId>com.complexible.common</groupId>
   <artifactId>openrdf</artifactId>
   <packaging>jar</packaging>
-  <version>2.0.2</version>
+  <version>2.0.3</version>
   <url>https://github.com/mhgrove/cp-openrdf-utils</url>
 
   <!-- point maven to the src and test folders -->
@@ -62,13 +62,13 @@
   <dependency>
    <groupId>com.google.guava</groupId>
    <artifactId>guava</artifactId>
-   <version>15.0</version>
+   <version>17.0</version>
    <scope>compile</scope>
   </dependency>
   <dependency>
    <groupId>org.openrdf.sesame</groupId>
    <artifactId>sesame-runtime</artifactId>
-   <version>2.7.10</version>
+   <version>2.7.11</version>
    <scope>compile</scope>
   </dependency>
   <dependency>

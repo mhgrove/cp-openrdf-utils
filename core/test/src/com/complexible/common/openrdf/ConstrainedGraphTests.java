@@ -17,7 +17,6 @@ package com.complexible.common.openrdf;
 
 import com.complexible.common.openrdf.model.ConstrainedGraph;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Constraint;
 import org.junit.Test;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Graph;
