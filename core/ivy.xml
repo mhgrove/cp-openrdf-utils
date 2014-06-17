@@ -18,7 +18,7 @@
 	<dependencies>
 	    <dependency org="com.google.guava" name="guava" rev="17.0" conf="compile,default,test->default"/>
 
-	    <dependency org="org.openrdf.sesame" name="sesame-runtime" rev="2.7.11" conf="compile,default,test->default"/>
+	    <dependency org="org.openrdf.sesame" name="sesame-runtime" rev="2.7.12" conf="compile,default,test->default"/>
 
 	    <dependency org="junit" name="junit" rev="4.8.2" conf="compile,test,default->default"/>
 	    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5" conf="compile,default,test->default"/>
