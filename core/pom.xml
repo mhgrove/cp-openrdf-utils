@@ -21,9 +21,33 @@
       <optional>true</optional>
     </dependency>
     <dependency>
+      <groupId>dfki.km.json</groupId>
+      <artifactId>jsonld-java</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>org.openrdf.sesame</groupId>
       <artifactId>sesame-runtime</artifactId>
       <version>2.7.12</version>
+      <optional>true</optional>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.5</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.5</version>
       <optional>true</optional>
     </dependency>
     <dependency>
