@@ -18,7 +18,7 @@
 	<dependencies>
 	    <dependency org="com.google.guava" name="guava" rev="17.0" conf="compile,default,test->default"/>
 
-		<dependency org="dfki.km.json" name="jsonld-java" rev="1.0.1-SNAPSHOT" conf="compile,default,test->default"/>
+		<dependency org="com.github.jsonld-java" name="jsonld-java" rev="0.5.0" conf="compile,default,test->default"/>
 
 		<dependency org="org.openrdf.sesame" name="sesame-runtime" rev="2.7.12" conf="compile,default,test->default">
 			<exclude org="org.slf4j"/>
