@@ -59,7 +59,7 @@
 
 		<echo>Compiling ${src} to ${build.main} ...</echo>
 
-		<javac source="1.6" target="1.6" destdir="${build.main}" debug="yes" deprecation="no">
+		<javac source="1.7" target="1.7" destdir="${build.main}" debug="yes" deprecation="no">
 			<classpath>
 				<path refid="classpath"/>
 			</classpath>

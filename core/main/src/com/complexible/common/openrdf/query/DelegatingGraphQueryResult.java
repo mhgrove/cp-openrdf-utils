@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2014 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.complexible.common.openrdf.query;
 
 import java.util.Map;
 
-import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.model.Statement;
 
@@ -26,7 +25,7 @@ import org.openrdf.model.Statement;
  *
  * @author  Michael Grove
  * @since   0.5
- * @version 1.0
+ * @version 3.0
  */
 public class DelegatingGraphQueryResult implements GraphQueryResult {
 

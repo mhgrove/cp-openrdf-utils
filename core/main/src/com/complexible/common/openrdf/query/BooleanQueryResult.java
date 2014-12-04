@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2014 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ import org.openrdf.query.QueryResult;
  *
  * @author	Michael Grove
  * @since	0.8
- * @version	0.8
+ * @version	3.0
  */
-public interface BooleanQueryResult extends QueryResult<Boolean> {
+public interface BooleanQueryResult extends QueryResult<Boolean>, AutoCloseable {
 
 }

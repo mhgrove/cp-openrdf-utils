@@ -5,3 +5,5 @@ settings/ivy-cache
 settings/repo
 out
 *.iml
+*.ipr
+*.iws

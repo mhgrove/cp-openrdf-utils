@@ -27,33 +27,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.complexible.common.openrdf.repository.Repositories;
+import com.complexible.common.openrdf.query.GraphQueryResult;
 import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
-import org.openrdf.model.Resource;
+import com.google.common.collect.Sets;
 import org.openrdf.model.Graph;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-
+import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.util.GraphUtil;
 import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.impl.ValueFactoryImpl;
-import com.google.common.base.Objects;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Iterators;
 import org.openrdf.model.vocabulary.XMLSchema;
-import org.openrdf.query.GraphQueryResult;
-import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
 
@@ -62,7 +55,7 @@ import org.openrdf.rio.RDFParseException;
  *
  * @author	Michael Grove
  * @since	0.4
- * @version	2.0
+ * @version	3.0
  */
 public final class Graphs {
 
