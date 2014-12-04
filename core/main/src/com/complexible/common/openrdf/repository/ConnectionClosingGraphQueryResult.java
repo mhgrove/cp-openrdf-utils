@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2014 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
 
 package com.complexible.common.openrdf.repository;
 
-import com.complexible.common.openrdf.query.DelegatingGraphQueryResult;
+import java.util.Map;
 
-import org.openrdf.query.GraphQueryResult;
+import com.complexible.common.openrdf.query.DelegatingGraphQueryResult;
+import com.complexible.common.openrdf.query.GraphQueryResult;
+import org.openrdf.model.Statement;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -26,14 +28,20 @@ import org.openrdf.repository.RepositoryException;
  * <p></p>
  *
  * @author  Michael Grove
+ * @author  Fernando Hernandez
  * @since   2.0
- * @version 2.0
+ * @version 3.0
  */
 public final class ConnectionClosingGraphQueryResult extends DelegatingGraphQueryResult {
 	private final RepositoryConnection mConn;
 
 	public ConnectionClosingGraphQueryResult(final RepositoryConnection theConn, final GraphQueryResult theResult) {
 		super(theResult);
+		mConn = theConn;
+	}
+
+	public ConnectionClosingGraphQueryResult(final RepositoryConnection theConn, final org.openrdf.query.GraphQueryResult theResult) {
+		super(new AutoCloseableAdaptor(theResult));
 		mConn = theConn;
 	}
 
@@ -50,6 +58,37 @@ public final class ConnectionClosingGraphQueryResult extends DelegatingGraphQuer
 		}
 		finally {
 			super.close();
+		}
+	}
+
+	private static class AutoCloseableAdaptor implements GraphQueryResult {
+		private final org.openrdf.query.GraphQueryResult mDelegate;
+		private AutoCloseableAdaptor(final org.openrdf.query.GraphQueryResult theResult) {
+			mDelegate = theResult;
+		}
+		@Override
+		public Map<String, String> getNamespaces() throws QueryEvaluationException {
+			return mDelegate.getNamespaces();
+		}
+
+		@Override
+		public void close() throws QueryEvaluationException {
+			mDelegate.close();
+		}
+
+		@Override
+		public boolean hasNext() throws QueryEvaluationException {
+			return mDelegate.hasNext();
+		}
+
+		@Override
+		public Statement next() throws QueryEvaluationException {
+			return mDelegate.next();
+		}
+
+		@Override
+		public void remove() throws QueryEvaluationException {
+			mDelegate.remove();
 		}
 	}
 }

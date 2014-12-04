@@ -15,39 +15,39 @@
 
 package com.complexible.common.openrdf;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 import com.complexible.common.openrdf.model.ContextAwareStatement;
 import com.complexible.common.openrdf.model.ContextAwareValueFactory;
 import com.complexible.common.openrdf.model.GraphIO;
 import com.complexible.common.openrdf.model.Graphs;
 import com.complexible.common.openrdf.model.Statements;
+import com.complexible.common.openrdf.query.impl.GraphQueryResultImpl;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import org.openrdf.model.Graph;
 import org.openrdf.model.Literal;
-import org.openrdf.model.util.ModelUtil;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import com.google.common.collect.Sets;
+import org.openrdf.model.util.ModelUtil;
+import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
-import org.openrdf.query.impl.GraphQueryResultImpl;
 import org.openrdf.rio.RDFFormat;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * <p>Tests for Graphs</p>

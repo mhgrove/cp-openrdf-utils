@@ -15,10 +15,12 @@
 
 package com.complexible.common.openrdf.repository;
 
-import com.complexible.common.openrdf.query.DelegatingTupleQueryResult;
+import java.util.List;
 
+import com.complexible.common.openrdf.query.DelegatingTupleQueryResult;
+import com.complexible.common.openrdf.query.TupleQueryResult;
+import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
@@ -27,13 +29,18 @@ import org.openrdf.repository.RepositoryException;
  *
  * @author  Michael Grove
  * @since   2.0
- * @version 2.0
+ * @version 3.0
  */
 public final class ConnectionClosingTupleQueryResult extends DelegatingTupleQueryResult {
 	private final RepositoryConnection mConn;
 
 	public ConnectionClosingTupleQueryResult(final RepositoryConnection theConn, final TupleQueryResult theResult) {
 		super(theResult);
+		mConn = theConn;
+	}
+
+	public ConnectionClosingTupleQueryResult(final RepositoryConnection theConn, final org.openrdf.query.TupleQueryResult theResult) {
+		super(new AutoCloseableAdaptor(theResult));
 		mConn = theConn;
 	}
 
@@ -50,6 +57,39 @@ public final class ConnectionClosingTupleQueryResult extends DelegatingTupleQuer
 		}
 		finally {
 			super.close();
+		}
+	}
+
+	private static class AutoCloseableAdaptor implements TupleQueryResult {
+		private final org.openrdf.query.TupleQueryResult mDelegate;
+
+		private AutoCloseableAdaptor(org.openrdf.query.TupleQueryResult theResult) {
+			mDelegate = theResult;
+		}
+
+		@Override
+		public List<String> getBindingNames() throws QueryEvaluationException {
+			return mDelegate.getBindingNames();
+		}
+
+		@Override
+		public void close() throws QueryEvaluationException {
+			mDelegate.close();
+		}
+
+		@Override
+		public boolean hasNext() throws QueryEvaluationException {
+			return mDelegate.hasNext();
+		}
+
+		@Override
+		public BindingSet next() throws QueryEvaluationException {
+			return mDelegate.next();
+		}
+
+		@Override
+		public void remove() throws QueryEvaluationException {
+			mDelegate.remove();
 		}
 	}
 }
