@@ -44,13 +44,11 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
-import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
-import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,25 +67,6 @@ public final class Repositories {
 
 	public Repositories() {
 		throw new AssertionError();
-	}
-
-	/**
-	 * Create a simple in-memory {@link Repository} which is already initialized
-	 *
-	 * @return an in memory Repository
-	 */
-	public static Repository createInMemoryRepo() {
-		try {
-			Repository aRepo = new SailRepository(new MemoryStore());
-
-			aRepo.initialize();
-
-			return aRepo;
-		}
-		catch (RepositoryException e) {
-			// impossible?
-			throw new AssertionError(e);
-		}
 	}
 
 	/**
@@ -235,19 +214,6 @@ public final class Repositories {
 			RepositoryConnections.closeQuietly(aConn);
 		}
 	}
-
-	public static Repository read(final InputStream theStream, final RDFFormat theFormat) throws IOException, RDFParseException {
-		return read(new InputStreamReader(theStream, Charsets.UTF_8), theFormat);
-	}
-
-	public static Repository read(final Reader theStream, final RDFFormat theFormat) throws IOException, RDFParseException {
-		Repository aRepo = createInMemoryRepo();
-
-		add(aRepo, theStream, theFormat);
-
-		return aRepo;
-	}
-
 
 	/**
 	 * Execute a select query.

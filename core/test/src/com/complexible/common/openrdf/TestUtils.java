@@ -67,7 +67,7 @@ public final class TestUtils {
 	}
 
 	public static Repository createRandomRepository() throws RepositoryException {
-		Repository aRepo = Repositories.createInMemoryRepo();
+		Repository aRepo = TestRepositories.createInMemoryRepo();
 
 		Repositories.add(aRepo, createRandomGraph());
 

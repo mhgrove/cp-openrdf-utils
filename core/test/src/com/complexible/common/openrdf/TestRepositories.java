@@ -26,7 +26,9 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
+import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.sail.memory.MemoryStore;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,6 +41,25 @@ import java.io.ByteArrayOutputStream;
  * @since 0.4
  */
 public class TestRepositories {
+
+	/**
+	 * Create a simple in-memory {@link Repository} which is already initialized
+	 *
+	 * @return an in memory Repository
+	 */
+	public static Repository createInMemoryRepo() {
+		try {
+			Repository aRepo = new SailRepository(new MemoryStore());
+
+			aRepo.initialize();
+
+			return aRepo;
+		}
+		catch (RepositoryException e) {
+			// impossible?
+			throw new AssertionError(e);
+		}
+	}
 
 	/**
 	 * Test for clear
@@ -61,7 +82,7 @@ public class TestRepositories {
 	 */
 	@Test
 	public void testSize() throws RepositoryException {
-		Repository aRepo = Repositories.createInMemoryRepo();
+		Repository aRepo = createInMemoryRepo();
 
 		Graph aGraph = TestUtils.createRandomGraph(25);
 
@@ -76,7 +97,7 @@ public class TestRepositories {
 	 */
 	@Test
 	public void testAddGraph() throws RepositoryException {
-		Repository aRepo = Repositories.createInMemoryRepo();
+		Repository aRepo = createInMemoryRepo();
 
 		Graph aGraph = TestUtils.createRandomGraph(25);
 
@@ -95,7 +116,7 @@ public class TestRepositories {
 	 */
 	@Test
 	public void testRemoveGraph() throws RepositoryException {
-		Repository aRepo = Repositories.createInMemoryRepo();
+		Repository aRepo = createInMemoryRepo();
 
 		Graph aGraph = TestUtils.createRandomGraph(25);
 
@@ -123,7 +144,7 @@ public class TestRepositories {
 	 */
 	@Test
 	public void testAddFromStream() throws Exception {
-		Repository aRepo = Repositories.createInMemoryRepo();
+		Repository aRepo = createInMemoryRepo();
 
 		Graph aGraph = TestUtils.createRandomGraph(25);
 
