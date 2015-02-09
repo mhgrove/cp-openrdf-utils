@@ -1,9 +1,10 @@
-build
-dist
-core/lib
-settings/ivy-cache
-settings/repo
 out
+build
 *.iml
 *.ipr
 *.iws
+.gradle/
+
+# where gradle properties are stored
+gradle.properties
+

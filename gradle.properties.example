@@ -1,0 +1,3 @@
+publishUrl=/url/to/repo
+artifactoryUser=user
+artifactoryPassword=secret

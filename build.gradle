@@ -1,0 +1,169 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+buildscript {
+	repositories {
+		maven {
+			url "http://jcenter.bintray.com"
+		}
+
+		dependencies {
+			classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '2.2.5')
+		}
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.0'
+	distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+}
+
+allprojects {
+	group = "com.complexible.common"
+	sourceCompatibility = '1.7'
+	targetCompatibility = '1.7'
+
+	repositories {
+		mavenCentral()
+	}
+
+
+}
+
+ext {
+	projectDescription	= "Complexible: OpenRdf Utility classes"
+	projectUrl			= "https://github.com/mhgrove/cp-openrdf-utils"
+	sesameVersion = "2.7.14"
+}
+
+subprojects {
+	apply plugin: "java"
+	apply plugin: "maven"
+	apply plugin: "artifactory"
+
+	dependencies {
+		compile 'org.slf4j:slf4j-api:1.7.7'
+		compile 'org.slf4j:slf4j-jdk14:1.7.7'
+
+		testCompile 'junit:junit:4.11'
+	}
+
+	sourceSets {
+		main {
+			java {
+				srcDir 'main/src'
+			}
+			resources {
+				srcDir 'main/resources'
+			}
+		}
+		test {
+			java {
+				srcDir 'test/src'
+			}
+			resources {
+				srcDir 'test/resources'
+			}
+		}
+	}
+
+	// create a 'tests' conf for importing test classes from other sub-projects
+	task testJar(type: Jar, dependsOn: testClasses) {
+		classifier = 'tests'
+		from sourceSets.test.output
+	}
+
+	artifacts {
+		testRuntime testJar // include the tests of other subprojects
+	}
+
+	if (project.hasProperty('publishUrl')
+		&& project.hasProperty('artifactoryUser')
+		&& project.hasProperty('artifactoryPassword')) {
+
+		// this task is just so artifactory picks up the pom changes
+		task('uploadMvn', type: Upload) {
+			configuration = configurations.archives
+			repositories {
+				mavenDeployer {
+					repository(url: publishUrl)
+					pom.project {
+						name = archivesBaseName
+						packaging = 'jar'
+						description projectDescription
+						url  projectUrl
+					}
+
+					//mess with the generated pom to remove test dependencies from published artifacts
+					pom.withXml { XmlProvider xmlProvider ->
+						def xml = xmlProvider.asString()
+						def pomXml = new XmlParser().parse(new ByteArrayInputStream(xml.toString().bytes))
+
+						pomXml.dependencies.dependency.each { dep ->
+							if (dep.scope.text() != 'compile') {
+								def parent = dep.parent()
+								parent.remove(dep)
+							}
+						}
+
+						def newXml = new StringWriter()
+						def printer = new XmlNodePrinter(new PrintWriter(newXml))
+						printer.preserveWhitespace = true
+						printer.print(pomXml)
+						xml.setLength(0)
+						xml.append(newXml.toString())
+					}
+
+				}
+			}
+		}
+
+		artifactory {
+			// publishUrl is defined in gradle.properties
+			publish {
+				contextUrl = publishUrl
+				repository {
+					repoKey = 'stardog-mvn' //The Artifactory repository key to publish to
+					username = "${artifactoryUser}" //The publisher user name
+					password = "${artifactoryPassword}" //The publisher password
+				}
+			}
+			resolve {
+				contextUrl = publishUrl
+				repository {
+					repoKey = 'stardog-mvn' //The Artifactory (preferably virtual) repository key to resolve from
+					username = "${artifactoryUser}" //Optional resolver user name (leave out to use anonymous resolution)
+					password = "${artifactoryPassword}" //The resolver password
+					maven = true
+				}
+			}
+
+		}
+	}
+
+//	evaluationDependsOnChildren()
+
+
+}
+
+dependencies {
+	compile project(":core")
+}
+
+evaluationDependsOnChildren()
+
+task javadocs(type: Javadoc) {
+	def core = project(":core")
+	println "generating docs: ${core.archivesBaseName}-${core.version}"
+	source core.sourceSets.main.allJava
+	classpath = core.configurations.compile
+	destinationDir = file("${rootProject.buildDir}/javadocs")
+	configure(options) {
+		windowTitle "${core.archivesBaseName}-${core.version} API"
+		docTitle "${core.archivesBaseName}-${core.version}"
+		bottom "Copyright &#169; 2010-2015 Complexible. All Rights Reserved."
+		links "http://docs.oracle.com/javase/7/docs/api/",
+			  "http://docs.guava-libraries.googlecode.com/git-history/v18.0/javadoc/",
+			  "http://rdf4j.org/sesame/2.7/apidocs/"
+	}
+}
