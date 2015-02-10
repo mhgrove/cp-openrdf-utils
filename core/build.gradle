@@ -1,0 +1,30 @@
+group = "com.complexible.common"
+version = "3.0"
+archivesBaseName = "cp-openrdf-utils"
+
+dependencies {
+	compile (group: "com.google.guava", name: "guava", version: "18.0") {
+		exclude group: "com.google.code.findbugs"
+	}
+
+	compile "org.openrdf.sesame:sesame-rio:$sesameVersion"
+	compile "org.openrdf.sesame:sesame-rio-turtle:$sesameVersion"
+	compile "org.openrdf.sesame:sesame-model:$sesameVersion"
+	compile "org.openrdf.sesame:sesame-query:$sesameVersion"
+	compile "org.openrdf.sesame:sesame-queryalgebra-model:$sesameVersion"
+	compile "org.openrdf.sesame:sesame-queryparser-sparql:$sesameVersion"
+	compile "org.openrdf.sesame:sesame-queryresultio-api:$sesameVersion"
+	compile "org.openrdf.sesame:sesame-repository-api:$sesameVersion"
+	compile "org.openrdf.sesame:sesame-sail-api:$sesameVersion"
+
+	testCompile "org.openrdf.sesame:sesame-repository-sail:$sesameVersion"
+	testCompile "org.openrdf.sesame:sesame-sail-memory:$sesameVersion"
+}
+
+configurations {
+	// sesame doesn't declare a version for junit,
+	// which doesn't play well with gradle
+	compile.dependencies.all { dep ->
+		dep.exclude group: "junit"
+	}
+}

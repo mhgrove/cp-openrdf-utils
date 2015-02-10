@@ -1,9 +1,9 @@
 ## Introduction
 This is a small library of some basic utility classes for working with the OpenRdf API.
 
-The code is works with version 2.7.12 of the OpenRdf API.
+The code is works with version 2.7.14 of the OpenRdf API.
 
-To learn more about the OpenRdf API, head to their [site](http://openrdf.org).
+To learn more about the OpenRdf API, head to their [site](http://rdf4j.org).
 
 ## Licensing
 

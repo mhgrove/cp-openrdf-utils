@@ -21,6 +21,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 
+import org.openrdf.model.util.Literals;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.algebra.Slice;
 
@@ -222,7 +223,7 @@ public final class SesameQueryUtils {
 
             aBuffer.append("\"\"\"").append(escape(aLit.getLabel())).append("\"\"\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
 
-            if (aLit.getDatatype() != null) {
+            if (aLit.getDatatype() != null && aLit.getLanguage() == null) {
                 aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
             }
         }
@@ -250,7 +251,7 @@ public final class SesameQueryUtils {
 
             aBuffer.append("\"\"\"").append(escape(aLit.getLabel())).append("\"\"\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
 
-            if (aLit.getDatatype() != null) {
+            if (aLit.getDatatype() != null && aLit.getLanguage() == null) {
                 aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
             }
         }
@@ -278,7 +279,7 @@ public final class SesameQueryUtils {
 
             aBuffer.append("\"").append(escape(aLit.getLabel())).append("\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
 
-            if (aLit.getDatatype() != null) {
+            if (aLit.getDatatype() != null && aLit.getLanguage() == null) {
                 aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
             }
         }
