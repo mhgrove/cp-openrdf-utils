@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ import org.openrdf.rio.RDFParseException;
  *
  * @author	Michael Grove
  * @since	0.4
- * @version	2.0
+ * @version	3.0
  */
 public final class Graphs {
 
@@ -316,11 +316,15 @@ public final class Graphs {
 		return aGraph;
 	}
 
-    public static boolean contains(final Iterable<Statement> theGraph, final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContexts) {
+    public static boolean contains(final Iterable<Statement> theGraph, final Resource theSubject,
+                                   final URI thePredicate, final Value theObject, final Resource... theContexts) {
+
         return !Iterables.isEmpty(filter(theGraph, theSubject, thePredicate, theObject, theContexts));
     }
 
-    public static Iterable<Statement> filter(final Iterable<Statement> theGraph, final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContexts) {
+    public static Iterable<Statement> filter(final Iterable<Statement> theGraph, final Resource theSubject,
+                                             final URI thePredicate, final Value theObject, final Resource... theContexts) {
+
         return Iterables.filter(theGraph, new Predicate<Statement>() {
             @Override
             public boolean apply(final Statement theStatement) {
@@ -627,23 +631,4 @@ public final class Graphs {
     public static void write(final Graph theGraph, final RDFFormat theFormat, final Writer theWriter) throws IOException {
         GraphIO.writeGraph(theGraph, theWriter, theFormat);
     }
-
-//    public static TupleQueryResult select(final Graph theGraph, final String theQuery) throws MalformedQueryException, QueryEvaluationException {
-//        Repository aRepo = Repositories.createInMemoryRepo();
-//        try {
-//	        Repositories.add(aRepo, theGraph);
-//            return aRepo.selectQuery(QueryLanguage.SPARQL, theQuery);
-//        }
-//        catch (RepositoryException e) {
-//            throw new QueryEvaluationException("There was an error setting up the repository to execute the query", e);
-//        }
-//        finally {
-//            try {
-//                aRepo.shutDown();
-//            }
-//            catch (RepositoryException e) {
-//                // can probably ignore this, its just an in mem repo anyway.
-//            }
-//        }
-//    }
 }

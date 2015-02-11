@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2014 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class DelegatingGraphQueryResult implements GraphQueryResult {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Map<String, String> getNamespaces() throws QueryEvaluationException {
@@ -60,7 +60,7 @@ public class DelegatingGraphQueryResult implements GraphQueryResult {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void close() throws QueryEvaluationException {
@@ -68,7 +68,7 @@ public class DelegatingGraphQueryResult implements GraphQueryResult {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean hasNext() throws QueryEvaluationException {
@@ -76,7 +76,7 @@ public class DelegatingGraphQueryResult implements GraphQueryResult {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Statement next() throws QueryEvaluationException {
@@ -84,7 +84,7 @@ public class DelegatingGraphQueryResult implements GraphQueryResult {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void remove() throws QueryEvaluationException {

@@ -39,7 +39,7 @@ import static org.junit.Assert.fail;
 public class FunctionalGraphTests {
     @Test
     public void testFilter() throws Exception {
-        Graph aGraph = Graphs.of(new File("core/test/data/test0.ttl"));
+        Graph aGraph = Graphs.of(new File("test/data/test0.ttl"));
 
         URI aPred = ValueFactoryImpl.getInstance().createURI("http://api.linkedin.com/v1/rdf#lastName");
 
