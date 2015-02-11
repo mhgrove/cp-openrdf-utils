@@ -26,8 +26,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.complexible.common.openrdf.query.GraphQueryResult;
-import com.complexible.common.openrdf.query.TupleQueryResult;
 import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
 import info.aduna.iteration.CloseableIteration;
@@ -37,9 +35,11 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author  Michael Grove
  * @since   2.0
- * @version 3.0
+ * @version 2.0
  */
 public final class Repositories {
 	/**
