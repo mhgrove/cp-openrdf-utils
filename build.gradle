@@ -1,18 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 
-buildscript {
-	repositories {
-		maven {
-			url "http://jcenter.bintray.com"
-		}
-
-		dependencies {
-			classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '2.2.5')
-		}
-	}
-}
-
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.0'
 	distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
@@ -39,7 +27,6 @@ ext {
 subprojects {
 	apply plugin: "java"
 	apply plugin: "maven"
-	apply plugin: "artifactory"
 
 	dependencies {
 		compile 'org.slf4j:slf4j-api:1.7.7'
@@ -77,16 +64,17 @@ subprojects {
 		testRuntime testJar // include the tests of other subprojects
 	}
 
-	if (project.hasProperty('publishUrl')
-		&& project.hasProperty('artifactoryUser')
+	if (project.hasProperty('artifactoryUrl')
+		&& project.hasProperty('artifactoryUsername')
 		&& project.hasProperty('artifactoryPassword')) {
 
-		// this task is just so artifactory picks up the pom changes
-		task('uploadMvn', type: Upload) {
+		task('uploadArtifactory', type: Upload) {
 			configuration = configurations.archives
 			repositories {
 				mavenDeployer {
-					repository(url: publishUrl)
+					repository(url: artifactoryUrl) {
+						authentication(userName: artifactoryUsername, password: artifactoryPassword)
+					}
 					pom.project {
 						name = archivesBaseName
 						packaging = 'jar'
@@ -106,6 +94,24 @@ subprojects {
 							}
 						}
 
+						// add exclusion nodes (only for compile conf) since the maven plugin
+						// doesn't handle them as of gradle 1.9
+						project.configurations.compile.allDependencies.findAll {
+							it instanceof ModuleDependency && !it.excludeRules.isEmpty()
+						}.each { ModuleDependency dep ->
+							def xmlDep = pomXml.dependencies.dependency.find {
+								it.groupId[0].text() == dep.group && it.artifactId[0].text() == dep.name
+							}
+							def xmlExclusions = xmlDep.exclusions
+							if (!xmlExclusions) xmlExclusions = xmlDep.appendNode('exclusions')
+
+							dep.excludeRules.each { ExcludeRule rule ->
+								def xmlExclusion = xmlExclusions.appendNode('exclusion')
+								xmlExclusion.appendNode('groupId', rule.group)
+								xmlExclusion.appendNode('artifactId', rule.module ?: '*')
+							}
+						}
+
 						def newXml = new StringWriter()
 						def printer = new XmlNodePrinter(new PrintWriter(newXml))
 						printer.preserveWhitespace = true
@@ -116,28 +122,6 @@ subprojects {
 
 				}
 			}
-		}
-
-		artifactory {
-			// publishUrl is defined in gradle.properties
-			publish {
-				contextUrl = publishUrl
-				repository {
-					repoKey = publishId //The Artifactory repository key to publish to
-					username = "${artifactoryUser}" //The publisher user name
-					password = "${artifactoryPassword}" //The publisher password
-				}
-			}
-			resolve {
-				contextUrl = publishUrl
-				repository {
-					repoKey = publishId //The Artifactory (preferably virtual) repository key to resolve from
-					username = "${artifactoryUser}" //Optional resolver user name (leave out to use anonymous resolution)
-					password = "${artifactoryPassword}" //The resolver password
-					maven = true
-				}
-			}
-
 		}
 	}
 
