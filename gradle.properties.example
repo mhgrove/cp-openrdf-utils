@@ -1,4 +1,3 @@
-publishId=theRepoName
-publishUrl=/base/url/to/repo
-artifactoryUser=user
+artifactoryUrl=/url/to/repo
+artifactoryUsername=user
 artifactoryPassword=secret
