@@ -164,7 +164,7 @@ public class ResourceBuilder {
 			c.setTime(theValue);
 
 			try {
-				return addProperty(theProperty, mValueFactory.createLiteral(DatatypeFactory.newInstance().newXMLGregorianCalendar(c).toXMLFormat(), XMLSchema.DATE));
+				return addProperty(theProperty, mValueFactory.createLiteral(DatatypeFactory.newInstance().newXMLGregorianCalendar(c).toXMLFormat(), XMLSchema.DATETIME));
 			}
 			catch (DatatypeConfigurationException e) {
 				throw new IllegalArgumentException(e);
