@@ -29,7 +29,7 @@ import org.openrdf.model.ValueFactory;
  *
  * @author	Michael Grove
  * @since	0.1
- * @version 1.1
+ * @version 3.0
  */
 public class GraphBuilder {
     private final Graph mGraph;
@@ -45,38 +45,81 @@ public class GraphBuilder {
         mValueFactory = theValueFactory;
     }
 
+	/**
+	 * Return the Graph created via this builder
+	 *
+	 * @return  the graph
+	 */
     public Graph graph() {
-        return mGraph;
+        return Graphs.newGraph(mGraph);
     }
 
+	/**
+	 * Clear the contents of the builder
+	 */
     public void reset() {
         mGraph.clear();
     }
 
+	/**
+	 * Create a {@link ResourceBuilder builder} for the individual
+	 * @param theURI    the individual
+	 * @return          the {@link ResourceBuilder builder}
+	 */
     public ResourceBuilder uri(URI theURI) {
         return new ResourceBuilder(mGraph, getValueFactory(), getValueFactory().createURI(theURI.toString()));
     }
 
+	/**
+	 * Create a {@link ResourceBuilder builder} for the individual
+	 * @param theURI    the individual
+	 * @return          the {@link ResourceBuilder builder}
+	 */
     public ResourceBuilder uri(String theURI) {
         return instance(null, theURI);
     }
 
+	/**
+	 * Create a new anonymous instance of the given type
+	 *
+	 * @param theType   the type
+	 *
+	 * @return          a {@link ResourceBuilder builder} for the new individual
+	 */
     public ResourceBuilder instance(URI theType) {
         return instance(theType, (String) null);
     }
 
 	/**
-	 * Create an un-typed BNode in the graph
+	 * Create an un-typed anonymous individual in the graph
+	 *
 	 * @return a ResourceBuilder wrapping the bnode
 	 */
 	public ResourceBuilder instance() {
 		return instance(null, (String) null);
 	}
 
+
+	/**
+	 * Create a {@link ResourceBuilder builder} for the given individual and add the type
+	 *
+	 * @param theType   the type
+	 * @param theURI    the individual
+	 *
+	 * @return          a {@link ResourceBuilder builder} for the new individual
+	 */
 	public ResourceBuilder instance(URI theType, java.net.URI theURI) {
 		return instance(theType, theURI.toString());
 	}
 
+	/**
+	 * Create a {@link ResourceBuilder builder} for the given individual and add the type
+	 *
+	 * @param theType   the type
+	 * @param theRes    the individual
+	 *
+	 * @return          a {@link ResourceBuilder builder} for the new individual
+	 */
 	public ResourceBuilder instance(URI theType, Resource theRes) {
 		if (theType != null) {
 			mGraph.add(theRes, RDF.TYPE, theType);
@@ -84,7 +127,14 @@ public class GraphBuilder {
 
 		return new ResourceBuilder(mGraph, getValueFactory(), theRes);
 	}
-
+	/**
+	 * Create a {@link ResourceBuilder builder} for the given individual and add the type
+	 *
+	 * @param theType   the type
+	 * @param theURI    the individual
+	 *
+	 * @return          a {@link ResourceBuilder builder} for the new individual
+	 */
     public ResourceBuilder instance(URI theType, String theURI) {
         Resource aRes = theURI == null
                         ? getValueFactory().createBNode()

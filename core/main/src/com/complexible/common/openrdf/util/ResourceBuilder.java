@@ -43,7 +43,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
  *
  * @author	Michael Grove
  * @since	0.1
- * @version	1.1
+ * @version	3.0
  */
 public class ResourceBuilder {
     private final Graph mGraph;
@@ -158,6 +158,13 @@ public class ResourceBuilder {
 		}
     }
 
+	/**
+	 * Add a xsd:dateTime property to the resource
+	 *
+	 * @param theProperty   the property
+	 * @param theValue      the date-time object
+	 * @return              this builder
+	 */
 	public ResourceBuilder addProperty(URI theProperty, Date theValue) {
 		if (theValue != null) {
 			GregorianCalendar c = new GregorianCalendar();
