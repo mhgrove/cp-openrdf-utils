@@ -64,70 +64,7 @@ subprojects {
 		testRuntime testJar // include the tests of other subprojects
 	}
 
-	if (project.hasProperty('artifactoryUrl')
-		&& project.hasProperty('artifactoryUsername')
-		&& project.hasProperty('artifactoryPassword')) {
-
-		task('uploadArtifactory', type: Upload) {
-			configuration = configurations.archives
-			repositories {
-				mavenDeployer {
-					repository(url: artifactoryUrl) {
-						authentication(userName: artifactoryUsername, password: artifactoryPassword)
-					}
-					pom.project {
-						name = archivesBaseName
-						packaging = 'jar'
-						description projectDescription
-						url  projectUrl
-					}
-
-					//mess with the generated pom to remove test dependencies from published artifacts
-					pom.withXml { XmlProvider xmlProvider ->
-						def xml = xmlProvider.asString()
-						def pomXml = new XmlParser().parse(new ByteArrayInputStream(xml.toString().bytes))
-
-						pomXml.dependencies.dependency.each { dep ->
-							if (dep.scope.text() != 'compile') {
-								def parent = dep.parent()
-								parent.remove(dep)
-							}
-						}
-
-						// add exclusion nodes (only for compile conf) since the maven plugin
-						// doesn't handle them as of gradle 1.9
-						project.configurations.compile.allDependencies.findAll {
-							it instanceof ModuleDependency && !it.excludeRules.isEmpty()
-						}.each { ModuleDependency dep ->
-							def xmlDep = pomXml.dependencies.dependency.find {
-								it.groupId[0].text() == dep.group && it.artifactId[0].text() == dep.name
-							}
-							def xmlExclusions = xmlDep.exclusions
-							if (!xmlExclusions) xmlExclusions = xmlDep.appendNode('exclusions')
-
-							dep.excludeRules.each { ExcludeRule rule ->
-								def xmlExclusion = xmlExclusions.appendNode('exclusion')
-								xmlExclusion.appendNode('groupId', rule.group)
-								xmlExclusion.appendNode('artifactId', rule.module ?: '*')
-							}
-						}
-
-						def newXml = new StringWriter()
-						def printer = new XmlNodePrinter(new PrintWriter(newXml))
-						printer.preserveWhitespace = true
-						printer.print(pomXml)
-						xml.setLength(0)
-						xml.append(newXml.toString())
-					}
-
-				}
-			}
-		}
-	}
-
-//	evaluationDependsOnChildren()
-
-
+	apply from: "$rootDir/maven.gradle"
 }
 
 dependencies {
