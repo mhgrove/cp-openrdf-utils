@@ -25,7 +25,6 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.openrdf.model.impl.ValueFactoryImpl;
 
 /**
  * <p>A {@link Graph} which has a {@link Predicate constraint} placed upon which statements can be added to the Graph.</p>
@@ -96,15 +95,16 @@ public final class ConstrainedGraph extends DelegatingGraph {
 	 * @inheritDoc
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean add(final Resource theResource, final URI theURI, final Value theValue, final Resource... theContexts) {
 
 		if (theContexts == null || theContexts.length == 0) {
-			return add(ValueFactoryImpl.getInstance().createStatement(theResource, theURI, theValue));
+			return add(getValueFactory().createStatement(theResource, theURI, theValue));
 		}
 		else {
 			boolean aAdded = true;
 			for (Resource aCxt : theContexts) {
-				aAdded |= add(ValueFactoryImpl.getInstance().createStatement(theResource, theURI, theValue, aCxt));
+				aAdded |= add(getValueFactory().createStatement(theResource, theURI, theValue, aCxt));
 			}
 
 			return aAdded;

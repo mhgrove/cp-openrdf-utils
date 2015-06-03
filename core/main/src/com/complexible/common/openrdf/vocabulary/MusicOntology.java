@@ -16,7 +16,6 @@
 package com.complexible.common.openrdf.vocabulary;
 
 import org.openrdf.model.URI;
-import org.openrdf.model.impl.ValueFactoryImpl;
 
 /**
  * <p>Term constants for the DC music ontology</p>

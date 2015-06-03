@@ -41,17 +41,12 @@ import org.openrdf.model.Value;
 
 import org.openrdf.model.util.GraphUtil;
 import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.impl.ValueFactoryImpl;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Iterators;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
 
@@ -60,7 +55,7 @@ import org.openrdf.rio.RDFParseException;
  *
  * @author	Michael Grove
  * @since	0.4
- * @version	3.0
+ * @version	3.1
  */
 public final class Graphs {
 
@@ -143,12 +138,12 @@ public final class Graphs {
 	 * @return				the list as RDF
 	 */
 	public static Graph toList(final List<Resource> theResources) {
-		Resource aCurr = ValueFactoryImpl.getInstance().createBNode();
+		Resource aCurr = ContextAwareValueFactory.getInstance().createBNode();
 
 		int i = 0;
 		Graph aGraph = new SetGraph();
 		for (Resource r : theResources) {
-			Resource aNext = ValueFactoryImpl.getInstance().createBNode();
+			Resource aNext = ContextAwareValueFactory.getInstance().createBNode();
 			aGraph.add(aCurr, RDF.FIRST, r);
 			aGraph.add(aCurr, RDF.REST, ++i < theResources.size() ? aNext : RDF.NIL);
 			aCurr = aNext;
@@ -208,7 +203,10 @@ public final class Graphs {
 	 *
 	 * @param theStatements	the statements for the new graph
 	 * @return				the new graph
+	 *
+	 * @deprecated use {@link #newGraph(Statement...)}
 	 */
+	@Deprecated
 	public static Graph newContextGraph(final Statement... theStatements) {
 		return newContextGraph(Iterators.forArray(theStatements));
 	}
@@ -218,7 +216,10 @@ public final class Graphs {
 	 *
 	 * @param theStatements the statements for the new graph
 	 * @return 				the new graph
+	 *
+	 * @deprecated use {@link #newGraph(Iterator}
 	 */
+	@Deprecated
 	public static Graph newContextGraph(final Iterator<Statement> theStatements) {
 		Graph aGraph = contextGraph();
 
@@ -234,7 +235,10 @@ public final class Graphs {
 	 *
 	 * @param theStatements	the statements for the new graph
 	 * @return				the new graph
+	 *
+	 * @deprecated use {@link #newGraph(Iterable)}
 	 */
+	@Deprecated
 	public static Graph newContextGraph(final Iterable<Statement> theStatements) {
 		return newContextGraph(theStatements.iterator());
 	}
@@ -287,16 +291,11 @@ public final class Graphs {
 	/**
 	 * Return a new (empty) graph whose ValueFactory is an instance of {@link ContextAwareValueFactory}
 	 * @return a new "context aware" graph
+	 *
+	 * @deprecated use {@link #newGraph()}
 	 */
 	public static Graph contextGraph() {
-		return new DelegatingGraph(new SetGraph()) {
-			@Override
-			public boolean add(final Statement e) {
-                // SetGraph uses the context aware value factory, so we just need to xform the statement here
-                // to a statement that uses that value factory
-				return super.add(e.getSubject(), e.getPredicate(), e.getObject(), e.getContext());
-			}
-		};
+		return new SetGraph();
 	}
 
 	/**

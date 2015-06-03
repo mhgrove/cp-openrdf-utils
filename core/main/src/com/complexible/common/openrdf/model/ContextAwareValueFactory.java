@@ -35,17 +35,10 @@ import org.openrdf.model.impl.ValueFactoryImpl;
  *
  * @author  Michael Grove
  * @since   0.4.1
- * @version 1.0
+ * @version 3.1
  */
 public final class ContextAwareValueFactory implements ValueFactory {
 	private final ValueFactory mFactory;
-
-	/**
-	 * Create a new ContextAwareValueFactory wrapping {@link ValueFactoryImpl#getInstance()}
-	 */
-	public ContextAwareValueFactory() {
-		this(ValueFactoryImpl.getInstance());
-	}
 
 	/**
 	 * Create a new ContextAwareValueFactory wrapping the provided ValueFactory
@@ -53,6 +46,19 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	 */
 	public ContextAwareValueFactory(final ValueFactory theFactory) {
 		mFactory = theFactory;
+	}
+
+	private static ContextAwareValueFactory INSTANCE = null;
+
+	/**
+	 * Return the default ContextAwareValueFactory
+	 */
+	public static ContextAwareValueFactory getInstance() {
+		if (INSTANCE != null) {
+			INSTANCE = new ContextAwareValueFactory(ValueFactoryImpl.getInstance());
+		}
+
+		return INSTANCE;
 	}
 
 	/**

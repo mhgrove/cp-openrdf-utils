@@ -35,7 +35,7 @@ import org.openrdf.model.ValueFactory;
  *
  * @author  Michael Grove
  * @since	0.5
- * @version 0.9
+ * @version 3.1
  */
 public final class SetGraph extends AbstractCollection<Statement> implements Graph {
 
@@ -47,7 +47,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	/**
 	 * The ValueFactory for this graph
 	 */
-	private final ValueFactory mValueFactory = new ContextAwareValueFactory();
+	private final ValueFactory mValueFactory = ContextAwareValueFactory.getInstance();
 
 	/**
 	 * @inheritDoc
@@ -63,14 +63,6 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	@Override
 	public int size() {
 		return mStatements.size();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	@Override
-	public boolean add(final Statement theStatement) {
-		return mStatements.add(theStatement);
 	}
 
 	/**
@@ -104,6 +96,15 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
     @Deprecated
 	public ValueFactory getValueFactory() {
 		return mValueFactory;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public boolean add(final Statement e) {
+		return (e instanceof ContextAwareStatement) ? mStatements.add(e)
+		                                            : add(e.getSubject(), e.getPredicate(), e.getObject(), e.getContext());
 	}
 
 	/**
