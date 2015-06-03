@@ -54,7 +54,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	 * Return the default ContextAwareValueFactory
 	 */
 	public static ContextAwareValueFactory getInstance() {
-		if (INSTANCE != null) {
+		if (INSTANCE == null) {
 			INSTANCE = new ContextAwareValueFactory(ValueFactoryImpl.getInstance());
 		}
 
