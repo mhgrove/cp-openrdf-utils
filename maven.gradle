@@ -29,6 +29,7 @@ def repoUpload(Map<String, String> options) {
 		configuration =  configurations.archives
 		repositories {
 			mavenDeployer {
+				uniqueVersion = false
 				repository(url: repoUrl) {
 					if (auth) {
 						authentication(userName: username, password: passwd)
