@@ -110,7 +110,7 @@ public class TestContextAware {
 		final URI o = ValueFactoryImpl.getInstance().createURI("urn:o");
 		final URI c = ValueFactoryImpl.getInstance().createURI("urn:c");
 
-		ValueFactory vf = new ContextAwareValueFactory();
+		ValueFactory vf = ContextAwareValueFactory.getInstance();
 
 		assertTrue(vf.createStatement(s, p, o) instanceof ContextAwareStatement);
 		assertTrue(vf.createStatement(s, p, o, c) instanceof ContextAwareStatement);

@@ -29,8 +29,8 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.ValueFactoryImpl;
 
 /**
- * <p>{@link ValueFactory} implementation which will create {@link Statement statements} of the type {@link ContextAwareStatement},
- * otherwise it delegates creation of objects to the default ValueFactory</p>
+ * <p>{@link ValueFactory} implementation which will create {@link Statement statements} of the type 
+ * {@link ContextAwareStatement}, otherwise it delegates creation of objects to the default ValueFactory</p>
  *
  *
  * @author  Michael Grove
@@ -62,7 +62,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public URI createURI(final String theURI) {
@@ -70,14 +70,14 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	public URI createURI(final String s, final String s1) {
 		return mFactory.createURI(s, s1);
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public BNode createBNode() {
@@ -85,7 +85,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public BNode createBNode(final String theId) {
@@ -93,7 +93,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final String theValue) {
@@ -101,7 +101,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final String theValue, final String theLang) {
@@ -109,7 +109,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final String theValue, final URI theDatatype) {
@@ -117,7 +117,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final boolean theValue) {
@@ -125,7 +125,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final byte theValue) {
@@ -133,7 +133,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final short theValue) {
@@ -141,7 +141,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final int theValue) {
@@ -149,7 +149,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final long theValue) {
@@ -157,7 +157,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final float theValue) {
@@ -165,7 +165,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final double theValue) {
@@ -173,7 +173,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Literal createLiteral(final XMLGregorianCalendar theXMLGregorianCalendar) {
@@ -181,7 +181,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Literal createLiteral(final Date theDate) {
@@ -189,7 +189,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
     }
 
     /**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Statement createStatement(final Resource theSubject, final URI thePredicate, final Value theObject) {
@@ -197,7 +197,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public Statement createStatement(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource theContext) {

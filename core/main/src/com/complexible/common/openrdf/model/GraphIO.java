@@ -36,6 +36,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.google.common.base.Charsets;
 import org.openrdf.rio.helpers.BasicParserSettings;
@@ -64,8 +66,8 @@ public final class GraphIO {
 	 * @throws IOException			if there was an error reading from the file
 	 * @throws RDFParseException	if the RDF could not be parsed
 	 */
-	public static Graph readGraph(final File theFile) throws IOException, RDFParseException {
-		return readGraph(new FileInputStream(theFile), RDFFormat.forFileName(theFile.getName()));
+	public static Graph readGraph(final Path theFile) throws IOException, RDFParseException {
+		return readGraph(Files.newInputStream(theFile), RDFFormat.forFileName(theFile.getFileName().toString()));
 	}
 
 	/**

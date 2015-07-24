@@ -17,12 +17,32 @@ package com.complexible.common.openrdf.util;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
+import java.util.function.ToDoubleFunction;
+import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collector;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.slf4j.LoggerFactory;
@@ -38,7 +58,7 @@ import com.google.common.base.Predicate;
  *
  * @author  Michael Grove
  * @since   0.4
- * @version 1.1
+ * @version 4.0
  */
 public final class AdunaIterations {
 	/**
@@ -51,6 +71,204 @@ public final class AdunaIterations {
 	 */
 	private AdunaIterations() {
         throw new AssertionError();
+	}
+
+	/**
+	 * Wrap the given {@link CloseableIteration} as a {@link Stream}
+	 *
+	 * @param theIter   the iterator to view as a {@code Stream}
+	 * @param <T>       the type of results in the Iteration
+	 *
+	 * @return          the new {@code Stream}
+	 */
+	public static <T, I extends CloseableIteration<T, ? extends Exception>> Stream<T> stream(final I theIter) {
+		final Stream<T> aStream = StreamSupport.stream(new IterationStream<T>(theIter), false);
+		aStream.onClose(() -> {
+			try {
+				theIter.close();
+			}
+			catch (Exception e) {
+				Throwables.propagateIfInstanceOf(e, RuntimeException.class);
+
+				// todo: convert to OpenRdfException when Sesame 4 is available
+				throw Throwables.propagate(e);
+			}
+		});
+
+		return aStream;
+
+//		// sorry about this wrapper.  only way to make sure that the original Iteration is closed since the
+//		// wrapper from StreamSupport does the default no-op since Spliterator's normally don't need to be closed
+//		// todo: DelegatingStream!
+//		return new Stream<T>() {
+//			public void close() {
+//				try {
+//					theIter.close();
+//				}
+//				catch (Exception e) {
+//					Throwables.propagateIfInstanceOf(e, RuntimeException.class);
+//
+//					// todo: convert to OpenRdfException when Sesame 4 is available
+//					throw Throwables.propagate(e);
+//				}
+//			}
+//
+//			public IntStream flatMapToInt(final Function<? super T, ? extends IntStream> mapper) {
+//				return aStream.flatMapToInt(mapper);
+//			}
+//
+//			public boolean allMatch(final java.util.function.Predicate<? super T> predicate) {
+//				return aStream.allMatch(predicate);
+//			}
+//
+//			public boolean anyMatch(final java.util.function.Predicate<? super T> predicate) {
+//				return aStream.anyMatch(predicate);
+//			}
+//
+//			public <R, A> R collect(final Collector<? super T, A, R> collector) {
+//				return aStream.collect(collector);
+//			}
+//
+//			public <R> R collect(final Supplier<R> supplier, final BiConsumer<R, ? super T> accumulator, final BiConsumer<R, R> combiner) {
+//				return aStream.collect(supplier, accumulator, combiner);
+//			}
+//
+//			public long count() {
+//				return aStream.count();
+//			}
+//
+//			public Stream<T> distinct() {
+//				return aStream.distinct();
+//			}
+//
+//			public Stream<T> filter(final java.util.function.Predicate<? super T> predicate) {
+//				return aStream.filter(predicate);
+//			}
+//
+//			public java.util.Optional<T> findAny() {
+//				return aStream.findAny();
+//			}
+//
+//			public java.util.Optional<T> findFirst() {
+//				return aStream.findFirst();
+//			}
+//
+//			public <R> Stream<R> flatMap(final Function<? super T, ? extends Stream<? extends R>> mapper) {
+//				return aStream.flatMap(mapper);
+//			}
+//
+//			public DoubleStream flatMapToDouble(final Function<? super T, ? extends DoubleStream> mapper) {
+//				return aStream.flatMapToDouble(mapper);
+//			}
+//
+//			public LongStream flatMapToLong(final Function<? super T, ? extends LongStream> mapper) {
+//				return aStream.flatMapToLong(mapper);
+//			}
+//
+//			public void forEach(final Consumer<? super T> action) {
+//				aStream.forEach(action);
+//			}
+//
+//			public void forEachOrdered(final Consumer<? super T> action) {
+//				aStream.forEachOrdered(action);
+//			}
+//
+//			public Stream<T> limit(final long maxSize) {
+//				return aStream.limit(maxSize);
+//			}
+//
+//			public <R> Stream<R> map(final Function<? super T, ? extends R> mapper) {
+//				return aStream.map(mapper);
+//			}
+//
+//			public DoubleStream mapToDouble(final ToDoubleFunction<? super T> mapper) {
+//				return aStream.mapToDouble(mapper);
+//			}
+//
+//			public IntStream mapToInt(final ToIntFunction<? super T> mapper) {
+//				return aStream.mapToInt(mapper);
+//			}
+//
+//			public LongStream mapToLong(final ToLongFunction<? super T> mapper) {
+//				return aStream.mapToLong(mapper);
+//			}
+//
+//			public java.util.Optional<T> max(final Comparator<? super T> comparator) {
+//				return aStream.max(comparator);
+//			}
+//
+//			public java.util.Optional<T> min(final Comparator<? super T> comparator) {
+//				return aStream.min(comparator);
+//			}
+//
+//			public boolean noneMatch(final java.util.function.Predicate<? super T> predicate) {
+//				return aStream.noneMatch(predicate);
+//			}
+//
+//			public Stream<T> peek(final Consumer<? super T> action) {
+//				return aStream.peek(action);
+//			}
+//
+//			public java.util.Optional<T> reduce(final BinaryOperator<T> accumulator) {
+//				return aStream.reduce(accumulator);
+//			}
+//
+//			public T reduce(final T identity, final BinaryOperator<T> accumulator) {
+//				return aStream.reduce(identity, accumulator);
+//			}
+//
+//			public <U> U reduce(final U identity, final BiFunction<U, ? super T, U> accumulator, final BinaryOperator<U> combiner) {
+//				return aStream.reduce(identity, accumulator, combiner);
+//			}
+//
+//			public Stream<T> skip(final long n) {
+//				return aStream.skip(n);
+//			}
+//
+//			public Stream<T> sorted() {
+//				return aStream.sorted();
+//			}
+//
+//			public Stream<T> sorted(final Comparator<? super T> comparator) {
+//				return aStream.sorted(comparator);
+//			}
+//
+//			public Object[] toArray() {
+//				return aStream.toArray();
+//			}
+//
+//			public <A> A[] toArray(final IntFunction<A[]> generator) {
+//				return aStream.toArray(generator);
+//			}
+//
+//			public boolean isParallel() {
+//				return aStream.isParallel();
+//			}
+//
+//			public Iterator<T> iterator() {
+//				return aStream.iterator();
+//			}
+//
+//			public Stream<T> onClose(final Runnable closeHandler) {
+//				return aStream.onClose(closeHandler);
+//			}
+//
+//			public Stream<T> parallel() {
+//				return aStream.parallel();
+//			}
+//
+//			public Stream<T> sequential() {
+//				return aStream.sequential();
+//			}
+//
+//			public Spliterator<T> spliterator() {
+//				return aStream.spliterator();
+//			}
+//
+//			public Stream<T> unordered() {
+//				return aStream.unordered();
+//			}
+//		};
 	}
 
 	/**
@@ -69,11 +287,7 @@ public final class AdunaIterations {
 	 * @return the RepositoryResult as an Iterable
 	 */
 	public static <T, E extends Exception> Iterable<T> iterable(final Iteration<T, E> theResult) {
-		return new Iterable<T>() {
-			public Iterator<T> iterator() {
-				return AdunaIterations.iterator(theResult);
-			}
-		};
+		return () -> iterator(theResult);
 	}
 
 	/**
@@ -88,27 +302,6 @@ public final class AdunaIterations {
 		}
 		catch (Exception e) {
 			LOGGER.warn("Ignoring error while closing iteration.", e);
-		}
-	}
-
-	/**
-	 * Apply the predicate to everything in the Iteration
-	 * @param theIter the iteratino
-	 * @param theEach the predicate to apply
-	 * @param <T> the type of objects in the iteration
-	 * @param <E> the type of exception that can be thrown
-	 * @throws E the exception
-	 */
-	public static <T, E extends Exception> void each(final CloseableIteration<T, E> theIter, final Predicate<T> theEach) throws E {
-        Preconditions.checkNotNull(theIter, "Cannot iterate over null Iteration");
-
-		try {
-			while (theIter.hasNext()) {
-				theEach.apply(theIter.next());
-			}
-		}
-		finally {
-			theIter.close();
 		}
 	}
 

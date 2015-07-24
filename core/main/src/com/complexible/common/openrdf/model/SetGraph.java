@@ -50,7 +50,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	private final ValueFactory mValueFactory = ContextAwareValueFactory.getInstance();
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Iterator<Statement> iterator() {
@@ -58,7 +58,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public int size() {
@@ -66,7 +66,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean contains(final Object theStatement) {
@@ -74,7 +74,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean remove(final Object theStatement) {
@@ -82,7 +82,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void clear() {
@@ -90,7 +90,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
     @Deprecated
@@ -99,7 +99,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean add(final Statement e) {
@@ -108,7 +108,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
 	public boolean add(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContexts) {
@@ -122,16 +122,16 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
     @Override
     @Deprecated
 	public Iterator<Statement> match(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContexts) {
-		return Graphs.filter(this, theSubject, thePredicate, theObject, theContexts).iterator();
+		return this.stream().filter(Statements.matches(theSubject, thePredicate, theObject, theContexts)).iterator();
 	}
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean equals(final Object o) {
@@ -148,7 +148,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int hashCode() {

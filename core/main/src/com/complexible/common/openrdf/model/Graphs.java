@@ -21,29 +21,32 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
+import com.complexible.common.openrdf.util.AdunaIterations;
 import com.google.common.collect.Lists;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
-import org.openrdf.model.Resource;
+import com.google.common.collect.Sets;
 import org.openrdf.model.Graph;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-
 import org.openrdf.model.util.GraphUtil;
 import org.openrdf.model.vocabulary.RDF;
-import com.google.common.base.Objects;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Iterators;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
@@ -55,7 +58,7 @@ import org.openrdf.rio.RDFParseException;
  *
  * @author	Michael Grove
  * @since	0.4
- * @version	3.1
+ * @version	4.0
  */
 public final class Graphs {
 
@@ -63,18 +66,36 @@ public final class Graphs {
         throw new AssertionError();
     }
 
-    /**
-     * Wrap the graph as an {@link ExtGraph}
-     * @param theGraph  the graph
-     * @return          the graph as an ExtGraph
-     */
-    public static ExtGraph extend(final Graph theGraph) {
-		if (theGraph instanceof ExtGraph) {
-            return (ExtGraph) theGraph;
-        }
-        else {
-            return new ExtGraphImpl(theGraph);
-        }
+	public static Collector<Statement, Graph, Graph> toGraph() {
+		return new Collector<Statement, Graph, Graph>() {
+			@Override
+			public Supplier<Graph> supplier() {
+				return Graphs::newGraph;
+			}
+
+			@Override
+			public BiConsumer<Graph, Statement> accumulator() {
+				return Graph::add;
+			}
+
+			@Override
+			public BinaryOperator<Graph> combiner() {
+				return (theGraph, theOtherGraph) -> {
+					theGraph.addAll(theOtherGraph);
+					return theGraph;
+				};
+			}
+
+			@Override
+			public Function<Graph, Graph> finisher() {
+				return Function.identity();
+			}
+
+			@Override
+			public Set<Characteristics> characteristics() {
+				return Sets.newHashSet(Characteristics.IDENTITY_FINISH, Characteristics.UNORDERED);
+			}
+		};
 	}
 
 	/**
@@ -104,7 +125,7 @@ public final class Graphs {
 	 * @throws IOException			if there was an error reading the file
 	 * @throws RDFParseException	if the file did not contain valid RDF
 	 */
-	public static Graph of(final File theFile) throws IOException, RDFParseException {
+	public static Graph of(final Path theFile) throws IOException, RDFParseException {
 		return GraphIO.readGraph(theFile);
 	}
 
@@ -120,13 +141,8 @@ public final class Graphs {
 	public static Graph newGraph(final GraphQueryResult theResult) throws QueryEvaluationException {
 		Graph aGraph = new SetGraph();
 
-		try {
-			while (theResult.hasNext()) {
-				aGraph.add(theResult.next());
-			}
-		}
-		finally {
-			theResult.close();
+		try (Stream<Statement> aResults = AdunaIterations.stream(theResult)) {
+			aResults.forEach(aGraph::add);
 		}
 
 		return aGraph;
@@ -142,9 +158,9 @@ public final class Graphs {
 
 		int i = 0;
 		Graph aGraph = new SetGraph();
-		for (Resource r : theResources) {
+		for (Resource aRes : theResources) {
 			Resource aNext = ContextAwareValueFactory.getInstance().createBNode();
-			aGraph.add(aCurr, RDF.FIRST, r);
+			aGraph.add(aCurr, RDF.FIRST, aRes);
 			aGraph.add(aCurr, RDF.REST, ++i < theResources.size() ? aNext : RDF.NIL);
 			aCurr = aNext;
 		}
@@ -189,58 +205,13 @@ public final class Graphs {
 	 * @return 				a Graph containing all the provided statements
 	 */
 	public static Graph newGraph(final Iterable<Statement> theStatements) {
-		final ExtGraphImpl aGraph = new ExtGraphImpl();
+		final SetGraph aGraph = new SetGraph();
 
 		for (Statement aStmt : theStatements) {
 			aGraph.add(aStmt);
 		}
 
 		return aGraph;
-	}
-
-	/**
-	 * Return a new {@link #contextGraph} whose contents are the statements contained in the array.
-	 *
-	 * @param theStatements	the statements for the new graph
-	 * @return				the new graph
-	 *
-	 * @deprecated use {@link #newGraph(Statement...)}
-	 */
-	@Deprecated
-	public static Graph newContextGraph(final Statement... theStatements) {
-		return newContextGraph(Iterators.forArray(theStatements));
-	}
-
-	/**
-	 * Return a new {@link #contextGraph} whose contents are the statements contained in the iterator.
-	 *
-	 * @param theStatements the statements for the new graph
-	 * @return 				the new graph
-	 *
-	 * @deprecated use {@link #newGraph(Iterator}
-	 */
-	@Deprecated
-	public static Graph newContextGraph(final Iterator<Statement> theStatements) {
-		Graph aGraph = contextGraph();
-
-		while (theStatements.hasNext()) {
-			aGraph.add(theStatements.next());
-		}
-
-		return aGraph;
-	}
-
-	/**
-	 * Return a new {@link #contextGraph} whose contents are the statements contained in the {@link Iterable}.
-	 *
-	 * @param theStatements	the statements for the new graph
-	 * @return				the new graph
-	 *
-	 * @deprecated use {@link #newGraph(Iterable)}
-	 */
-	@Deprecated
-	public static Graph newContextGraph(final Iterable<Statement> theStatements) {
-		return newContextGraph(theStatements.iterator());
 	}
 
 	/**
@@ -252,28 +223,21 @@ public final class Graphs {
 	 * @return 				the new graph
 	 */
 	public static Graph withContext(final Graph theGraph, final Resource theResource) {
-		final Graph aGraph = contextGraph();
+		final Graph aGraph = newGraph();
 
-		for (Statement aStmt : theGraph) {
-			if (Objects.equal(aStmt.getContext(), theResource)) {
-				aGraph.add(aStmt);
-			}
-			else {
-				aGraph.add(aStmt.getSubject(),
-						   aStmt.getPredicate(),
-						   aStmt.getObject(),
-						   theResource);
-			}
-		}
+		theGraph.stream()
+		        .map(Statements.applyContext(theResource, theGraph.getValueFactory()))
+		        .forEach(aGraph::add);
 
 		return aGraph;
 	}
 
 	/**
-	 * Return a new Graph which is the union of all the provided graphs.  Be careful if you are using statements w/ a context as the equals method for Statement
-	 * does not take into account context, so two statements with the same SPO, but different contexts will be considered the same statement and only one will
-	 * be included in the union.  You can use {@link ContextAwareStatement} which implements equals & hashcode taking into account the context if you need to use
-	 * Statements with contexts where context is considered in this way.
+	 * Return a new Graph which is the union of all the provided graphs.  Be careful if you are using statements w/ a
+	 * context as the equals method for Statement does not take into account context, so two statements with the same
+	 * SPO, but different contexts will be considered the same statement and only one will be included in the union.
+	 * You can use {@link ContextAwareStatement} which implements equals & hashcode taking into account the context
+	 * if you need to use Statements with contexts where context is considered in this way.
 	 * 
 	 * @param theGraphs the graphs to union
 	 * @return			the union of the graphs
@@ -288,180 +252,14 @@ public final class Graphs {
 		return aSetGraph;
 	}
 
-	/**
-	 * Return a new (empty) graph whose ValueFactory is an instance of {@link ContextAwareValueFactory}
-	 * @return a new "context aware" graph
-	 *
-	 * @deprecated use {@link #newGraph()}
-	 */
-	public static Graph contextGraph() {
-		return new SetGraph();
-	}
-
-	/**
-	 * Create a {@link Predicate filtered} copy of the provided {@link Graph}
-	 *
-	 * @param theGraph		the graph to filter
-	 * @param thePredicate	the predicate to use for filtering
-	 * @return				the filtered graph
-	 */
-	public static Graph filter(final Graph theGraph, final Predicate<Statement> thePredicate) {
-		final SetGraph aGraph = new SetGraph();
-		for (Statement aStmt : theGraph) {
-			if (thePredicate.apply(aStmt)) {
-				aGraph.add(aStmt);
-			}
-		}
-		return aGraph;
-	}
-
     public static boolean contains(final Iterable<Statement> theGraph, final Resource theSubject,
                                    final URI thePredicate, final Value theObject, final Resource... theContexts) {
 
-        return !Iterables.isEmpty(filter(theGraph, theSubject, thePredicate, theObject, theContexts));
+	    return (theGraph instanceof Graph ? ((Graph) theGraph).stream() : StreamSupport.stream(theGraph.spliterator(), false))
+		           .filter(Statements.matches(theSubject, thePredicate, theObject, theContexts))
+		           .findFirst()
+		           .isPresent();
     }
-
-    public static Iterable<Statement> filter(final Iterable<Statement> theGraph, final Resource theSubject,
-                                             final URI thePredicate, final Value theObject, final Resource... theContexts) {
-
-        return Iterables.filter(theGraph, new Predicate<Statement>() {
-            @Override
-            public boolean apply(final Statement theStatement) {
-                if (theSubject != null && !theSubject.equals(theStatement.getSubject())) {
-                    return false;
-                }
-                if (thePredicate != null && !thePredicate.equals(theStatement.getPredicate())) {
-                    return false;
-                }
-                if (theObject != null && !theObject.equals(theStatement.getObject())) {
-                    return false;
-                }
-
-                if (theContexts == null || theContexts.length == 0) {
-                    // no context specified, SPO were all equal, so this is equals as null/empty context is a wildcard
-                    return true;
-                }
-                else {
-                    Resource aContext = theStatement.getContext();
-
-                    for (Resource aCxt : theContexts) {
-                        if (aCxt == null && aContext == null) {
-                            return true;
-                        }
-                        if (aCxt != null && aCxt.equals(aContext)) {
-                            return true;
-                        }
-                    }
-
-                    return false;
-                }
-            }
-        });
-    }
-
-	/**
-	 * {@link Function Transform} the contents of the {@link Graph}.  This returns a copy of the original
-	 * graph with the transformation applied
-	 *
-	 * @param theGraph		the graph to transform
-	 * @param theFunction	the function for the transform
-	 * @return				the transformed graph
-	 */
-	public static Graph transform(final Graph theGraph, final Function<Statement, Statement> theFunction) {
-		final SetGraph aGraph = new SetGraph();
-		for (Statement aStmt : theGraph) {
-			aGraph.add(theFunction.apply(aStmt));
-		}
-		return aGraph;
-	}
-
-	/**
-	 * Find a {@link Statement} which satisfies the given {@link Predicate}
-	 *
-	 * @param theGraph		the Graph
-	 * @param thePredicate	the predicate
-	 * @return				{@link Optional Optionally}, the first Statement to satisfy the Predicate, or an absent Optional if none do
-	 */
-	public static Optional<Statement> find(final Graph theGraph, final Predicate<Statement> thePredicate) {
-		for (Statement aStmt : theGraph) {
-			if (thePredicate.apply(aStmt)) {
-				return Optional.of(aStmt);
-			}
-		}
-		return Optional.absent();
-	}
-
-	/**
-	 * Return whether or not at least one {@link Statement} satisfies the {@link Predicate}
-	 *
-	 * @param theGraph		the graph
-	 * @param thePredicate	the predicate
-	 * @return				true if at least one Statement satisfies the Predicate, false otherwise
-	 */
-	public static boolean any(final Graph theGraph, final Predicate<Statement> thePredicate) {
-		for (Statement aStmt : theGraph) {
-			if (thePredicate.apply(aStmt)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Return whether or not all {@link Statement statements} satisfy the {@link Predicate}
-	 *
-	 * @param theGraph		the graph
-	 * @param thePredicate	the predicate
-	 * @return				true if at all Statements satisfy the Predicate, false otherwise
-	 */
-	public static boolean all(final Graph theGraph, final Predicate<Statement> thePredicate) {
-		for (Statement aStmt : theGraph) {
-			if (!thePredicate.apply(aStmt)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Collect the results of the {@link Function} as it is applied to each {@link Statement}.  {@link Optional Absent}
-	 * values are not collected; the provided function should never return a null value.
-	 *
-	 * @param theGraph		the statements
-	 * @param theFunction	the function
-	 * @return				the collected values
-	 */
-	public static <T> Collection<T> collect(final Iterable<Statement> theGraph, final Function<Statement, Optional<T>> theFunction) {
-		final Set<T> aSet = Sets.newHashSet();
-		for (Statement aStmt : theGraph) {
-			final Optional<T> aResult = theFunction.apply(aStmt);
-			if (aResult.isPresent()) {
-				aSet.add(aResult.get());
-			}
-		}
-		return aSet;
-	}
-
-	/**
-	 * Collect the results of the {@link Function} as it is applied to each {@link Statement}.  {@link Optional Absent}
-	 * values are not collected; the provided function should never return a null value.
-	 *
-	 * @param theStatementIterator		the statements
-	 * @param theFunction	the function
-	 * @return				the collected values
-	 */
-	public static <T> Collection<T> collect(final Iterator<Statement> theStatementIterator, final Function<Statement, Optional<T>> theFunction) {
-		final Set<T> aSet = Sets.newHashSet();
-		while (theStatementIterator.hasNext()) {
-			final Statement aStmt = theStatementIterator.next();
-
-			Optional<T> aResult = theFunction.apply(aStmt);
-			if (aResult.isPresent()) {
-				aSet.add(aResult.get());
-			}
-		}
-		return aSet;
-	}
 
 	/**
 	 * Return the value of the property for the given subject.  If there are multiple values, only the first value will
@@ -482,7 +280,7 @@ public final class Graphs {
 			return Optional.of(aCollection.next());
 		}
 		else {
-			return Optional.absent();
+			return Optional.empty();
 		}
 	}
 
@@ -503,7 +301,7 @@ public final class Graphs {
 			return Optional.of((Literal) aVal.get());
 		}
 		else {
-			return Optional.absent();
+			return Optional.empty();
 		}
 	}
 
@@ -525,7 +323,7 @@ public final class Graphs {
 			return Optional.of((Resource) aVal.get());
 		}
 		else {
-			return Optional.absent();
+			return Optional.empty();
 		}
 	}
 
@@ -542,7 +340,7 @@ public final class Graphs {
 		Optional<Literal> aLitOpt = getLiteral(theGraph, theSubj, thePred);
 
 		if (!aLitOpt.isPresent()) {
-			return Optional.absent();
+			return Optional.empty();
 		}
 
 		Literal aLiteral = aLitOpt.get();
@@ -552,7 +350,7 @@ public final class Graphs {
 			return Optional.of(Boolean.valueOf(aLiteral.getLabel()));
 		}
 		else {
-			return Optional.absent();
+			return Optional.empty();
 		}
 	}
 
@@ -565,9 +363,7 @@ public final class Graphs {
 	 * @return			true if its a list, false otherwise
 	 */
 	public static boolean isList(final Graph theGraph, final Resource theRes) {
-		Iterable<Statement> sIter = filter(theGraph, theRes, RDF.FIRST, null);
-
-		return theRes != null && theRes.equals(RDF.NIL) || !Iterables.isEmpty(sIter);
+		return theRes != null && (theRes.equals(RDF.NIL) || theGraph.stream().filter(Statements.matches(theRes, RDF.FIRST, null)).findFirst().isPresent());
 	}
 
 	/**
@@ -591,7 +387,7 @@ public final class Graphs {
 				aList.add(aFirst.get());
 			}
 
-			if (aRest.or(RDF.NIL).equals(RDF.NIL)) {
+			if (aRest.orElse(RDF.NIL).equals(RDF.NIL)) {
 				aListRes = null;
 			}
 			else {
@@ -610,17 +406,21 @@ public final class Graphs {
 	 * @return			the asserted rdf:type's of the resource
 	 */
 	public static Iterable<Resource> getTypes(final Graph theGraph, final Resource theRes) {
-		return collect(filter(theGraph, theRes, RDF.TYPE, null).iterator(), Statements.objectAsResource());
+		return theGraph.stream()
+		               .filter(Statements.matches(theRes, RDF.TYPE, null))
+		               .map(Statement::getObject)
+		               .map(theObject -> (Resource) theObject)
+		               .collect(Collectors.toList());
+	}
+
+	public static boolean isInstanceOf(final Graph theGraph, final Resource theSubject, final Resource theType) {
+		return theGraph.contains(ContextAwareValueFactory.getInstance().createStatement(theSubject, RDF.TYPE, theType));
 	}
 
     public static void write(final Graph theGraph, final RDFFormat theFormat, final File theFile) throws IOException {
-        FileOutputStream aOut = new FileOutputStream(theFile);
-        try {
-            write(theGraph, theFormat, aOut);
-        }
-        finally {
-            aOut.close();
-        }
+	    try (FileOutputStream aOut = new FileOutputStream(theFile)) {
+		    write(theGraph, theFormat, aOut);
+	    }
     }
 
     public static void write(final Graph theGraph, final RDFFormat theFormat, final OutputStream theStream) throws IOException {
@@ -630,4 +430,15 @@ public final class Graphs {
     public static void write(final Graph theGraph, final RDFFormat theFormat, final Writer theWriter) throws IOException {
         GraphIO.writeGraph(theGraph, theWriter, theFormat);
     }
+
+	public static Set<Resource> individuals(final Graph theGraph) {
+		return GraphUtil.getSubjects(theGraph, RDF.TYPE, null);
+	}
+
+	public static Set<Resource> instancesOf(final Graph theGraph, final URI theType) {
+		return theGraph.stream()
+		               .filter(Statements.matches(null, RDF.TYPE, theType))
+		               .map(Statement::getSubject)
+		               .collect(Collectors.toSet());
+	}
 }

@@ -15,12 +15,10 @@
 
 package com.complexible.common.openrdf;
 
-import com.complexible.common.openrdf.model.ExtGraph;
 import com.complexible.common.openrdf.model.Graphs;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import org.openrdf.model.Graph;
 import org.openrdf.model.vocabulary.RDF;
@@ -49,7 +47,7 @@ public class TestExtGraph {
 		URI aType = ValueFactoryImpl.getInstance().createURI("urn:some:type");
 		URI aOtherType = ValueFactoryImpl.getInstance().createURI("urn:some:other:type");
 
-		ExtGraph aGraph = Graphs.extend(TestUtils.createRandomGraph(20));
+		Graph aGraph = TestUtils.createRandomGraph(20);
 
 		Set<Resource> aInds = Sets.newHashSet();
 
@@ -69,12 +67,12 @@ public class TestExtGraph {
 		assertTrue(aGraph.add(aStmt));
 		assertTrue(aGraph.add(aStmt.getSubject(), RDF.TYPE, aOtherType));
 
-		assertEquals(aInds, aGraph.getIndividuals());
+		assertEquals(aInds, Graphs.individuals(aGraph));
 
 		assertEquals(aIndsOfType,
-					 aGraph.getInstancesOf(aType));
+		             Graphs.instancesOf(aGraph, aType));
 
 		assertEquals(Sets.newHashSet(aStmt.getSubject()),
-					 aGraph.getInstancesOf(aOtherType));
+		             Graphs.instancesOf(aGraph, aOtherType));
 	}
 }

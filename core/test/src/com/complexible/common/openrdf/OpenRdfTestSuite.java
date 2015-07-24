@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ TestGraphs.class, TestRepositories.class, TestQueryUtils.class,
 					  TestImmutableGraph.class, TestSetGraph.class, TestContextAware.class, ConstrainedGraphTests.class,
-					  TestExtGraph.class, FunctionalGraphTests.class, IOGraphTests.class })
+					  TestExtGraph.class, GraphIOTests.class })
 public class OpenRdfTestSuite {
 
 }

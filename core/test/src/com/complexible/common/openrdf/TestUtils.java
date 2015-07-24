@@ -83,4 +83,8 @@ public final class TestUtils {
 
 		return new StatementImpl(aSubj, aPred, aObj);
 	}
+
+	public static void main(String[] args) {
+		System.err.println(new java.io.File("/Users/mhgrove/work/ClarkParsia/GitHub/stardog-develop/test/data/add_data_non_existent.nt").length());
+	}
 }

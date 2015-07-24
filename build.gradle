@@ -8,8 +8,8 @@ task wrapper(type: Wrapper) {
 
 allprojects {
 	group = "com.complexible.common"
-	sourceCompatibility = '1.6'
-	targetCompatibility = '1.6'
+	sourceCompatibility = '1.8'
+	targetCompatibility = '1.8'
 
 	repositories {
 		mavenCentral()
@@ -82,7 +82,7 @@ task javadocs(type: Javadoc) {
 		windowTitle "${core.archivesBaseName}-${core.version} API"
 		docTitle "${core.archivesBaseName}-${core.version}"
 		bottom "Copyright &#169; 2010-2015 Complexible. All Rights Reserved."
-		links "http://docs.oracle.com/javase/7/docs/api/",
+		links "http://docs.oracle.com/javase/8/docs/api/",
 			  "http://docs.guava-libraries.googlecode.com/git-history/v18.0/javadoc/",
 			  "http://rdf4j.org/sesame/2.7/apidocs/"
 	}

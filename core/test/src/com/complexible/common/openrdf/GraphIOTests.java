@@ -15,6 +15,7 @@
 
 package com.complexible.common.openrdf;
 
+import com.complexible.common.openrdf.model.GraphIO;
 import com.complexible.common.openrdf.model.Graphs;
 import org.junit.Test;
 import org.openrdf.model.Graph;
@@ -30,14 +31,14 @@ import static org.junit.Assert.assertEquals;
  * @since   0.9
  * @version 0.9
  */
-public class IOGraphTests {
+public class GraphIOTests {
     @Test
     public void testToString() {
         Graph aGraph = Graphs.newGraph(ValueFactoryImpl.getInstance().createStatement(ValueFactoryImpl.getInstance().createURI("urn:s"),
                                                                                       ValueFactoryImpl.getInstance().createURI("urn:p"),
                                                                                       ValueFactoryImpl.getInstance().createURI("urn:o")));
 
-        String aStr = Graphs.extend(aGraph).toString(RDFFormat.NTRIPLES);
+        String aStr = GraphIO.toString(aGraph, RDFFormat.NTRIPLES);
 
         assertEquals("<urn:s> <urn:p> <urn:o> .", aStr.trim());
     }

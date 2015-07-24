@@ -21,8 +21,6 @@ import com.complexible.common.openrdf.model.GraphIO;
 import com.complexible.common.openrdf.model.Graphs;
 import com.complexible.common.openrdf.model.Statements;
 import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
@@ -39,15 +37,11 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import com.google.common.collect.Sets;
-import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.query.impl.GraphQueryResultImpl;
 import org.openrdf.rio.RDFFormat;
 
-import java.io.File;
-import java.util.Collection;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>Tests for Graphs</p>
@@ -74,7 +68,7 @@ public class TestGraphs {
 	@Test
     @SuppressWarnings("deprecation")
 	public void testContextGraph() throws Exception {
-		assertTrue(Graphs.contextGraph().getValueFactory() instanceof ContextAwareValueFactory);
+		assertTrue(Graphs.newGraph().getValueFactory() instanceof ContextAwareValueFactory);
 	}
 
 	@Test
@@ -120,10 +114,18 @@ public class TestGraphs {
 
 		Graph aGraph = Graphs.newGraph(Graphs.toList(aElems));
 
-		assertEquals(aElems, Graphs.asList(aGraph, Graphs.filter(aGraph, null, RDF.FIRST, aElems.get(0)).iterator().next().getSubject()));
+		assertEquals(aElems, Graphs.asList(aGraph, aGraph.stream()
+		                                                 .filter(Statements.matches(null, RDF.FIRST, aElems.get(0)))
+		                                                 .map(Statement::getSubject)
+		                                                 .findFirst()
+		                                                 .get()));
 
 		for (Resource aRes : aElems) {
-			assertTrue(Graphs.isList(aGraph, Graphs.filter(aGraph, null, RDF.FIRST, aRes).iterator().next().getSubject()));
+			assertTrue(Graphs.isList(aGraph, aGraph.stream()
+			                                       .filter(Statements.matches(null, RDF.FIRST, aRes))
+			                                       .map(Statement::getSubject)
+			                                       .findFirst()
+			                                       .get()));
 		}
 
 		final URI s = ValueFactoryImpl.getInstance().createURI("urn:s");
@@ -139,17 +141,15 @@ public class TestGraphs {
 	public void testOf() throws Exception {
 		Graph aInput = TestUtils.createRandomGraph(20);
 
-		File aFile = File.createTempFile("foo", ".ttl");
+		Path aFile = java.nio.file.Files.createTempFile("foo", ".ttl");
 
 		try {
-			Files.write(GraphIO.toString(aInput, RDFFormat.TURTLE), aFile, Charsets.UTF_8);
+			Files.write(GraphIO.toString(aInput, RDFFormat.TURTLE), aFile.toFile(), Charsets.UTF_8);
 
 			assertTrue(ModelUtil.equals(aInput, Graphs.of(aFile)));
 		}
 		finally {
-			if (!aFile.delete()) {
-				aFile.deleteOnExit();
-			}
+			java.nio.file.Files.delete(aFile);
 		}
 	}
 
@@ -169,7 +169,7 @@ public class TestGraphs {
 		aInput.add(st1);
 		aInput.add(st2);
 
-		Graph aGraph = Graphs.filter(aInput, Statements.predicateIs(RDF.TYPE));
+		Graph aGraph = aInput.stream().filter(Statements.predicateIs(RDF.TYPE)).collect(Graphs.toGraph());
 
 		assertEquals(2, aGraph.size());
 
@@ -178,95 +178,14 @@ public class TestGraphs {
 	}
 
 	@Test
-	public void testTransform() {
-		final Graph aInput = TestUtils.createRandomGraph(20);
-
-		Function<Statement, Statement> xform = new Function<Statement, Statement>() {
-			@Override
-			public Statement apply(final Statement theStatement) {
-				return ValueFactoryImpl.getInstance().createStatement(theStatement.getSubject(), RDF.TYPE, RDFS.CLASS);
-			}
-		};
-
-		final Graph aOutput = Graphs.transform(aInput, xform);
-
-		Collection<Resource> subjs = Graphs.collect(aInput, Statements.subjectOptional());
-
-		for (Statement aStmt : aOutput) {
-			assertTrue(subjs.contains(aStmt.getSubject()));
-			assertEquals(RDF.TYPE, aStmt.getPredicate());
-			assertEquals(RDFS.CLASS, aStmt.getObject());
-		}
-	}
-
-	@Test
-	public void testAny() {
-		final Graph aInput = TestUtils.createRandomGraph(20);
-
-		assertFalse(Graphs.any(aInput, Statements.predicateIs(RDF.TYPE)));
-
-		aInput.add(ValueFactoryImpl.getInstance().createBNode(), RDF.TYPE, ValueFactoryImpl.getInstance().createBNode());
-
-		assertTrue(Graphs.any(aInput, Statements.predicateIs(RDF.TYPE)));
-	}
-
-	@Test
-	public void testAll() {
-		final Graph aInput = TestUtils.createRandomGraph(20);
-
-		assertFalse(Graphs.all(aInput, Statements.predicateIs(RDF.TYPE)));
-
-		Function<Statement, Statement> xform = new Function<Statement, Statement>() {
-			@Override
-			public Statement apply(final Statement theStatement) {
-				return ValueFactoryImpl.getInstance().createStatement(theStatement.getSubject(), RDF.TYPE, theStatement.getObject());
-			}
-		};
-
-		assertTrue(Graphs.all(Graphs.transform(aInput, xform), Statements.predicateIs(RDF.TYPE)));
-	}
-
-	@Test
-	public void testCollect() {
-		final Graph aInput = TestUtils.createRandomGraph(20);
-
-		Set<Resource> subjs = Sets.newHashSet(Graphs.collect(aInput, Statements.subjectOptional()));
-
-		Set<Resource> aExpected = Sets.newHashSet();
-
-		for (Statement st : aInput) {
-			aExpected.add(st.getSubject());
-		}
-
-		assertEquals(aExpected, subjs);
-	}
-
-	@Test
-	public void testFind() {
-		final Graph aInput = TestUtils.createRandomGraph(20);
-
-		Optional<Statement> aResult = Graphs.find(aInput, Statements.predicateIs(RDF.TYPE));
-
-		assertTrue(!aResult.isPresent());
-
-		Statement st = ValueFactoryImpl.getInstance().createStatement(ValueFactoryImpl.getInstance().createBNode(), RDF.TYPE, ValueFactoryImpl.getInstance().createBNode());
-
-		aInput.add(st);
-
-		aResult = Graphs.find(aInput, Statements.predicateIs(RDF.TYPE));
-
-		assertEquals(st, aResult.orNull());
-	}
-
-	@Test
 	public void testGetObject() {
 		final Graph aInput = TestUtils.createRandomGraph(20);
 
 		final Statement aStatement = aInput.iterator().next();
 
-		assertEquals(aStatement.getObject(), Graphs.getObject(aInput, aStatement.getSubject(), aStatement.getPredicate()).orNull());
+		assertEquals(aStatement.getObject(), Graphs.getObject(aInput, aStatement.getSubject(), aStatement.getPredicate()).orElse(null));
 
-		assertTrue(Graphs.getObject(aInput, aStatement.getSubject(), RDF.TYPE).orNull() == null);
+		assertTrue(Graphs.getObject(aInput, aStatement.getSubject(), RDF.TYPE).orElse(null) == null);
 	}
 
 	@Test
@@ -283,11 +202,11 @@ public class TestGraphs {
 		aGraph.add(s, p, o);
 		aGraph.add(s, p2, l);
 
-		assertEquals(l, Graphs.getLiteral(aGraph, s, p2).orNull());
+		assertEquals(l, Graphs.getLiteral(aGraph, s, p2).orElse(null));
 
-		assertTrue(Graphs.getLiteral(aGraph, s, p).orNull() == null);
+		assertTrue(Graphs.getLiteral(aGraph, s, p).orElse(null) == null);
 
-		assertTrue(Graphs.getLiteral(aGraph, s, RDF.TYPE).orNull() == null);
+		assertTrue(Graphs.getLiteral(aGraph, s, RDF.TYPE).orElse(null) == null);
 	}
 
 	@Test
@@ -304,11 +223,11 @@ public class TestGraphs {
 		aGraph.add(s, p, o);
 		aGraph.add(s, p2, l);
 
-		assertEquals(o, Graphs.getResource(aGraph, s, p).orNull());
+		assertEquals(o, Graphs.getResource(aGraph, s, p).orElse(null));
 
-		assertTrue(Graphs.getResource(aGraph, s, p2).orNull() == null);
+		assertTrue(Graphs.getResource(aGraph, s, p2).orElse(null) == null);
 
-		assertTrue(Graphs.getResource(aGraph, s, RDF.TYPE).orNull() == null);
+		assertTrue(Graphs.getResource(aGraph, s, RDF.TYPE).orElse(null) == null);
 	}
 
 	@Test
@@ -331,10 +250,10 @@ public class TestGraphs {
 		aGraph.add(s, p3, b);
 		aGraph.add(s, p4, b2);
 
-		assertTrue(Graphs.getBooleanValue(aGraph, s, p).orNull() == null);
-		assertTrue(Graphs.getBooleanValue(aGraph, s, p2).orNull() == null);
-		assertTrue(Graphs.getBooleanValue(aGraph, s, RDF.TYPE).orNull() == null);
-		assertTrue(Graphs.getBooleanValue(aGraph, s, p3).or(false));
-		assertTrue(Graphs.getBooleanValue(aGraph, s, p4).or(false));
+		assertTrue(Graphs.getBooleanValue(aGraph, s, p).orElse(null) == null);
+		assertTrue(Graphs.getBooleanValue(aGraph, s, p2).orElse(null) == null);
+		assertTrue(Graphs.getBooleanValue(aGraph, s, RDF.TYPE).orElse(null) == null);
+		assertTrue(Graphs.getBooleanValue(aGraph, s, p3).orElse(false));
+		assertTrue(Graphs.getBooleanValue(aGraph, s, p4).orElse(false));
 	}
 }

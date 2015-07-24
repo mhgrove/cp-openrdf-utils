@@ -15,16 +15,17 @@
 
 package com.complexible.common.openrdf.model;
 
-import com.google.common.base.Function;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.model.URI;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.rio.turtle.TurtleUtil;
 
@@ -33,13 +34,9 @@ import org.openrdf.rio.turtle.TurtleUtil;
  *
  * @author  Michael Grove
  * @since	0.4.1
- * @version	2.0.3
+ * @version	4.0
  */
 public final class Statements {
-	private static final GetSubject GET_SUBJECT = new GetSubject();
-	private static final GetPredicate GET_PREDICATE = new GetPredicate();
-	private static final GetObject GET_OBJECT = new GetObject();
-	private static final GetContext GET_CONTEXT = new GetContext();
 
 	/**
 	 * No instances
@@ -49,105 +46,109 @@ public final class Statements {
 	}
 
 	public static Predicate<Statement> subjectIs(final Resource theSubj) {
-		return Predicates.compose(Predicates.equalTo(theSubj), subject());
+		return theStmt -> {
+			return Objects.equals(theStmt.getSubject(), theSubj);
+		};
 	}
 
 	public static Predicate<Statement> predicateIs(final URI thePred) {
-		return Predicates.compose(Predicates.equalTo(thePred), predicate());
+		return theStmt -> {
+			return Objects.equals(theStmt.getPredicate(), thePred);
+		};
 	}
 
 	public static Predicate<Statement> objectIs(final Value theObj) {
-		return Predicates.compose(Predicates.equalTo(theObj), object());
+		return theStmt -> {
+			return Objects.equals(theStmt.getObject(), theObj);
+		};
 	}
 
 	public static Predicate<Statement> contextIs(final Resource theContext) {
-		return Predicates.compose(Predicates.equalTo(theContext), context());
+		return theStmt -> {
+			return Objects.equals(theStmt.getContext(), theContext);
+		};
 	}
 
 	public static Predicate<Statement> objectIs(final Class<? extends Value> theValue) {
-		return Predicates.compose(Predicates.instanceOf(theValue), object());
+		return theStmt -> {
+			return theValue.isInstance(theStmt.getObject());
+		};
 	}
 
-	/**
-	 * Return a Function which will retrieve the Subject of a Statement
-	 * @return the function
-	 */
-	public static Function<Statement, Resource> subject() {
-		return GET_SUBJECT;
+	public static Function<Statement, Statement> applyContext(final Resource theContext) {
+		return applyContext(theContext, ContextAwareValueFactory.getInstance());
 	}
 
-	/**
-	 * Return a Function which will retrieve the Predicate of a Statement
-	 * @return the function
-	 */
-	public static Function<Statement, URI> predicate() {
-		return GET_PREDICATE;
+	public static Function<Statement, Statement> applyContext(final Resource theContext, final ValueFactory theValueFactory) {
+		return theStmt -> {
+			if (Objects.equals(theContext, theStmt.getContext())) {
+				return theStmt;
+			}
+			else {
+				return theValueFactory.createStatement(theStmt.getSubject(), theStmt.getPredicate(), theStmt.getObject(), theContext);
+			}
+		};
 	}
 
-	/**
-	 * Return a Function which will retrieve the Object of a Statement
-	 * @return the function
-	 */
-	public static Function<Statement, Value> object() {
-		return GET_OBJECT;
-	}
+	public static Predicate<Statement> matches(final Resource theSubject, final URI thePredicate, final Value theObject,
+	                                           final Resource... theContexts) {
+		return theStatement -> {
+			if (theSubject != null && !theSubject.equals(theStatement.getSubject())) {
+				return false;
+			}
+			if (thePredicate != null && !thePredicate.equals(theStatement.getPredicate())) {
+				return false;
+			}
+			if (theObject != null && !theObject.equals(theStatement.getObject())) {
+				return false;
+			}
 
-	/**
-	 * Return a Function which will retrieve the Context of a Statement
-	 * @return the function
-	 */
-	public static Function<Statement, Resource> context() {
-		return GET_CONTEXT;
+			if (theContexts == null || theContexts.length == 0) {
+				// no context specified, SPO were all equal, so this is equals as null/empty context is a wildcard
+				return true;
+			}
+			else {
+				Resource aContext = theStatement.getContext();
+
+				for (Resource aCxt : theContexts) {
+					if (aCxt == null && aContext == null) {
+						return true;
+					}
+					if (aCxt != null && aCxt.equals(aContext)) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+		};
 	}
 
 	public static Function<Statement, Optional<Resource>> subjectOptional() {
-		return new Function<Statement, Optional<Resource>>() {
-			public Optional<Resource> apply(final Statement theStatement) {
-				return Optional.of(theStatement.getSubject());
-			}
-		};
+		return theStatement -> Optional.of(theStatement.getSubject());
 	}
 
 	public static Function<Statement, Optional<URI>> predicateOptional() {
-		return new Function<Statement, Optional<URI>>() {
-			public Optional<URI> apply(final Statement theStatement) {
-				return Optional.of(theStatement.getPredicate());
-			}
-		};
+		return theStatement -> Optional.of(theStatement.getPredicate());
 	}
 
 	public static Function<Statement, Optional<Value>> objectOptional() {
-		return new Function<Statement, Optional<Value>>() {
-			public Optional<Value> apply(final Statement theStatement) {
-				return Optional.of(theStatement.getObject());
-			}
-		};
+		return theStatement -> Optional.of(theStatement.getObject());
 	}
 
 	public static Function<Statement, Optional<Literal>> objectAsLiteral() {
-		return new Function<Statement, Optional<Literal>>() {
-			public Optional<Literal> apply(final Statement theStatement) {
-				return theStatement.getObject() instanceof Literal
-					   ? Optional.of((Literal) theStatement.getObject()) : Optional.<Literal>absent();
-			}
-		};
+		return theStatement -> theStatement.getObject() instanceof Literal ? Optional.of((Literal) theStatement.getObject())
+		                                                                   : Optional.<Literal>empty();
 	}
 
 	public static Function<Statement, Optional<Resource>> objectAsResource() {
-		return new Function<Statement, Optional<Resource>>() {
-			public Optional<Resource> apply(final Statement theStatement) {
-				return theStatement.getObject() instanceof Resource ? Optional.of((Resource) theStatement.getObject()) : Optional.<Resource>absent();
-			}
-		};
+		return theStatement -> theStatement.getObject() instanceof Resource ? Optional.of((Resource) theStatement.getObject())
+		                                                                    : Optional.<Resource>empty();
 	}
 
 	public static Function<Statement, Optional<Resource>> contextOptional() {
-		return new Function<Statement, Optional<Resource>>() {
-			public Optional<Resource> apply(final Statement theStatement) {
-				return theStatement.getContext() != null ? Optional.of(theStatement.getContext())
-														 : Optional.<Resource>absent();
-			}
-		};
+		return theStatement -> theStatement.getContext() != null ? Optional.of(theStatement.getContext())
+		                                                         : Optional.<Resource>empty();
 	}
 
 	/**
@@ -215,41 +216,5 @@ public final class Statements {
 		}
 
 		return true;
-	}
-
-	private static class GetSubject implements Function<Statement, Resource> {
-		/**
-		 * @inheritDoc
-		 */
-		public Resource apply(final Statement theStatement) {
-			return theStatement.getSubject();
-		}
-	}
-
-	private static class GetPredicate implements Function<Statement, URI> {
-		/**
-		 * @inheritDoc
-		 */
-		public URI apply(final Statement theStatement) {
-			return theStatement.getPredicate();
-		}
-	}
-
-	private static class GetObject implements Function<Statement, Value> {
-		/**
-		 * @inheritDoc
-		 */
-		public Value apply(final Statement theStatement) {
-			return theStatement.getObject();
-		}
-	}
-
-	private static class GetContext implements Function<Statement, Resource> {
-		/**
-		 * @inheritDoc
-		 */
-		public Resource apply(final Statement theStatement) {
-			return theStatement.getContext();
-		}
 	}
 }
