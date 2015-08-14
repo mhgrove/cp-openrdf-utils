@@ -24,7 +24,6 @@ import com.complexible.common.openrdf.query.SesameQueryUtils;
 
 import org.junit.Test;
 
-import static com.complexible.common.openrdf.TestUtils.parse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,12 +34,12 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.algebra.QueryModelNode;
 
+import org.openrdf.query.algebra.QueryModelNode;
+import org.openrdf.query.algebra.Slice;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 import org.openrdf.query.impl.MapBindingSet;
 import org.openrdf.query.parser.ParsedQuery;
-import org.openrdf.query.algebra.Slice;
 
 /**
  * <p></p>
@@ -77,20 +76,6 @@ public class TestQueryUtils {
 		}
 
 		assertFalse(new BooleanQueryResultImpl(false).next());
-	}
-
-	@Test
-	public void testIsDescribe() throws Exception {
-System.err.println(parse("describe <http://google.com> <http://foo.bar.baz>").getTupleExpr());
-System.err.println(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
-                         "DESCRIBE ?x ?y <http://example.org/>\n" +
-                         "WHERE    {?x foaf:knows ?y}").getTupleExpr());
-
-		assertTrue(SesameQueryUtils.isDescribe(parse("describe <http://google.com> <http://foo.bar.baz>").getTupleExpr()));
-		assertTrue(SesameQueryUtils.isDescribe(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
-													 "DESCRIBE ?x ?y <http://example.org/>\n" +
-													 "WHERE    {?x foaf:knows ?y}").getTupleExpr()));
-		assertFalse(SesameQueryUtils.isDescribe(parse("select * where { ?s ?p ?o }").getTupleExpr()));
 	}
 
 	@Test

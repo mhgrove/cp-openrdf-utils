@@ -21,21 +21,17 @@ import org.openrdf.model.URI;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 
-import org.openrdf.model.util.Literals;
 import org.openrdf.query.BindingSet;
-import org.openrdf.query.algebra.Slice;
 
+import org.openrdf.query.algebra.Slice;
 import org.openrdf.query.algebra.TupleExpr;
 
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 
-import org.openrdf.query.parser.ParsedQuery;
-
 import org.openrdf.query.algebra.ProjectionElem;
 
-import com.complexible.common.openrdf.query.util.DescribeVisitor;
-import com.complexible.common.openrdf.query.util.DescribeRewriter;
 import com.google.common.collect.Sets;
+import org.openrdf.query.parser.ParsedQuery;
 
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -149,61 +145,6 @@ public final class SesameQueryUtils {
 	}
 
 	/**
-	 * <p>Return whether or not the TupleExpr represents a parsed describe query.</p>
-	 *
-	 * <p>This is not foolproof and depends on the inspection of variable names in the query model.
-	 * Sesame's parser uses regular names for generated variables in describe queries, so we're
-	 * sniffing the model looking for these names to make an educated guess as to whether or not
-	 * this represents a parsed describe query.</p>
-	 *
-	 * @param theExpr	the expression
-	 * @return			true if a describe query, false otherwise
-	 */
-	public static boolean isDescribe(final TupleExpr theExpr) {
-		try {
-
-			DescribeVisitor aVisitor = new DescribeVisitor();
-			theExpr.visit(aVisitor);
-			return aVisitor.isDescribe();
-		}
-		catch (Exception e) {
-			return false;
-		}
-	}
-
-	/**
-	 * <p>Simplify the parsed model for a describe query.</p>
-	 *
-	 * @param theExpr	the describe algebra
-	 */
-	public static void rewriteDescribe(final TupleExpr theExpr) {
-		try {
-			DescribeRewriter aRewriter = new DescribeRewriter(false);
-			theExpr.visit(aRewriter);
-			theExpr.visit(new DescribeRewriter.Clean());
-		}
-		catch (Exception e) {
-			// no-op
-		}
-	}
-
-	/**
-	 * <p>Simplify the parsed model for a describe query.  Handles named graphs.</p>
-	 *
-	 * @param theExpr	the describe algebra
-	 */
-	public static void rewriteDescribeWithNamedGraphs(final TupleExpr theExpr) {
-		try {
-			DescribeRewriter aRewriter = new DescribeRewriter(true);
-			theExpr.visit(aRewriter);
-			theExpr.visit(new DescribeRewriter.Clean());
-		}
-		catch (Exception e) {
-			// no-op
-		}
-	}
-
-	/**
 	 * Return the query string rendering of the {@link Value}
 	 * @param theValue	the value to render
 	 * @return 			the value rendered in its query string representation
@@ -286,7 +227,6 @@ public final class SesameQueryUtils {
 
         return aBuffer.toString();
 	}
-
 
 	/**
 	 * Properly escape out any special characters in the query string.  Replaces unescaped double quotes with \" and replaces slashes '\' which

@@ -17,31 +17,13 @@ package com.complexible.common.openrdf.util;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.Spliterator;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Supplier;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
-import java.util.function.ToLongFunction;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collector;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -51,7 +33,6 @@ import org.slf4j.Logger;
 import info.aduna.iteration.CloseableIteration;
 import info.aduna.iteration.Iterations;
 import info.aduna.iteration.Iteration;
-import com.google.common.base.Predicate;
 
 /**
  * <p>Utility methods for Aduna {@link info.aduna.iteration.Iteration Iterations} not already present in {@link Iterations}</p>
@@ -354,11 +335,11 @@ public final class AdunaIterations {
      */
     public static <T, E extends Exception> Optional<T> singleResult(final CloseableIteration<T, E> theIter) throws E {
         if (theIter == null) {
-            return Optional.absent();
+            return Optional.empty();
         }
 
         try {
-            return theIter.hasNext() ? Optional.of(theIter.next()) : Optional.<T>absent();
+            return theIter.hasNext() ? Optional.of(theIter.next()) : Optional.<T>empty();
         }
         finally {
             theIter.close();
