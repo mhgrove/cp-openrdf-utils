@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import org.openrdf.model.Graph;
+import org.openrdf.model.IRI;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
@@ -37,6 +38,7 @@ import java.util.Set;
  * @since	0.4
  * @version 0.8
  */
+@Deprecated
 public class TestExtGraph {
 
 	/**
@@ -44,10 +46,10 @@ public class TestExtGraph {
 	 */
 	@Test
 	public void testIndividuals() {
-		URI aType = ValueFactoryImpl.getInstance().createURI("urn:some:type");
-		URI aOtherType = ValueFactoryImpl.getInstance().createURI("urn:some:other:type");
+		IRI aType = ValueFactoryImpl.getInstance().createIRI("urn:some:type");
+		IRI aOtherType = ValueFactoryImpl.getInstance().createIRI("urn:some:other:type");
 
-		Graph aGraph = TestUtils.createRandomGraph(20);
+		Graph aGraph = TestUtils.createRandomModel(20);
 
 		Set<Resource> aInds = Sets.newHashSet();
 

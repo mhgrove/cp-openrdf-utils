@@ -15,7 +15,9 @@
 
 package com.complexible.common.openrdf.util;
 
+import com.complexible.common.openrdf.model.Models2;
 import com.complexible.common.openrdf.model.SetGraph;
+import org.openrdf.model.Model;
 import org.openrdf.rio.helpers.RDFHandlerBase;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.model.Statement;
@@ -24,34 +26,34 @@ import org.openrdf.model.Graph;
 /**
  * <p>Implementation of an RDFHandler which collects statements from the handler events and puts them into a Graph object.</p>
  *
- * @author Michael Grove
- * @since 0.1
- * @version 0.4.2
+ * @author  Michael Grove
+ * @since   0.1
+ * @version 4.0
  */
-public final class GraphBuildingRDFHandler extends RDFHandlerBase {
+public final class ModelBuildingRDFHandler extends RDFHandlerBase {
 
 	/**
 	 * The graph to collect statements in
 	 */
-	private final Graph mGraph;
+	private final Model mGraph;
 
 	/**
 	 * Create a new GraphBuildingRDFHandler
 	 */
-	public GraphBuildingRDFHandler() {
-		this(new SetGraph());
+	public ModelBuildingRDFHandler() {
+		this(Models2.newModel());
 	}
 
 	/**
 	 * Create a new GraphBuildingRDFHandler that will insert statements into the supplied Graph
 	 * @param theGraph the graph to insert into
 	 */
-	public GraphBuildingRDFHandler(final Graph theGraph) {
+	public ModelBuildingRDFHandler(final Model theGraph) {
 		mGraph = theGraph;
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void handleStatement(final Statement theStatement) throws RDFHandlerException {
@@ -62,7 +64,7 @@ public final class GraphBuildingRDFHandler extends RDFHandlerBase {
 	 * Return the graph built from events fired to this handler
 	 * @return the graph
 	 */
-	public Graph getGraph() {
+	public Model getModel() {
 		return mGraph;
 	}
 

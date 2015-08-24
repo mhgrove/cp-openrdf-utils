@@ -84,7 +84,7 @@ public class TestRepositories {
 	public void testSize() throws RepositoryException {
 		Repository aRepo = createInMemoryRepo();
 
-		Graph aGraph = TestUtils.createRandomGraph(25);
+		Graph aGraph = TestUtils.createRandomModel(25);
 
 		Repositories.add(aRepo, aGraph);
 
@@ -99,7 +99,7 @@ public class TestRepositories {
 	public void testAddGraph() throws RepositoryException {
 		Repository aRepo = createInMemoryRepo();
 
-		Graph aGraph = TestUtils.createRandomGraph(25);
+		Graph aGraph = TestUtils.createRandomModel(25);
 
 		Repositories.add(aRepo, aGraph);
 
@@ -118,7 +118,7 @@ public class TestRepositories {
 	public void testRemoveGraph() throws RepositoryException {
 		Repository aRepo = createInMemoryRepo();
 
-		Graph aGraph = TestUtils.createRandomGraph(25);
+		Graph aGraph = TestUtils.createRandomModel(25);
 
 		Repositories.add(aRepo, aGraph);
 
@@ -146,7 +146,7 @@ public class TestRepositories {
 	public void testAddFromStream() throws Exception {
 		Repository aRepo = createInMemoryRepo();
 
-		Graph aGraph = TestUtils.createRandomGraph(25);
+		Graph aGraph = TestUtils.createRandomModel(25);
 
 		ByteArrayOutputStream aOut = new ByteArrayOutputStream();
 

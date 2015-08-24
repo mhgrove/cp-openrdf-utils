@@ -21,7 +21,7 @@ allprojects {
 ext {
 	projectDescription	= "Complexible: OpenRdf Utility classes"
 	projectUrl			= "https://github.com/mhgrove/cp-openrdf-utils"
-	sesameVersion = "2.7.15"
+	sesameVersion = "4.0.0-M1"
 }
 
 subprojects {

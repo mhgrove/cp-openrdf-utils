@@ -16,6 +16,7 @@
 package com.complexible.common.openrdf.model;
 
 import org.openrdf.model.Graph;
+import org.openrdf.model.IRI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
@@ -32,6 +33,7 @@ import java.util.Collection;
  * @since   0.1
  * @version 1.1
  */
+@Deprecated
 public abstract class DelegatingGraph implements Graph {
 	protected final Graph mGraph;
 
@@ -53,7 +55,7 @@ public abstract class DelegatingGraph implements Graph {
 	 * @inheritDoc
 	 */
     @Override
-	public boolean add(final Resource theResource, final URI theURI, final Value theValue, final Resource... theContexts) {
+	public boolean add(final Resource theResource, final IRI theURI, final Value theValue, final Resource... theContexts) {
 		return mGraph.add(theResource,  theURI, theValue, theContexts);
 	}
 
@@ -63,7 +65,7 @@ public abstract class DelegatingGraph implements Graph {
     @Override
     @Deprecated
     @SuppressWarnings("deprecation")
-	public Iterator<Statement> match(final Resource theResource, final URI theURI, final Value theValue, final Resource... theContexts) {
+	public Iterator<Statement> match(final Resource theResource, final IRI theURI, final Value theValue, final Resource... theContexts) {
 		return mGraph.match(theResource, theURI, theValue, theContexts);
 	}
 

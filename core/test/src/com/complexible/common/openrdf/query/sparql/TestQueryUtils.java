@@ -31,13 +31,13 @@ import static org.junit.Assert.fail;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.IRI;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.query.QueryEvaluationException;
 
 import org.openrdf.query.algebra.QueryModelNode;
 import org.openrdf.query.algebra.Slice;
-import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
+import org.openrdf.query.algebra.helpers.AbstractQueryModelVisitor;
 import org.openrdf.query.impl.MapBindingSet;
 import org.openrdf.query.parser.ParsedQuery;
 
@@ -82,9 +82,9 @@ public class TestQueryUtils {
 	public void testBindingSetUtils() {
 		MapBindingSet aBindingSet = new MapBindingSet();
 
-		final Literal aLiteral = ValueFactoryImpl.getInstance().createLiteral("literal");
-		final URI aURI = ValueFactoryImpl.getInstance().createURI("urn:s");
-		final BNode aBNode = ValueFactoryImpl.getInstance().createBNode();
+		final Literal aLiteral = SimpleValueFactory.getInstance().createLiteral("literal");
+		final IRI aURI = SimpleValueFactory.getInstance().createIRI("urn:s");
+		final BNode aBNode = SimpleValueFactory.getInstance().createBNode();
 
 		aBindingSet.addBinding("lit", aLiteral);
 		aBindingSet.addBinding("bnode", aBNode);
@@ -170,7 +170,7 @@ public class TestQueryUtils {
 		return aVisitor.isContains();
 	}
 
-	private static class GetSlice extends QueryModelVisitorBase<Exception> {
+	private static class GetSlice extends AbstractQueryModelVisitor<Exception> {
 		private long mLimit = -1;
 		private long mOffset = -1;
 
@@ -189,7 +189,7 @@ public class TestQueryUtils {
 		}
 	}
 
-	private static class ContainsVisitor extends QueryModelVisitorBase<Exception> {
+	private static class ContainsVisitor extends AbstractQueryModelVisitor<Exception> {
 		private boolean mContains = false;
 
 		private final Class<? extends QueryModelNode> mClass;

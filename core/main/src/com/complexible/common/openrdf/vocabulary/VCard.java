@@ -15,7 +15,7 @@
 
 package com.complexible.common.openrdf.vocabulary;
 
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 
 /**
  * <p>Term constants for the VCard ontology</p>
@@ -34,14 +34,14 @@ public class VCard extends Vocabulary {
         return VOCAB;
     }
 
-    public final URI Address = term("Address");
+    public final IRI Address = term("Address");
 
-    public final URI GEO = term("GEO");
-    public final URI ADR = term("ADR");
+    public final IRI GEO = term("GEO");
+    public final IRI ADR = term("ADR");
 
-	public final URI street_address = term("street-address");
-	public final URI locality = term("locality");
-	public final URI region = term("region");
-	public final URI postal_code = term("postal-code");
+	public final IRI street_address = term("street-address");
+	public final IRI locality = term("locality");
+	public final IRI region = term("region");
+	public final IRI postal_code = term("postal-code");
 }
 

@@ -15,6 +15,7 @@
 
 package com.complexible.common.openrdf.model;
 
+import org.openrdf.model.IRI;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Value;
@@ -29,8 +30,9 @@ import com.google.common.base.Objects;
  *
  * @author	Michael Grove
  * @since	0.4.1
- * @version 0.4.1
+ * @version 4.0
  */
+@Deprecated
 public final class ContextAwareStatement implements Statement {
 
 	/**
@@ -41,7 +43,7 @@ public final class ContextAwareStatement implements Statement {
 	/**
 	 * The predicate
 	 */
-	private final URI mPredicate;
+	private final IRI mPredicate;
 
 	/**
 	 * The object
@@ -61,7 +63,7 @@ public final class ContextAwareStatement implements Statement {
 	 * @param theObject		the object
 	 * @param theContext	the context, or null
 	 */
-	public ContextAwareStatement(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource theContext) {
+	public ContextAwareStatement(final Resource theSubject, final IRI thePredicate, final Value theObject, final Resource theContext) {
 		Preconditions.checkNotNull(theSubject);
 		Preconditions.checkNotNull(thePredicate);
 		Preconditions.checkNotNull(theObject);
@@ -82,7 +84,7 @@ public final class ContextAwareStatement implements Statement {
 	/**
 	 * @inheritDoc
 	 */
-	public URI getPredicate() {
+	public IRI getPredicate() {
 		return mPredicate;
 	}
 
@@ -131,7 +133,7 @@ public final class ContextAwareStatement implements Statement {
 	 */
 	@Override
 	public int hashCode() {
-		return 961 * mSubject.hashCode() + 31 * mPredicate.hashCode() + mObject.hashCode();// + (mContext == null ? 0 : 17 * mContext.hashCode());
+		return java.util.Objects.hash(mSubject, mPredicate, mObject, getContext());
 	}
 
 	/**

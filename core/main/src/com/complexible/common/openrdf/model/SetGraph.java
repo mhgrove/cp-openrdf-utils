@@ -22,9 +22,9 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import org.openrdf.model.Graph;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 
@@ -35,8 +35,9 @@ import org.openrdf.model.ValueFactory;
  *
  * @author  Michael Grove
  * @since	0.5
- * @version 3.1
+ * @version 4.0
  */
+@Deprecated
 public final class SetGraph extends AbstractCollection<Statement> implements Graph {
 
 	/**
@@ -111,7 +112,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	 * {@inheritDoc}
 	 */
     @Override
-	public boolean add(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContexts) {
+	public boolean add(final Resource theSubject, final IRI thePredicate, final Value theObject, final Resource... theContexts) {
 		boolean aAdded = false;
 
 		for (Resource aContext : (theContexts == null || theContexts.length == 0 ? new Resource[] {null} : theContexts)) {
@@ -126,7 +127,7 @@ public final class SetGraph extends AbstractCollection<Statement> implements Gra
 	 */
     @Override
     @Deprecated
-	public Iterator<Statement> match(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource... theContexts) {
+	public Iterator<Statement> match(final Resource theSubject, final IRI thePredicate, final Value theObject, final Resource... theContexts) {
 		return this.stream().filter(Statements.matches(theSubject, thePredicate, theObject, theContexts)).iterator();
 	}
 

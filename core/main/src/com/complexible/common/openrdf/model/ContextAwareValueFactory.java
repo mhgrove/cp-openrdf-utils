@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.util.Date;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.openrdf.model.IRI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
@@ -35,8 +36,9 @@ import org.openrdf.model.impl.ValueFactoryImpl;
  *
  * @author  Michael Grove
  * @since   0.4.1
- * @version 3.1
+ * @version 4.0
  */
+@Deprecated
 public final class ContextAwareValueFactory implements ValueFactory {
 	private final ValueFactory mFactory;
 
@@ -59,6 +61,46 @@ public final class ContextAwareValueFactory implements ValueFactory {
 		}
 
 		return INSTANCE;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Statement createStatement(final Resource subject, final URI predicate, final Value object) {
+		return mFactory.createStatement(subject, predicate, object);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Statement createStatement(final Resource subject, final URI predicate, final Value object, final Resource context) {
+		return mFactory.createStatement(subject, predicate, object, context);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Literal createLiteral(final String label, final IRI datatype) {
+		return mFactory.createLiteral(label, datatype);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IRI createIRI(final String iri) {
+		return mFactory.createIRI(iri);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IRI createIRI(final String namespace, final String localName) {
+		return mFactory.createIRI(namespace, localName);
 	}
 
 	/**
@@ -192,7 +234,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	 * {@inheritDoc}
 	 */
     @Override
-	public Statement createStatement(final Resource theSubject, final URI thePredicate, final Value theObject) {
+	public Statement createStatement(final Resource theSubject, final IRI thePredicate, final Value theObject) {
 		return createStatement(theSubject, thePredicate, theObject, null);
 	}
 
@@ -200,7 +242,7 @@ public final class ContextAwareValueFactory implements ValueFactory {
 	 * {@inheritDoc}
 	 */
     @Override
-	public Statement createStatement(final Resource theSubject, final URI thePredicate, final Value theObject, final Resource theContext) {
+	public Statement createStatement(final Resource theSubject, final IRI thePredicate, final Value theObject, final Resource theContext) {
 		return new ContextAwareStatement(theSubject,  thePredicate, theObject, theContext);
 	}
 }

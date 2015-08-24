@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.openrdf.model.Graph;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import com.google.common.collect.Iterators;
 
@@ -32,6 +32,7 @@ import com.google.common.collect.Iterators;
  * @since	0.4
  * @version	0.4
  */
+@Deprecated
 public final class ImmutableGraph extends DelegatingGraph {
 
 	/**
@@ -95,7 +96,7 @@ public final class ImmutableGraph extends DelegatingGraph {
 	 * @inheritDoc
 	 */
 	@Override
-	public boolean add(final Resource theResource, final URI theURI, final Value theValue, final Resource... theContexts) {
+	public boolean add(final Resource theResource, final IRI theURI, final Value theValue, final Resource... theContexts) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,17 @@ package com.complexible.common.openrdf.query;
 
 import org.openrdf.model.Resource;
 import org.openrdf.model.Value;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 
+import org.openrdf.model.util.Literals;
 import org.openrdf.query.BindingSet;
 
 import org.openrdf.query.algebra.Slice;
 import org.openrdf.query.algebra.TupleExpr;
 
+import org.openrdf.query.algebra.helpers.AbstractQueryModelVisitor;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 
 import org.openrdf.query.algebra.ProjectionElem;
@@ -59,10 +61,10 @@ public final class SesameQueryUtils {
 	 * @param theKey		the binding name
 	 * @return				the URI value for the key, or null if the key did not have a binding or if it was not a URI
 	 */
-	public static URI getURI(final BindingSet theBindingSet, final String theKey) {
+	public static IRI getIRI(final BindingSet theBindingSet, final String theKey) {
 		Value aVal = theBindingSet.getValue(theKey);
-		if (aVal instanceof URI) {
-			return (URI) aVal;
+		if (aVal instanceof IRI) {
+			return (IRI) aVal;
 		}
 		else {
 			return null;
@@ -127,9 +129,9 @@ public final class SesameQueryUtils {
 		final Collection<String> aVars = Sets.newHashSet();
 
 		try {
-			theExpr.visit(new QueryModelVisitorBase<Exception>() {
+			theExpr.visit(new AbstractQueryModelVisitor<RuntimeException>() {
 				@Override
-				public void meet(final ProjectionElem theProjectionElem) throws Exception {
+				public void meet(final ProjectionElem theProjectionElem) throws RuntimeException {
 					super.meet(theProjectionElem);
 
 					aVars.add(theProjectionElem.getTargetName());
@@ -152,8 +154,8 @@ public final class SesameQueryUtils {
 	public static String getARQSPARQLQueryString(Value theValue) {
         StringBuilder aBuffer = new StringBuilder();
 
-        if (theValue instanceof URI) {
-            URI aURI = (URI) theValue;
+        if (theValue instanceof IRI) {
+	        IRI aURI = (IRI) theValue;
             aBuffer.append("<").append(aURI.toString()).append(">");
         }
         else if (theValue instanceof BNode) {
@@ -162,9 +164,9 @@ public final class SesameQueryUtils {
         else if (theValue instanceof Literal) {
             Literal aLit = (Literal)theValue;
 
-            aBuffer.append("\"\"\"").append(escape(aLit.getLabel())).append("\"\"\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
+            aBuffer.append("\"\"\"").append(escape(aLit.getLabel())).append("\"\"\"").append(aLit.getLanguage().isPresent() ? "@" + aLit.getLanguage().get() : "");
 
-            if (aLit.getDatatype() != null && aLit.getLanguage() == null) {
+            if (aLit.getDatatype() != null && !Literals.isLanguageLiteral(aLit)) {
                 aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
             }
         }
@@ -180,8 +182,8 @@ public final class SesameQueryUtils {
 	public static String getSPARQLQueryString(Value theValue) {
         StringBuilder aBuffer = new StringBuilder();
 
-        if (theValue instanceof URI) {
-            URI aURI = (URI) theValue;
+        if (theValue instanceof IRI) {
+	        IRI aURI = (IRI) theValue;
             aBuffer.append("<").append(aURI.toString()).append(">");
         }
         else if (theValue instanceof BNode) {
@@ -190,11 +192,11 @@ public final class SesameQueryUtils {
         else if (theValue instanceof Literal) {
             Literal aLit = (Literal)theValue;
 
-            aBuffer.append("\"\"\"").append(escape(aLit.getLabel())).append("\"\"\"").append(aLit.getLanguage() != null ? "@" + aLit.getLanguage() : "");
+	        aBuffer.append("\"\"\"").append(escape(aLit.getLabel())).append("\"\"\"").append(aLit.getLanguage().isPresent() ? "@" + aLit.getLanguage().get() : "");
 
-            if (aLit.getDatatype() != null && aLit.getLanguage() == null) {
-                aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
-            }
+	        if (aLit.getDatatype() != null && !Literals.isLanguageLiteral(aLit)) {
+		        aBuffer.append("^^<").append(aLit.getDatatype().toString()).append(">");
+	        }
         }
 
         return aBuffer.toString();
@@ -208,8 +210,8 @@ public final class SesameQueryUtils {
 	public static String getSerqlQueryString(Value theValue) {
         StringBuilder aBuffer = new StringBuilder();
 
-        if (theValue instanceof URI) {
-            URI aURI = (URI) theValue;
+        if (theValue instanceof IRI) {
+	        IRI aURI = (IRI) theValue;
             aBuffer.append("<").append(aURI.toString()).append(">");
         }
         else if (theValue instanceof BNode) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@ package com.complexible.common.openrdf;
 import com.complexible.common.openrdf.model.ContextAwareStatement;
 import com.complexible.common.openrdf.model.ContextAwareValueFactory;
 import org.junit.Test;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.StatementImpl;
 
@@ -37,14 +38,15 @@ import static org.junit.Assert.fail;
  * @since	0.8
  * @version	0.8
  */
+@Deprecated
 public class TestContextAware {
 	@Test
 	public void testContextAwareStmt() {
-		final URI s = ValueFactoryImpl.getInstance().createURI("urn:s");
-		final URI p = ValueFactoryImpl.getInstance().createURI("urn:p");
-		final URI o = ValueFactoryImpl.getInstance().createURI("urn:o");
-		final URI c = ValueFactoryImpl.getInstance().createURI("urn:c");
-		final URI c2 = ValueFactoryImpl.getInstance().createURI("urn:c2");
+		final IRI s = ValueFactoryImpl.getInstance().createIRI("urn:s");
+		final IRI p = ValueFactoryImpl.getInstance().createIRI("urn:p");
+		final IRI o = ValueFactoryImpl.getInstance().createIRI("urn:o");
+		final IRI c = ValueFactoryImpl.getInstance().createIRI("urn:c");
+		final IRI c2 = ValueFactoryImpl.getInstance().createIRI("urn:c2");
 
 		Statement aStmt = new StatementImpl(s, p, o);
 		ContextAwareStatement aCxtStmt = new ContextAwareStatement(s, p, o, c);
@@ -69,10 +71,10 @@ public class TestContextAware {
 
 	@Test
 	public void testCxtStmtNoNulls() {
-		final URI s = ValueFactoryImpl.getInstance().createURI("urn:s");
-		final URI p = ValueFactoryImpl.getInstance().createURI("urn:p");
-		final URI o = ValueFactoryImpl.getInstance().createURI("urn:o");
-		final URI c = ValueFactoryImpl.getInstance().createURI("urn:c");
+		final IRI s = ValueFactoryImpl.getInstance().createIRI("urn:s");
+		final IRI p = ValueFactoryImpl.getInstance().createIRI("urn:p");
+		final IRI o = ValueFactoryImpl.getInstance().createIRI("urn:o");
+		final IRI c = ValueFactoryImpl.getInstance().createIRI("urn:c");
 
 		// this is ok, no context
 		new ContextAwareStatement(s, p, o, null);
@@ -105,10 +107,10 @@ public class TestContextAware {
 
 	@Test
 	public void testContextAwareVF() {
-		final URI s = ValueFactoryImpl.getInstance().createURI("urn:s");
-		final URI p = ValueFactoryImpl.getInstance().createURI("urn:p");
-		final URI o = ValueFactoryImpl.getInstance().createURI("urn:o");
-		final URI c = ValueFactoryImpl.getInstance().createURI("urn:c");
+		final IRI s = ValueFactoryImpl.getInstance().createIRI("urn:s");
+		final IRI p = ValueFactoryImpl.getInstance().createIRI("urn:p");
+		final IRI o = ValueFactoryImpl.getInstance().createIRI("urn:o");
+		final IRI c = ValueFactoryImpl.getInstance().createIRI("urn:c");
 
 		ValueFactory vf = ContextAwareValueFactory.getInstance();
 

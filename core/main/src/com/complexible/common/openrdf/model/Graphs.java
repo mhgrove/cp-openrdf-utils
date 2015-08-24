@@ -39,11 +39,12 @@ import java.util.stream.StreamSupport;
 import com.complexible.common.openrdf.util.AdunaIterations;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import info.aduna.iteration.Iterations;
 import org.openrdf.model.Graph;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.util.GraphUtil;
 import org.openrdf.model.vocabulary.RDF;
@@ -60,6 +61,7 @@ import org.openrdf.rio.RDFParseException;
  * @since	0.4
  * @version	4.0
  */
+@Deprecated
 public final class Graphs {
 
     private Graphs() {
@@ -141,7 +143,7 @@ public final class Graphs {
 	public static Graph newGraph(final GraphQueryResult theResult) throws QueryEvaluationException {
 		Graph aGraph = new SetGraph();
 
-		try (Stream<Statement> aResults = AdunaIterations.stream(theResult)) {
+		try (Stream<Statement> aResults = Iterations.stream(theResult)) {
 			aResults.forEach(aGraph::add);
 		}
 
@@ -253,7 +255,7 @@ public final class Graphs {
 	}
 
     public static boolean contains(final Iterable<Statement> theGraph, final Resource theSubject,
-                                   final URI thePredicate, final Value theObject, final Resource... theContexts) {
+                                   final IRI thePredicate, final Value theObject, final Resource... theContexts) {
 
 	    return (theGraph instanceof Graph ? ((Graph) theGraph).stream() : StreamSupport.stream(theGraph.spliterator(), false))
 		           .filter(Statements.matches(theSubject, thePredicate, theObject, theContexts))
@@ -273,7 +275,7 @@ public final class Graphs {
 	 *
 	 * @see org.openrdf.model.util.GraphUtil#getOptionalObject
 	 */
-	public static Optional<Value> getObject(final Graph theGraph, final Resource theSubj, final URI thePred) {
+	public static Optional<Value> getObject(final Graph theGraph, final Resource theSubj, final IRI thePred) {
 		Iterator<Value> aCollection = GraphUtil.getObjectIterator(theGraph, theSubj, thePred);
 
 		if (aCollection.hasNext()) {
@@ -292,9 +294,9 @@ public final class Graphs {
 	 * @param thePred	the property whose value is to be retrieved
 	 * @return 			Optionally, the property value as a literal.  Value will be absent of the SP does not have an O, or the O is not a literal
 	 *
-	 * @see #getObject(org.openrdf.model.Graph, org.openrdf.model.Resource, org.openrdf.model.URI)
+	 * @see #getObject(org.openrdf.model.Graph, org.openrdf.model.Resource, org.openrdf.model.IRI)
 	 */
-	public static Optional<Literal> getLiteral(final Graph theGraph, final Resource theSubj, final URI thePred) {
+	public static Optional<Literal> getLiteral(final Graph theGraph, final Resource theSubj, final IRI thePred) {
 		Optional<Value> aVal = getObject(theGraph, theSubj, thePred) ;
 
 		if (aVal.isPresent() && aVal.get() instanceof Literal) {
@@ -313,10 +315,10 @@ public final class Graphs {
 	 * @param thePred	the property whose value is to be retrieved
 	 * @return 			Optionally, the property value as a Resource.  Value will be absent of the SP does not have an O, or the O is not a Resource
 	 *
-	 * @see #getObject(org.openrdf.model.Graph, org.openrdf.model.Resource, org.openrdf.model.URI)
+	 * @see #getObject(org.openrdf.model.Graph, org.openrdf.model.Resource, org.openrdf.model.IRI)
 	 * @see GraphUtil#getOptionalObjectResource
 	 */
-	public static Optional<Resource> getResource(final Graph theGraph, final Resource theSubj, final URI thePred) {
+	public static Optional<Resource> getResource(final Graph theGraph, final Resource theSubj, final IRI thePred) {
 		Optional<Value> aVal = getObject(theGraph, theSubj, thePred) ;
 
 		if (aVal.isPresent() && aVal.get() instanceof Resource) {
@@ -336,7 +338,7 @@ public final class Graphs {
 	 * @return 			Optionally, the value of the property as a boolean.  Value will be absent if the SP does not have an O,
 	 * 					or that O is not a literal or not a valid boolean value
 	 */
-	public static Optional<Boolean> getBooleanValue(final Graph theGraph, final Resource theSubj, final URI thePred) {
+	public static Optional<Boolean> getBooleanValue(final Graph theGraph, final Resource theSubj, final IRI thePred) {
 		Optional<Literal> aLitOpt = getLiteral(theGraph, theSubj, thePred);
 
 		if (!aLitOpt.isPresent()) {
@@ -435,7 +437,7 @@ public final class Graphs {
 		return GraphUtil.getSubjects(theGraph, RDF.TYPE, null);
 	}
 
-	public static Set<Resource> instancesOf(final Graph theGraph, final URI theType) {
+	public static Set<Resource> instancesOf(final Graph theGraph, final IRI theType) {
 		return theGraph.stream()
 		               .filter(Statements.matches(null, RDF.TYPE, theType))
 		               .map(Statement::getSubject)

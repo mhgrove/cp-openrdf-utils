@@ -15,7 +15,7 @@
 
 package com.complexible.common.openrdf.model;
 
-import com.complexible.common.openrdf.util.GraphBuildingRDFHandler;
+import com.complexible.common.openrdf.util.ModelBuildingRDFHandler;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.RDFWriter;
@@ -31,8 +31,6 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.io.IOException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.InputStreamReader;
@@ -49,6 +47,7 @@ import org.openrdf.rio.helpers.BasicParserSettings;
  * @since	0.1
  * @version	2.0
  */
+@Deprecated
 public final class GraphIO {
 
 	/**
@@ -126,7 +125,7 @@ public final class GraphIO {
         aParser.getParserConfig().set(BasicParserSettings.NORMALIZE_DATATYPE_VALUES, false);
         aParser.getParserConfig().set(BasicParserSettings.PRESERVE_BNODE_IDS, true);
 
-		GraphBuildingRDFHandler aHandler = new GraphBuildingRDFHandler();
+		ModelBuildingRDFHandler aHandler = new ModelBuildingRDFHandler();
 
 		aParser.setRDFHandler(aHandler);
 
@@ -142,7 +141,7 @@ public final class GraphIO {
 			}
 		}
 
-		return aHandler.getGraph();
+		return aHandler.getModel();
 	}
 
 	/**

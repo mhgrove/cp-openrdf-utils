@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import com.google.common.base.Throwables;
 import info.aduna.iteration.CloseableIteration;
+import info.aduna.iteration.Iterations;
 
 /**
  * <p>Class which wraps a {@link CloseableIteration} as a {@link Spliterator}.  Resulting iterator is
@@ -23,6 +24,7 @@ import info.aduna.iteration.CloseableIteration;
  * @since   4.0
  * @version 4.0
  */
+@Deprecated
 public final class IterationStream<T> extends Spliterators.AbstractSpliterator<T> {
 	private final CloseableIteration<T, ? extends Exception> mIteration;
 

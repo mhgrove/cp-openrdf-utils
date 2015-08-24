@@ -54,7 +54,7 @@ public class TestImmutableGraph {
 		}
 
 		try {
-			aGraph.addAll(TestUtils.createRandomGraph(5));
+			aGraph.addAll(TestUtils.createRandomModel(5));
 			fail("Should not have been able to add a graph");
 		}
 		catch (UnsupportedOperationException e) {
@@ -85,7 +85,7 @@ public class TestImmutableGraph {
 		}
 
 		try {
-			aGraph.removeAll(TestUtils.createRandomGraph(5));
+			aGraph.removeAll(TestUtils.createRandomModel(5));
 			fail("Should not have been able to remove a graph of statements");
 		}
 		catch (UnsupportedOperationException e) {
@@ -94,7 +94,7 @@ public class TestImmutableGraph {
 
 
 		try {
-			aGraph.retainAll(TestUtils.createRandomGraph(5));
+			aGraph.retainAll(TestUtils.createRandomModel(5));
 			fail("Should not have been able to remove statements via retain");
 		}
 		catch (UnsupportedOperationException e) {
@@ -104,7 +104,7 @@ public class TestImmutableGraph {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testCantModifyFromIterator() {
-		Graph aGraph = ImmutableGraph.of(TestUtils.createRandomGraph(5));
+		Graph aGraph = ImmutableGraph.of(TestUtils.createRandomModel(5));
 
 		Iterator aIter = aGraph.iterator();
 

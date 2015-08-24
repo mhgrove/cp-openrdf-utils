@@ -51,7 +51,7 @@ public class ConstrainedGraphTests {
 		Graph aGraph = ConstrainedGraph.of(noBNodes);
 
 		// random graphs dont include bnodes so this should be ok
-		aGraph.addAll(TestUtils.createRandomGraph(5));
+		aGraph.addAll(TestUtils.createRandomModel(5));
 
 		try {
 			aGraph.add(ValueFactoryImpl.getInstance().createBNode(), RDF.TYPE, ValueFactoryImpl.getInstance().createURI("urn:o"));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,12 @@
 
 package com.complexible.common.openrdf.util;
 
-import com.complexible.common.openrdf.model.Graphs;
-
-import org.openrdf.model.Graph;
-import org.openrdf.model.impl.ValueFactoryImpl;
+import com.complexible.common.openrdf.model.Models2;
+import org.openrdf.model.IRI;
+import org.openrdf.model.Model;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 
 /**
@@ -29,19 +28,19 @@ import org.openrdf.model.ValueFactory;
  *
  * @author	Michael Grove
  * @since	0.1
- * @version 3.0
+ * @version 4.0
  */
 public class GraphBuilder {
-    private final Graph mGraph;
+    private final Model mGraph;
     private final ValueFactory mValueFactory;
 
     public GraphBuilder() {
-        mGraph = Graphs.newGraph();
-        mValueFactory = ValueFactoryImpl.getInstance();
+        mGraph = Models2.newModel();
+        mValueFactory = SimpleValueFactory.getInstance();
     }
 
     public GraphBuilder(final ValueFactory theValueFactory) {
-        mGraph = Graphs.newGraph();
+	    mGraph = Models2.newModel();
         mValueFactory = theValueFactory;
     }
 
@@ -50,8 +49,8 @@ public class GraphBuilder {
 	 *
 	 * @return  the graph
 	 */
-    public Graph graph() {
-        return Graphs.newGraph(mGraph);
+    public Model model() {
+        return Models2.newModel(mGraph);
     }
 
 	/**
@@ -66,8 +65,8 @@ public class GraphBuilder {
 	 * @param theURI    the individual
 	 * @return          the {@link ResourceBuilder builder}
 	 */
-    public ResourceBuilder uri(URI theURI) {
-        return new ResourceBuilder(mGraph, getValueFactory(), getValueFactory().createURI(theURI.toString()));
+    public ResourceBuilder iri(IRI theURI) {
+        return new ResourceBuilder(mGraph, getValueFactory(), getValueFactory().createIRI(theURI.toString()));
     }
 
 	/**
@@ -75,7 +74,7 @@ public class GraphBuilder {
 	 * @param theURI    the individual
 	 * @return          the {@link ResourceBuilder builder}
 	 */
-    public ResourceBuilder uri(String theURI) {
+    public ResourceBuilder iri(String theURI) {
         return instance(null, theURI);
     }
 
@@ -86,7 +85,7 @@ public class GraphBuilder {
 	 *
 	 * @return          a {@link ResourceBuilder builder} for the new individual
 	 */
-    public ResourceBuilder instance(URI theType) {
+    public ResourceBuilder instance(IRI theType) {
         return instance(theType, (String) null);
     }
 
@@ -108,7 +107,7 @@ public class GraphBuilder {
 	 *
 	 * @return          a {@link ResourceBuilder builder} for the new individual
 	 */
-	public ResourceBuilder instance(URI theType, java.net.URI theURI) {
+	public ResourceBuilder instance(IRI theType, java.net.URI theURI) {
 		return instance(theType, theURI.toString());
 	}
 
@@ -120,7 +119,7 @@ public class GraphBuilder {
 	 *
 	 * @return          a {@link ResourceBuilder builder} for the new individual
 	 */
-	public ResourceBuilder instance(URI theType, Resource theRes) {
+	public ResourceBuilder instance(IRI theType, Resource theRes) {
 		if (theType != null) {
 			mGraph.add(theRes, RDF.TYPE, theType);
 		}
@@ -135,10 +134,10 @@ public class GraphBuilder {
 	 *
 	 * @return          a {@link ResourceBuilder builder} for the new individual
 	 */
-    public ResourceBuilder instance(URI theType, String theURI) {
+    public ResourceBuilder instance(IRI theType, String theURI) {
         Resource aRes = theURI == null
                         ? getValueFactory().createBNode()
-                        : getValueFactory().createURI(theURI);
+                        : getValueFactory().createIRI(theURI);
 
         if (theType != null) {
             mGraph.add(aRes, RDF.TYPE, theType);

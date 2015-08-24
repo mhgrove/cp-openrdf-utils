@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import org.openrdf.model.Graph;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
 import org.openrdf.model.util.ModelUtil;
 import org.openrdf.model.vocabulary.RDF;
@@ -37,7 +38,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import org.openrdf.query.impl.GraphQueryResultImpl;
+import org.openrdf.query.impl.IteratingGraphQueryResult;
 import org.openrdf.rio.RDFFormat;
 
 import java.nio.file.Path;
@@ -50,10 +51,11 @@ import java.util.List;
  * @since	0.8
  * @version	1.1
  */
+@Deprecated
 public class TestGraphs {
 	@Test
 	public void testNewGraph() throws Exception {
-		Graph aInput = TestUtils.createRandomGraph(3);
+		Graph aInput = TestUtils.createRandomModel(3);
 		List<Statement> aStmtList = Lists.newArrayList(aInput);
 
 		assertTrue(ModelUtil.equals(aInput, Graphs.newGraph(aStmtList)));
@@ -62,7 +64,7 @@ public class TestGraphs {
 
 		assertTrue(ModelUtil.equals(aInput, Graphs.newGraph(aStmtList.iterator())));
 
-		assertTrue(ModelUtil.equals(aInput, Graphs.newGraph(new GraphQueryResultImpl(Maps.<String, String>newHashMap(), aInput))));
+		assertTrue(ModelUtil.equals(aInput, Graphs.newGraph(new IteratingGraphQueryResult(Maps.<String, String>newHashMap(), aInput))));
 	}
 
 	@Test
@@ -74,9 +76,9 @@ public class TestGraphs {
 	@Test
     @SuppressWarnings("deprecation")
 	public void testWithContext() throws Exception {
-		final URI aCxt = ValueFactoryImpl.getInstance().createURI("urn:context");
+		final URI aCxt = ValueFactoryImpl.getInstance().createIRI("urn:context");
 
-		Graph aGraph = Graphs.withContext(TestUtils.createRandomGraph(20), aCxt);
+		Graph aGraph = Graphs.withContext(TestUtils.createRandomModel(20), aCxt);
 
 		assertTrue(aGraph.getValueFactory() instanceof ContextAwareValueFactory);
 
@@ -88,8 +90,8 @@ public class TestGraphs {
 
 	@Test
 	public void testUnion() throws Exception {
-		Graph one = TestUtils.createRandomGraph(20);
-		Graph two = TestUtils.createRandomGraph(20);
+		Graph one = TestUtils.createRandomModel(20);
+		Graph two = TestUtils.createRandomModel(20);
 
 		Graph union = Graphs.union(one, two);
 
@@ -109,7 +111,7 @@ public class TestGraphs {
 		List<Resource> aElems = Lists.newArrayList();
 
 		for (int i = 0; i < 10; i++) {
-			aElems.add(ValueFactoryImpl.getInstance().createURI("urn:" + i));
+			aElems.add(ValueFactoryImpl.getInstance().createIRI("urn:" + i));
 		}
 
 		Graph aGraph = Graphs.newGraph(Graphs.toList(aElems));
@@ -128,9 +130,9 @@ public class TestGraphs {
 			                                       .get()));
 		}
 
-		final URI s = ValueFactoryImpl.getInstance().createURI("urn:s");
-		final URI p = ValueFactoryImpl.getInstance().createURI("urn:p");
-		final URI o = ValueFactoryImpl.getInstance().createURI("urn:o");
+		final IRI s = ValueFactoryImpl.getInstance().createIRI("urn:s");
+		final IRI p = ValueFactoryImpl.getInstance().createIRI("urn:p");
+		final IRI o = ValueFactoryImpl.getInstance().createIRI("urn:o");
 
 		aGraph.add(s,p,o);
 
@@ -139,7 +141,7 @@ public class TestGraphs {
 
 	@Test
 	public void testOf() throws Exception {
-		Graph aInput = TestUtils.createRandomGraph(20);
+		Graph aInput = TestUtils.createRandomModel(20);
 
 		Path aFile = java.nio.file.Files.createTempFile("foo", ".ttl");
 
@@ -155,13 +157,13 @@ public class TestGraphs {
 
 	@Test
 	public void testFilter() {
-		Graph aInput = TestUtils.createRandomGraph(20);
+		Graph aInput = TestUtils.createRandomModel(20);
 
-		Resource s = ValueFactoryImpl.getInstance().createURI("urn:s");
-		Resource s2 = ValueFactoryImpl.getInstance().createURI("urn:s2");
+		Resource s = ValueFactoryImpl.getInstance().createIRI("urn:s");
+		Resource s2 = ValueFactoryImpl.getInstance().createIRI("urn:s2");
 
-		URI o = ValueFactoryImpl.getInstance().createURI("urn:o");
-		URI o2 = ValueFactoryImpl.getInstance().createURI("urn:o2");
+		URI o = ValueFactoryImpl.getInstance().createIRI("urn:o");
+		URI o2 = ValueFactoryImpl.getInstance().createIRI("urn:o2");
 
 		Statement st1 = ValueFactoryImpl.getInstance().createStatement(s, RDF.TYPE, o);
 		Statement st2 = ValueFactoryImpl.getInstance().createStatement(s2, RDF.TYPE, o2);
@@ -179,7 +181,7 @@ public class TestGraphs {
 
 	@Test
 	public void testGetObject() {
-		final Graph aInput = TestUtils.createRandomGraph(20);
+		final Graph aInput = TestUtils.createRandomModel(20);
 
 		final Statement aStatement = aInput.iterator().next();
 
@@ -190,11 +192,11 @@ public class TestGraphs {
 
 	@Test
 	public void testGetLiteral() {
-		final URI s = ValueFactoryImpl.getInstance().createURI("urn:s");
-		final URI p = ValueFactoryImpl.getInstance().createURI("urn:p");
-		final URI p2 = ValueFactoryImpl.getInstance().createURI("urn:p2");
+		final IRI s = ValueFactoryImpl.getInstance().createIRI("urn:s");
+		final IRI p = ValueFactoryImpl.getInstance().createIRI("urn:p");
+		final IRI p2 = ValueFactoryImpl.getInstance().createIRI("urn:p2");
 
-		final URI o = ValueFactoryImpl.getInstance().createURI("urn:o");
+		final IRI o = ValueFactoryImpl.getInstance().createIRI("urn:o");
 		final Literal l = ValueFactoryImpl.getInstance().createLiteral("literal");
 
 		Graph aGraph = Graphs.newGraph();
@@ -211,11 +213,11 @@ public class TestGraphs {
 
 	@Test
 	public void testGetResource() {
-		final URI s = ValueFactoryImpl.getInstance().createURI("urn:s");
-		final URI p = ValueFactoryImpl.getInstance().createURI("urn:p");
-		final URI p2 = ValueFactoryImpl.getInstance().createURI("urn:p2");
+		final IRI s = ValueFactoryImpl.getInstance().createIRI("urn:s");
+		final IRI p = ValueFactoryImpl.getInstance().createIRI("urn:p");
+		final IRI p2 = ValueFactoryImpl.getInstance().createIRI("urn:p2");
 
-		final URI o = ValueFactoryImpl.getInstance().createURI("urn:o");
+		final IRI o = ValueFactoryImpl.getInstance().createIRI("urn:o");
 		final Literal l = ValueFactoryImpl.getInstance().createLiteral("literal");
 
 		Graph aGraph = Graphs.newGraph();
@@ -232,13 +234,13 @@ public class TestGraphs {
 
 	@Test
 	public void testGetBoolean() {
-		final URI s = ValueFactoryImpl.getInstance().createURI("urn:s");
-		final URI p = ValueFactoryImpl.getInstance().createURI("urn:p");
-		final URI p2 = ValueFactoryImpl.getInstance().createURI("urn:p2");
-		final URI p3 = ValueFactoryImpl.getInstance().createURI("urn:p3");
-		final URI p4 = ValueFactoryImpl.getInstance().createURI("urn:p4");
+		final IRI s = ValueFactoryImpl.getInstance().createIRI("urn:s");
+		final IRI p = ValueFactoryImpl.getInstance().createIRI("urn:p");
+		final IRI p2 = ValueFactoryImpl.getInstance().createIRI("urn:p2");
+		final IRI p3 = ValueFactoryImpl.getInstance().createIRI("urn:p3");
+		final IRI p4 = ValueFactoryImpl.getInstance().createIRI("urn:p4");
 
-		final URI o = ValueFactoryImpl.getInstance().createURI("urn:o");
+		final IRI o = ValueFactoryImpl.getInstance().createIRI("urn:o");
 		final Literal l = ValueFactoryImpl.getInstance().createLiteral("literal");
 		final Literal b = ValueFactoryImpl.getInstance().createLiteral("true");
 		final Literal b2 = ValueFactoryImpl.getInstance().createLiteral(true);

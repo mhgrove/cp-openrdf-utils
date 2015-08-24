@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,13 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
-import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.util.Literals;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.rio.turtle.TurtleUtil;
 
@@ -51,7 +52,7 @@ public final class Statements {
 		};
 	}
 
-	public static Predicate<Statement> predicateIs(final URI thePred) {
+	public static Predicate<Statement> predicateIs(final IRI thePred) {
 		return theStmt -> {
 			return Objects.equals(theStmt.getPredicate(), thePred);
 		};
@@ -90,7 +91,7 @@ public final class Statements {
 		};
 	}
 
-	public static Predicate<Statement> matches(final Resource theSubject, final URI thePredicate, final Value theObject,
+	public static Predicate<Statement> matches(final Resource theSubject, final IRI thePredicate, final Value theObject,
 	                                           final Resource... theContexts) {
 		return theStatement -> {
 			if (theSubject != null && !theSubject.equals(theStatement.getSubject())) {
@@ -128,7 +129,7 @@ public final class Statements {
 		return theStatement -> Optional.of(theStatement.getSubject());
 	}
 
-	public static Function<Statement, Optional<URI>> predicateOptional() {
+	public static Function<Statement, Optional<IRI>> predicateOptional() {
 		return theStatement -> Optional.of(theStatement.getPredicate());
 	}
 
@@ -163,8 +164,8 @@ public final class Statements {
 	 * @return 				true if its a valid/parseable literal, false otherwise
 	 */
 	public static boolean isLiteralValid(final Literal theLiteral) {
-		if (theLiteral.getLanguage() != null && theLiteral.getLanguage().length() > 0) {
-			final String aLang = theLiteral.getLanguage();
+		if (Literals.isLanguageLiteral(theLiteral)) {
+			final String aLang = theLiteral.getLanguage().get();
 
 			if (!TurtleUtil.isLanguageStartChar(aLang.charAt(0))) {
 				return false;
