@@ -15,16 +15,16 @@
 
 package com.complexible.common.openrdf;
 
-import com.complexible.common.openrdf.model.GraphIO;
+import com.complexible.common.openrdf.model.ModelIO;
 import com.complexible.common.openrdf.repository.Repositories;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import org.openrdf.model.Model;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
@@ -84,7 +84,7 @@ public class TestRepositories {
 	public void testSize() throws RepositoryException {
 		Repository aRepo = createInMemoryRepo();
 
-		Graph aGraph = TestUtils.createRandomModel(25);
+		Model aGraph = TestUtils.createRandomModel(25);
 
 		Repositories.add(aRepo, aGraph);
 
@@ -99,7 +99,7 @@ public class TestRepositories {
 	public void testAddGraph() throws RepositoryException {
 		Repository aRepo = createInMemoryRepo();
 
-		Graph aGraph = TestUtils.createRandomModel(25);
+		Model aGraph = TestUtils.createRandomModel(25);
 
 		Repositories.add(aRepo, aGraph);
 
@@ -118,7 +118,7 @@ public class TestRepositories {
 	public void testRemoveGraph() throws RepositoryException {
 		Repository aRepo = createInMemoryRepo();
 
-		Graph aGraph = TestUtils.createRandomModel(25);
+		Model aGraph = TestUtils.createRandomModel(25);
 
 		Repositories.add(aRepo, aGraph);
 
@@ -146,11 +146,11 @@ public class TestRepositories {
 	public void testAddFromStream() throws Exception {
 		Repository aRepo = createInMemoryRepo();
 
-		Graph aGraph = TestUtils.createRandomModel(25);
+		Model aGraph = TestUtils.createRandomModel(25);
 
 		ByteArrayOutputStream aOut = new ByteArrayOutputStream();
 
-		GraphIO.writeGraph(aGraph, aOut, RDFFormat.TURTLE);
+		ModelIO.write(aGraph, aOut, RDFFormat.TURTLE);
 
 		Repositories.add(aRepo, new ByteArrayInputStream(aOut.toByteArray()), RDFFormat.TURTLE);
 

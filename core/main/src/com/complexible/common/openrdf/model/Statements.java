@@ -26,6 +26,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.util.Literals;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.rio.turtle.TurtleUtil;
@@ -77,7 +78,7 @@ public final class Statements {
 	}
 
 	public static Function<Statement, Statement> applyContext(final Resource theContext) {
-		return applyContext(theContext, ContextAwareValueFactory.getInstance());
+		return applyContext(theContext, SimpleValueFactory.getInstance());
 	}
 
 	public static Function<Statement, Statement> applyContext(final Resource theContext, final ValueFactory theValueFactory) {

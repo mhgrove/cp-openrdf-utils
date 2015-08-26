@@ -17,8 +17,7 @@ package com.complexible.common.openrdf.model;
 
 import java.util.Collection;
 
-import com.google.common.base.Predicate;
-import org.openrdf.model.Graph;
+import java.util.function.Predicate;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
@@ -83,7 +82,7 @@ public final class ConstrainedModel extends DelegatingModel {
 	 */
 	@Override
 	public boolean add(final Statement e) {
-		mConstraint.apply(e);
+		mConstraint.test(e);
 
 		return super.add(e);
 	}
@@ -120,7 +119,7 @@ public final class ConstrainedModel extends DelegatingModel {
 
 	private static <T> void all(final Iterable<? extends T> theObjects, final Predicate<T> theConstraint) {
 		for (T aObj : theObjects) {
-			theConstraint.apply(aObj);
+			theConstraint.test(aObj);
 		}
 	}
 

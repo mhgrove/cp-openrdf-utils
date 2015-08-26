@@ -16,12 +16,10 @@
 package com.complexible.common.openrdf.util;
 
 import com.complexible.common.openrdf.model.Models2;
-import com.complexible.common.openrdf.model.SetGraph;
 import org.openrdf.model.Model;
-import org.openrdf.rio.helpers.RDFHandlerBase;
+import org.openrdf.rio.helpers.AbstractRDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.model.Statement;
-import org.openrdf.model.Graph;
 
 /**
  * <p>Implementation of an RDFHandler which collects statements from the handler events and puts them into a Graph object.</p>
@@ -30,7 +28,7 @@ import org.openrdf.model.Graph;
  * @since   0.1
  * @version 4.0
  */
-public final class ModelBuildingRDFHandler extends RDFHandlerBase {
+public final class ModelBuildingRDFHandler extends AbstractRDFHandler {
 
 	/**
 	 * The graph to collect statements in

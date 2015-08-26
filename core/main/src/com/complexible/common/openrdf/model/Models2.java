@@ -286,6 +286,26 @@ public final class Models2 {
 	}
 
 	/**
+	 * Return the contents of the list serialized as an RDF list
+	 * @param theResources	the list
+	 * @return				the list as RDF
+	 */
+	public static Model toList(final List<Resource> theResources) {
+		Resource aCurr = SimpleValueFactory.getInstance().createBNode();
+
+		int i = 0;
+		Model aGraph = newModel();
+
+		for (Resource aRes : theResources) {
+			Resource aNext = SimpleValueFactory.getInstance().createBNode();
+			aGraph.add(aCurr, RDF.FIRST, aRes);
+			aGraph.add(aCurr, RDF.REST, ++i < theResources.size() ? aNext : RDF.NIL);
+			aCurr = aNext;
+		}
+
+		return aGraph;
+	}
+	/**
 	 * Return an {@link Iterable} of the types of the {@link Resource} in the specified {@link Model}
 	 *
 	 * @param theGraph	the graph

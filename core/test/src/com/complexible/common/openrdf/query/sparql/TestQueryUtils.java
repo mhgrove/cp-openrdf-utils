@@ -92,7 +92,7 @@ public class TestQueryUtils {
 
 		assertEquals(SesameQueryUtils.getLiteral(aBindingSet, "lit"), aLiteral);
 		assertEquals(SesameQueryUtils.getBNode(aBindingSet, "bnode"), aBNode);
-		assertEquals(SesameQueryUtils.getURI(aBindingSet, "uri"), aURI);
+		assertEquals(SesameQueryUtils.getIRI(aBindingSet, "uri"), aURI);
 
 		assertEquals(SesameQueryUtils.getResource(aBindingSet, "bnode"), aBNode);
 		assertEquals(SesameQueryUtils.getResource(aBindingSet, "uri"), aURI);
@@ -100,7 +100,7 @@ public class TestQueryUtils {
 		assertTrue(SesameQueryUtils.getLiteral(aBindingSet, "uri") == null);
 		assertTrue(SesameQueryUtils.getLiteral(aBindingSet, "bnode") == null);
 		assertTrue(SesameQueryUtils.getResource(aBindingSet, "lit") == null);
-		assertTrue(SesameQueryUtils.getURI(aBindingSet, "lit") == null);
+		assertTrue(SesameQueryUtils.getIRI(aBindingSet, "lit") == null);
 		assertTrue(SesameQueryUtils.getBNode(aBindingSet, "lit") == null);
 	}
 

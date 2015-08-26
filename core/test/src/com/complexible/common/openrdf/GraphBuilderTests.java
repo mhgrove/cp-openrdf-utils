@@ -21,7 +21,7 @@ import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeFactory;
 
-import com.complexible.common.openrdf.util.GraphBuilder;
+import com.complexible.common.openrdf.util.ModelBuilder;
 import org.junit.Test;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
@@ -44,7 +44,7 @@ public class GraphBuilderTests {
 	@Test
 	public void createDate() throws Exception {
 		final IRI aURI = SimpleValueFactory.getInstance().createIRI("urn:foo");
-		GraphBuilder aBuilder = new GraphBuilder();
+		ModelBuilder aBuilder = new ModelBuilder();
 
 		final Date aDate = Calendar.getInstance().getTime();
 

@@ -30,16 +30,16 @@ import org.openrdf.model.ValueFactory;
  * @since	0.1
  * @version 4.0
  */
-public class GraphBuilder {
+public class ModelBuilder {
     private final Model mGraph;
     private final ValueFactory mValueFactory;
 
-    public GraphBuilder() {
+    public ModelBuilder() {
         mGraph = Models2.newModel();
         mValueFactory = SimpleValueFactory.getInstance();
     }
 
-    public GraphBuilder(final ValueFactory theValueFactory) {
+    public ModelBuilder(final ValueFactory theValueFactory) {
 	    mGraph = Models2.newModel();
         mValueFactory = theValueFactory;
     }

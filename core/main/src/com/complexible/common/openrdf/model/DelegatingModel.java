@@ -44,7 +44,7 @@ import org.openrdf.model.util.ModelException;
  * @version 4.0
  */
 @SuppressWarnings("deprecation")
-public class DelegatingModel implements Model {
+public abstract class DelegatingModel implements Model {
 	private final Model mModel;
 
 	public DelegatingModel(final Model theModel) {

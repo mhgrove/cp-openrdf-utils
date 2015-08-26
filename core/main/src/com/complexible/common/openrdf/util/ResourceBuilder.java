@@ -15,11 +15,10 @@
 
 package com.complexible.common.openrdf.util;
 
-import com.complexible.common.openrdf.model.ContextAwareValueFactory;
-
 import com.complexible.common.openrdf.model.Models2;
 import org.openrdf.model.Model;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -51,7 +50,7 @@ public class ResourceBuilder {
     private final ValueFactory mValueFactory;
 
     public ResourceBuilder(final Resource theRes) {
-        this(Models2.newModel(), ContextAwareValueFactory.getInstance(), theRes);
+        this(Models2.newModel(), SimpleValueFactory.getInstance(), theRes);
     }
 
     protected ResourceBuilder(final Model theGraph, final ValueFactory theValueFactory, final Resource theRes) {

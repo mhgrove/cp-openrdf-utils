@@ -15,13 +15,14 @@
 
 package com.complexible.common.openrdf;
 
-import com.complexible.common.openrdf.model.ConstrainedGraph;
-import com.google.common.base.Predicate;
+import java.util.function.Predicate;
+
+import com.complexible.common.openrdf.model.ConstrainedModel;
 import org.junit.Test;
 import org.openrdf.model.BNode;
-import org.openrdf.model.Graph;
+import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
-import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDF;
 
 import static org.junit.Assert.fail;
@@ -33,28 +34,25 @@ import static org.junit.Assert.fail;
  * @version 0
  * @since 0
  */
-public class ConstrainedGraphTests {
+public class ConstrainedModelTests {
 	@Test
 	public void testCannotAddViolatingConstraint() {
-		Predicate<Statement> noBNodes = new Predicate<Statement>() {
-			@Override
-			public boolean apply(final Statement theStatement) {
-				if (theStatement.getSubject() instanceof BNode ||
-					theStatement.getObject() instanceof BNode) {
-					throw new ConstrainedGraph.StatementViolatedConstraintException("Cannot add statements with bnodes to this graph");
-				}
-
-				return true;
+		Predicate<Statement> noBNodes = theStatement -> {
+			if (theStatement.getSubject() instanceof BNode ||
+				theStatement.getObject() instanceof BNode) {
+				throw new ConstrainedModel.StatementViolatedConstraintException("Cannot add statements with bnodes to this graph");
 			}
+
+			return true;
 		};
 
-		Graph aGraph = ConstrainedGraph.of(noBNodes);
+		Model aGraph = ConstrainedModel.of(noBNodes);
 
 		// random graphs dont include bnodes so this should be ok
 		aGraph.addAll(TestUtils.createRandomModel(5));
 
 		try {
-			aGraph.add(ValueFactoryImpl.getInstance().createBNode(), RDF.TYPE, ValueFactoryImpl.getInstance().createURI("urn:o"));
+			aGraph.add(SimpleValueFactory.getInstance().createBNode(), RDF.TYPE, SimpleValueFactory.getInstance().createURI("urn:o"));
 			fail("should not allow an addition which violates a constraint");
 		}
 		catch (RuntimeException e) {
@@ -62,7 +60,7 @@ public class ConstrainedGraphTests {
 		}
 
 		try {
-			aGraph.add(ValueFactoryImpl.getInstance().createURI("urn:s"), RDF.TYPE, ValueFactoryImpl.getInstance().createBNode());
+			aGraph.add(SimpleValueFactory.getInstance().createURI("urn:s"), RDF.TYPE, SimpleValueFactory.getInstance().createBNode());
 			fail("should not allow an addition which violates a constraint");
 		}
 		catch (RuntimeException e) {
