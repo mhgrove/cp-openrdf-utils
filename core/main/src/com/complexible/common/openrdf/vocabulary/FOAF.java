@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 package com.complexible.common.openrdf.vocabulary;
 
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 
 /**
  * <p>Constants for the concepts in the FOAF vocabulary</p>
@@ -27,10 +27,10 @@ import org.openrdf.model.URI;
 public final class FOAF extends Vocabulary {
 	private static FOAF INSTANCE;
 	
-    private static final java.net.URI FOAF_URI = java.net.URI.create("http://xmlns.com/foaf/0.1/");
+    private static final java.net.URI FOAF_IRI = java.net.URI.create("http://xmlns.com/foaf/0.1/");
 
 	private FOAF() {
-		super(FOAF_URI.toString());
+		super(FOAF_IRI.toString());
 	}
 	
 	public static FOAF ontology() {
@@ -41,38 +41,38 @@ public final class FOAF extends Vocabulary {
 		return INSTANCE;
 	}
 
-    public final URI Person = term("Person");
-    public final URI Organization = term("Organization");
-    public final URI Image = term("Image");
-	public final URI Agent = term("Agent");
-	public final URI Group = term("Group");
-	public final URI Document = term("Document");
+    public final IRI Person = term("Person");
+    public final IRI Organization = term("Organization");
+    public final IRI Image = term("Image");
+	public final IRI Agent = term("Agent");
+	public final IRI Group = term("Group");
+	public final IRI Document = term("Document");
 
-    public final URI givenName = term("givenName");
-    public final URI familyName = term("familyName");
-    public final URI firstName = term("firstName");
-    public final URI surname = term("surname");
-	public final URI name = term("name");
-    public final URI mbox = term("mbox");
-    public final URI depicts = term("depicts");
-    public final URI depiction = term("depiction");
-    public final URI maker = term("maker");
-    public final URI phone = term("phone");
-    public final URI fax = term("fax");
-    public final URI based_near = term("based_near");
-	public final URI thumbnail = term("thumbnail");
-	public final URI homepage = term("homepage");
-	public final URI birthday = term("birthday");
-	public final URI knows = term("knows");
-	public final URI lastName = term("lastName");
-	public final URI title = term("title");
-	public final URI openId = term("openId");
-	public final URI pastProject = term("pastProject");
-	public final URI topic_interest = term("topic_interest");
-	public final URI age = term("age");
-	public final URI member = term("member");
-	public final URI primaryTopic = term("primaryTopic");
-	public final URI made = term("made");
-	public final URI logo = term("logo");
-	public final URI currentProject = term("currentProject");
+    public final IRI givenName = term("givenName");
+    public final IRI familyName = term("familyName");
+    public final IRI firstName = term("firstName");
+    public final IRI surname = term("surname");
+	public final IRI name = term("name");
+    public final IRI mbox = term("mbox");
+    public final IRI depicts = term("depicts");
+    public final IRI depiction = term("depiction");
+    public final IRI maker = term("maker");
+    public final IRI phone = term("phone");
+    public final IRI fax = term("fax");
+    public final IRI based_near = term("based_near");
+	public final IRI thumbnail = term("thumbnail");
+	public final IRI homepage = term("homepage");
+	public final IRI birthday = term("birthday");
+	public final IRI knows = term("knows");
+	public final IRI lastName = term("lastName");
+	public final IRI title = term("title");
+	public final IRI openId = term("openId");
+	public final IRI pastProject = term("pastProject");
+	public final IRI topic_interest = term("topic_interest");
+	public final IRI age = term("age");
+	public final IRI member = term("member");
+	public final IRI primaryTopic = term("primaryTopic");
+	public final IRI made = term("made");
+	public final IRI logo = term("logo");
+	public final IRI currentProject = term("currentProject");
 }

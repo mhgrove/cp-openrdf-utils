@@ -24,7 +24,6 @@ import com.complexible.common.openrdf.query.SesameQueryUtils;
 
 import org.junit.Test;
 
-import static com.complexible.common.openrdf.TestUtils.parse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -32,15 +31,15 @@ import static org.junit.Assert.fail;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.IRI;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.algebra.QueryModelNode;
 
-import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
+import org.openrdf.query.algebra.QueryModelNode;
+import org.openrdf.query.algebra.Slice;
+import org.openrdf.query.algebra.helpers.AbstractQueryModelVisitor;
 import org.openrdf.query.impl.MapBindingSet;
 import org.openrdf.query.parser.ParsedQuery;
-import org.openrdf.query.algebra.Slice;
 
 /**
  * <p></p>
@@ -80,26 +79,12 @@ public class TestQueryUtils {
 	}
 
 	@Test
-	public void testIsDescribe() throws Exception {
-System.err.println(parse("describe <http://google.com> <http://foo.bar.baz>").getTupleExpr());
-System.err.println(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
-                         "DESCRIBE ?x ?y <http://example.org/>\n" +
-                         "WHERE    {?x foaf:knows ?y}").getTupleExpr());
-
-		assertTrue(SesameQueryUtils.isDescribe(parse("describe <http://google.com> <http://foo.bar.baz>").getTupleExpr()));
-		assertTrue(SesameQueryUtils.isDescribe(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
-													 "DESCRIBE ?x ?y <http://example.org/>\n" +
-													 "WHERE    {?x foaf:knows ?y}").getTupleExpr()));
-		assertFalse(SesameQueryUtils.isDescribe(parse("select * where { ?s ?p ?o }").getTupleExpr()));
-	}
-
-	@Test
 	public void testBindingSetUtils() {
 		MapBindingSet aBindingSet = new MapBindingSet();
 
-		final Literal aLiteral = ValueFactoryImpl.getInstance().createLiteral("literal");
-		final URI aURI = ValueFactoryImpl.getInstance().createURI("urn:s");
-		final BNode aBNode = ValueFactoryImpl.getInstance().createBNode();
+		final Literal aLiteral = SimpleValueFactory.getInstance().createLiteral("literal");
+		final IRI aURI = SimpleValueFactory.getInstance().createIRI("urn:s");
+		final BNode aBNode = SimpleValueFactory.getInstance().createBNode();
 
 		aBindingSet.addBinding("lit", aLiteral);
 		aBindingSet.addBinding("bnode", aBNode);
@@ -107,7 +92,7 @@ System.err.println(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
 
 		assertEquals(SesameQueryUtils.getLiteral(aBindingSet, "lit"), aLiteral);
 		assertEquals(SesameQueryUtils.getBNode(aBindingSet, "bnode"), aBNode);
-		assertEquals(SesameQueryUtils.getURI(aBindingSet, "uri"), aURI);
+		assertEquals(SesameQueryUtils.getIRI(aBindingSet, "uri"), aURI);
 
 		assertEquals(SesameQueryUtils.getResource(aBindingSet, "bnode"), aBNode);
 		assertEquals(SesameQueryUtils.getResource(aBindingSet, "uri"), aURI);
@@ -115,7 +100,7 @@ System.err.println(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
 		assertTrue(SesameQueryUtils.getLiteral(aBindingSet, "uri") == null);
 		assertTrue(SesameQueryUtils.getLiteral(aBindingSet, "bnode") == null);
 		assertTrue(SesameQueryUtils.getResource(aBindingSet, "lit") == null);
-		assertTrue(SesameQueryUtils.getURI(aBindingSet, "lit") == null);
+		assertTrue(SesameQueryUtils.getIRI(aBindingSet, "lit") == null);
 		assertTrue(SesameQueryUtils.getBNode(aBindingSet, "lit") == null);
 	}
 
@@ -185,7 +170,7 @@ System.err.println(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
 		return aVisitor.isContains();
 	}
 
-	private static class GetSlice extends QueryModelVisitorBase<Exception> {
+	private static class GetSlice extends AbstractQueryModelVisitor<Exception> {
 		private long mLimit = -1;
 		private long mOffset = -1;
 
@@ -204,7 +189,7 @@ System.err.println(parse("PREFIX foaf:   <http://xmlns.com/foaf/0.1/>\n" +
 		}
 	}
 
-	private static class ContainsVisitor extends QueryModelVisitorBase<Exception> {
+	private static class ContainsVisitor extends AbstractQueryModelVisitor<Exception> {
 		private boolean mContains = false;
 
 		private final Class<? extends QueryModelNode> mClass;

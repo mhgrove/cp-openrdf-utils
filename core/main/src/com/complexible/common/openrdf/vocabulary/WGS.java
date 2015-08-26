@@ -15,7 +15,7 @@
 
 package com.complexible.common.openrdf.vocabulary;
 
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 
 /**
  * <p>Term constants for the WGS ontology</p>
@@ -34,10 +34,10 @@ public class WGS extends Vocabulary {
         return VOCAB;
     }
 
-    public final URI lat = term("lat");
-    public final URI _long = term("long");
-    public final URI alt = term("alt");
-    public final URI lat_long = term("lat_long");
-    public final URI Point = term("Point");
-    public final URI SpatialThing = term("SpatialThing");
+    public final IRI lat = term("lat");
+    public final IRI _long = term("long");
+    public final IRI alt = term("alt");
+    public final IRI lat_long = term("lat_long");
+    public final IRI Point = term("Point");
+    public final IRI SpatialThing = term("SpatialThing");
 }

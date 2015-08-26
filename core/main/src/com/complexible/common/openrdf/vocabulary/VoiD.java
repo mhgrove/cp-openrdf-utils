@@ -1,6 +1,6 @@
 package com.complexible.common.openrdf.vocabulary;
 
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 
 /**
  * <p></p>
@@ -19,5 +19,5 @@ public final class VoiD extends Vocabulary {
         return INSTANCE;
     }
 
-    public final URI triples = term("triples");
+    public final IRI triples = term("triples");
 }

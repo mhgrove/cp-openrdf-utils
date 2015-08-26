@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,15 @@
 
 package com.complexible.common.openrdf.util;
 
-import com.complexible.common.openrdf.model.ContextAwareValueFactory;
-import com.complexible.common.openrdf.model.Graphs;
-
-import org.openrdf.model.Graph;
+import com.complexible.common.openrdf.model.Models2;
+import org.openrdf.model.Model;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.model.Value;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.BNode;
 
@@ -43,28 +42,28 @@ import javax.xml.datatype.DatatypeConfigurationException;
  *
  * @author	Michael Grove
  * @since	0.1
- * @version	3.0
+ * @version	4.0
  */
 public class ResourceBuilder {
-    private final Graph mGraph;
+    private final Model mGraph;
     private final Resource mRes;
     private final ValueFactory mValueFactory;
 
     public ResourceBuilder(final Resource theRes) {
-        this(Graphs.newGraph(), ContextAwareValueFactory.getInstance(), theRes);
+        this(Models2.newModel(), SimpleValueFactory.getInstance(), theRes);
     }
 
-    protected ResourceBuilder(final Graph theGraph, final ValueFactory theValueFactory, final Resource theRes) {
+    protected ResourceBuilder(final Model theGraph, final ValueFactory theValueFactory, final Resource theRes) {
         mRes = theRes;
         mGraph = theGraph;
         mValueFactory = theValueFactory;
     }
 
-	public ResourceBuilder addProperty(URI theProperty, java.net.URI theURI) {
-		return addProperty(theProperty, mValueFactory.createURI(theURI.toString()));
+	public ResourceBuilder addProperty(IRI theProperty, java.net.URI theURI) {
+		return addProperty(theProperty, mValueFactory.createIRI(theURI.toString()));
 	}
 
-	public ResourceBuilder addProperty(URI theProperty, List<? extends Value> theList) {
+	public ResourceBuilder addProperty(IRI theProperty, List<? extends Value> theList) {
 		Resource aListRes = mValueFactory.createBNode();
 
 		mGraph.add(getResource(), theProperty, aListRes);
@@ -85,7 +84,7 @@ public class ResourceBuilder {
 		return this;
 	}
 
-    public ResourceBuilder addProperty(URI theProperty, Value theValue) {
+    public ResourceBuilder addProperty(IRI theProperty, Value theValue) {
         if (theValue != null) {
             mGraph.add(mRes, theProperty, theValue);
         }
@@ -97,11 +96,11 @@ public class ResourceBuilder {
         return mRes;
     }
 
-    public Graph graph() {
+    public Model model() {
         return mGraph;
     }
 
-    public ResourceBuilder addProperty(URI theProperty, ResourceBuilder theBuilder) {
+    public ResourceBuilder addProperty(IRI theProperty, ResourceBuilder theBuilder) {
         if (theBuilder != null) {
             addProperty(theProperty, theBuilder.getResource());
 
@@ -111,7 +110,7 @@ public class ResourceBuilder {
         return this;
     }
 
-    public ResourceBuilder addProperty(URI theProperty, String theValue) {
+    public ResourceBuilder addProperty(IRI theProperty, String theValue) {
 		if (theValue != null) {
 			return addProperty(theProperty, mValueFactory.createLiteral(theValue));
 		}
@@ -120,7 +119,7 @@ public class ResourceBuilder {
 		}
     }
 
-    public ResourceBuilder addProperty(URI theProperty, Integer theValue) {
+    public ResourceBuilder addProperty(IRI theProperty, Integer theValue) {
 		if (theValue != null) {
         	return addProperty(theProperty, mValueFactory.createLiteral(theValue));
 		}
@@ -129,8 +128,7 @@ public class ResourceBuilder {
 		}
     }
 
-
-    public ResourceBuilder addProperty(URI theProperty, Long theValue) {
+    public ResourceBuilder addProperty(IRI theProperty, Long theValue) {
 		if (theValue != null) {
 	        return addProperty(theProperty, mValueFactory.createLiteral(theValue));
 		}
@@ -139,8 +137,7 @@ public class ResourceBuilder {
 		}
     }
 
-
-    public ResourceBuilder addProperty(URI theProperty, Short theValue) {
+    public ResourceBuilder addProperty(IRI theProperty, Short theValue) {
 		if (theValue != null) {
 	        return addProperty(theProperty, mValueFactory.createLiteral(theValue));
 		}
@@ -149,7 +146,7 @@ public class ResourceBuilder {
 		}
     }
 
-    public ResourceBuilder addProperty(URI theProperty, Double theValue) {
+    public ResourceBuilder addProperty(IRI theProperty, Double theValue) {
 		if (theValue != null) {
         	return addProperty(theProperty, mValueFactory.createLiteral(theValue));
 		}
@@ -165,7 +162,7 @@ public class ResourceBuilder {
 	 * @param theValue      the date-time object
 	 * @return              this builder
 	 */
-	public ResourceBuilder addProperty(URI theProperty, Date theValue) {
+	public ResourceBuilder addProperty(IRI theProperty, Date theValue) {
 		if (theValue != null) {
 			GregorianCalendar c = new GregorianCalendar();
 			c.setTime(theValue);
@@ -182,7 +179,7 @@ public class ResourceBuilder {
 		}
 	}
 
-    public ResourceBuilder addProperty(URI theProperty, Float theValue) {
+    public ResourceBuilder addProperty(IRI theProperty, Float theValue) {
 		if (theValue != null) {
 	        return addProperty(theProperty, mValueFactory.createLiteral(theValue));
 		}
@@ -191,7 +188,7 @@ public class ResourceBuilder {
 		}
     }
 
-    public ResourceBuilder addProperty(URI theProperty, Boolean theValue) {
+    public ResourceBuilder addProperty(IRI theProperty, Boolean theValue) {
 		if (theValue != null) {
         	return addProperty(theProperty, mValueFactory.createLiteral(theValue));
 		}
@@ -201,7 +198,7 @@ public class ResourceBuilder {
     }
 
 	@SuppressWarnings("unchecked")
-	public ResourceBuilder addProperty(URI theProperty, Object theObject) {
+	public ResourceBuilder addProperty(IRI theProperty, Object theObject) {
 		if (theObject == null) {
 			return this;
 		}
@@ -253,7 +250,7 @@ public class ResourceBuilder {
         return addProperty(RDFS.LABEL, theLabel);
     }
 
-    public ResourceBuilder addType(URI theType) {
+    public ResourceBuilder addType(IRI theType) {
         return addProperty(RDF.TYPE, theType);
     }
 }

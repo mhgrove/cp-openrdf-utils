@@ -15,17 +15,17 @@
 
 package com.complexible.common.openrdf;
 
-import com.complexible.common.openrdf.model.Graphs;
+import com.complexible.common.openrdf.model.Models2;
 import com.complexible.common.openrdf.repository.Repositories;
-import org.openrdf.model.Graph;
+import org.openrdf.model.IRI;
+import org.openrdf.model.Model;
+import org.openrdf.model.impl.SimpleStatement;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.openrdf.model.impl.ValueFactoryImpl;
-import org.openrdf.model.impl.StatementImpl;
+import org.openrdf.model.impl.SimpleValueFactory;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.MalformedQueryException;
@@ -52,12 +52,12 @@ public final class TestUtils {
 		return parser.parseQuery(theQuery, "http://openrdf.complexible.com");
 	}
 
-	public static Graph createRandomGraph() {
-		return createRandomGraph(RANDOM.nextInt(500));
+	public static Model createRandomModel() {
+		return createRandomModel(RANDOM.nextInt(500));
 	}
 
-	public static Graph createRandomGraph(final int theSize) {
-		Graph aGraph = Graphs.newGraph();
+	public static Model createRandomModel(final int theSize) {
+		Model aGraph = Models2.newModel();
 
 		for (int i = 0; i < theSize; i++) {
 			aGraph.add(createRandomStatement());
@@ -69,18 +69,18 @@ public final class TestUtils {
 	public static Repository createRandomRepository() throws RepositoryException {
 		Repository aRepo = TestRepositories.createInMemoryRepo();
 
-		Repositories.add(aRepo, createRandomGraph());
+		Repositories.add(aRepo, createRandomModel());
 
 		return aRepo;
 	}
 
 	public static Statement createRandomStatement() {
-		Resource aSubj = ValueFactoryImpl.getInstance().createURI("urn:" + RANDOM.nextLong());
-		URI aPred = ValueFactoryImpl.getInstance().createURI("urn:" + RANDOM.nextLong());
+		Resource aSubj = SimpleValueFactory.getInstance().createIRI("urn:" + RANDOM.nextLong());
+		IRI aPred = SimpleValueFactory.getInstance().createIRI("urn:" + RANDOM.nextLong());
 		Value aObj = RANDOM.nextBoolean()
-						? ValueFactoryImpl.getInstance().createURI("urn:" + RANDOM.nextLong())
-						: ValueFactoryImpl.getInstance().createLiteral(""+ RANDOM.nextLong());
+						? SimpleValueFactory.getInstance().createIRI("urn:" + RANDOM.nextLong())
+						: SimpleValueFactory.getInstance().createLiteral(""+ RANDOM.nextLong());
 
-		return new StatementImpl(aSubj, aPred, aObj);
+		return new SimpleStatement(aSubj, aPred, aObj);
 	}
 }
