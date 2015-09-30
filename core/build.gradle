@@ -1,5 +1,5 @@
 group = "com.complexible.common"
-version = "4.0"
+version = "4.0.1-SNAPSHOT"
 archivesBaseName = "cp-openrdf-utils"
 
 dependencies {
