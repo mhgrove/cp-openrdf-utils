@@ -31,9 +31,9 @@ import com.google.common.io.Closeables;
 import info.aduna.iteration.CloseableIteration;
 import info.aduna.iteration.EmptyIteration;
 import org.openrdf.model.Graph;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.MalformedQueryException;
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author  Michael Grove
  * @since   2.0
- * @version 3.0
+ * @version 4.0
  */
 public final class Repositories {
 	/**
@@ -90,44 +90,28 @@ public final class Repositories {
 	}
 
 	public static void clear(final Repository theRepository) throws RepositoryException {
-		RepositoryConnection aConn = theRepository.getConnection();
-		try {
+		try (RepositoryConnection aConn = theRepository.getConnection()) {
 			RepositoryConnections.clear(aConn);
-		}
-		finally {
-			aConn.close();
 		}
 	}
 
 	public static void add(final Repository theRepository, final Graph theGraph) throws RepositoryException {
-		RepositoryConnection aConn = theRepository.getConnection();
-		try {
+		try (RepositoryConnection aConn = theRepository.getConnection()) {
 			RepositoryConnections.add(aConn, theGraph);
-		}
-		finally {
-			aConn.close();
 		}
 	}
 
 	public static void remove(final Repository theRepository, final Graph theGraph) throws RepositoryException {
-		RepositoryConnection aConn = theRepository.getConnection();
-		try {
+		try (RepositoryConnection aConn = theRepository.getConnection()) {
 			RepositoryConnections.remove(aConn, theGraph);
-		}
-		finally {
-			aConn.close();
 		}
 	}
 
 	public static boolean contains(final Repository theRepository, final Statement theStmt) throws RepositoryException {
-		RepositoryConnection aConn = theRepository.getConnection();
-		try {
+		try (RepositoryConnection aConn = theRepository.getConnection()) {
 			return theStmt.getContext() != null
 			       ? aConn.hasStatement(theStmt, true, theStmt.getContext())
 			       : aConn.hasStatement(theStmt, true);
-		}
-		finally {
-			aConn.close();
 		}
 	}
 
@@ -178,9 +162,11 @@ public final class Repositories {
 
 	/**
 	 * Write the contents of the repository to the given stream in the specified format
-	 * @param theRepo the repository to write
+	 *
+	 * @param theRepo   the repository to write
 	 * @param theStream the stream to write to
 	 * @param theFormat the format to write the RDF in
+	 *
 	 * @throws RepositoryException if there is an error getting the data from the repository
 	 * @throws IOException if there is an error writing to the stream
 	 */
@@ -190,9 +176,11 @@ public final class Repositories {
 
 	/**
 	 * Write the contents of the repository to the given writer in the specified format
-	 * @param theRepo the repository to write
+	 *
+	 * @param theRepo   the repository to write
 	 * @param theWriter the writer to write to
 	 * @param theFormat the format to write the RDF in
+	 *
 	 * @throws RepositoryException if there is an error getting the data from the repository
 	 * @throws IOException if there is an error writing to the writer
 	 */
@@ -277,13 +265,16 @@ public final class Repositories {
 
 	/**
 	 * Return a RepositoryResult over the statements in this Repository which match the given spo pattern.
-	 * @param theSubj the subject to search for, or null for any
-	 * @param thePred the predicate to search for, or null for any
-	 * @param theObj the object to search for, or null for any
-	 * @param theContext the contexts for the statement(s)
+	 *
+	 * @param theSubj       the subject to search for, or null for any
+	 * @param thePred       the predicate to search for, or null for any
+	 * @param theObj        the object to search for, or null for any
+	 * @param theContext    the contexts for the statement(s)
+	 *
 	 * @return an Iterable over the matching statements
 	 */
-	public static RepositoryResult<Statement> getStatements(final Repository theRepo, final Resource theSubj, final URI thePred, final Value theObj, final Resource... theContext) {
+	public static RepositoryResult<Statement> getStatements(final Repository theRepo, final Resource theSubj,
+	                                                        final IRI thePred, final Value theObj, final Resource... theContext) {
 		RepositoryConnection aConn = null;
 		try {
 			aConn = theRepo.getConnection();
@@ -295,7 +286,7 @@ public final class Repositories {
 
 			LOGGER.error("There was an error getting statements, returning empty iteration.", ex);
 
-			return new RepositoryResult<Statement>(emptyStatementIteration());
+			return new RepositoryResult<>(emptyStatementIteration());
 		}
 	}
 
@@ -304,6 +295,6 @@ public final class Repositories {
 	 * @return an empty iteration
 	 */
 	private static CloseableIteration<Statement, RepositoryException> emptyStatementIteration() {
-		return new EmptyIteration<Statement, RepositoryException>();
+		return new EmptyIteration<>();
 	}
 }

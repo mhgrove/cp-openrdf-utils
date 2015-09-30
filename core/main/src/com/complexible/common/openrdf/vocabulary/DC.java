@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2010 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 package com.complexible.common.openrdf.vocabulary;
 
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 
 /**
  * <p>Term constants for the DC ontology</p>
@@ -34,19 +34,19 @@ public class DC extends Vocabulary {
         return VOCAB;
     }
 	
-    public final URI title = term("title");
-    public final URI creator = term("creator");
-    public final URI subject = term("subject");
-    public final URI description = term("description");
-    public final URI contributor = term("contributor");
-    public final URI date = term("date");
-    public final URI type = term("type");
-    public final URI format = term ("format");
-    public final URI identifier = term("identifier");
-    public final URI source = term("source");
-    public final URI language = term("language");
-    public final URI relation = term("relation");
-    public final URI coverage = term("coverage");
-    public final URI rights = term("rights");
-	public final URI publisher = term("publisher");
+    public final IRI title = term("title");
+    public final IRI creator = term("creator");
+    public final IRI subject = term("subject");
+    public final IRI description = term("description");
+    public final IRI contributor = term("contributor");
+    public final IRI date = term("date");
+    public final IRI type = term("type");
+    public final IRI format = term ("format");
+    public final IRI identifier = term("identifier");
+    public final IRI source = term("source");
+    public final IRI language = term("language");
+    public final IRI relation = term("relation");
+    public final IRI coverage = term("coverage");
+    public final IRI rights = term("rights");
+	public final IRI publisher = term("publisher");
 }

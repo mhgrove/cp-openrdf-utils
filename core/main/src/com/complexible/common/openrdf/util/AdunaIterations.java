@@ -15,30 +15,20 @@
 
 package com.complexible.common.openrdf.util;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 import info.aduna.iteration.CloseableIteration;
 import info.aduna.iteration.Iterations;
-import info.aduna.iteration.Iteration;
-import com.google.common.base.Predicate;
 
 /**
  * <p>Utility methods for Aduna {@link info.aduna.iteration.Iteration Iterations} not already present in {@link Iterations}</p>
  *
  * @author  Michael Grove
  * @since   0.4
- * @version 1.1
+ * @version 4.0
  */
 public final class AdunaIterations {
 	/**
@@ -51,29 +41,6 @@ public final class AdunaIterations {
 	 */
 	private AdunaIterations() {
         throw new AssertionError();
-	}
-
-	/**
-	 * Conver the Sesame Iteration to a Java Iterator
-	 * @param theIteration the iteration
-	 * @param <T> the type returned from the iteration
-	 * @return the Iteration as an iterator
-	 */
-	public static <T> Iterator<T> iterator(Iteration<T, ?> theIteration) {
-		return new IterationIterator<T>(theIteration);
-	}
-
-	/**
-	 * Return the RepositoryResult as an {@link Iterable}.
-	 * @param theResult the RepositoryResult to wrap
-	 * @return the RepositoryResult as an Iterable
-	 */
-	public static <T, E extends Exception> Iterable<T> iterable(final Iteration<T, E> theResult) {
-		return new Iterable<T>() {
-			public Iterator<T> iterator() {
-				return AdunaIterations.iterator(theResult);
-			}
-		};
 	}
 
 	/**
@@ -91,65 +58,6 @@ public final class AdunaIterations {
 		}
 	}
 
-	/**
-	 * Apply the predicate to everything in the Iteration
-	 * @param theIter the iteratino
-	 * @param theEach the predicate to apply
-	 * @param <T> the type of objects in the iteration
-	 * @param <E> the type of exception that can be thrown
-	 * @throws E the exception
-	 */
-	public static <T, E extends Exception> void each(final CloseableIteration<T, E> theIter, final Predicate<T> theEach) throws E {
-        Preconditions.checkNotNull(theIter, "Cannot iterate over null Iteration");
-
-		try {
-			while (theIter.hasNext()) {
-				theEach.apply(theIter.next());
-			}
-		}
-		finally {
-			theIter.close();
-		}
-	}
-
-    /**
-     * Return the results of the Iteration as a {@link Set}
-     * @param theIter   the iteration
-     * @return          the contents of the Iteration in a Set
-     * @throws E        if there is an error while iterating
-     */
-    public static <T, E extends Exception> Set<T> toSet(final CloseableIteration<T, E> theIter) throws E {
-        if (theIter == null) {
-            return Collections.emptySet();
-        }
-
-        try {
-            return Sets.newHashSet(iterable(theIter));
-        }
-        finally {
-            theIter.close();
-        }
-    }
-
-    /**
-     * Return the results of the Iteration as a {@link List}
-     * @param theIter   the iteration
-     * @return          the contents of the Iteration in a List
-     * @throws E        if there is an error while iterating
-     */
-    public static <T, E extends Exception> List<T> toList(final CloseableIteration<T, E> theIter) throws E {
-        if (theIter == null) {
-            return Collections.emptyList();
-        }
-
-        try {
-            return Lists.newArrayList(iterable(theIter));
-        }
-        finally {
-            theIter.close();
-        }
-    }
-
     /**
      * Return the first result of the iteration.  If the Iteration is empty or null, the Optional will be absent.
      *
@@ -161,28 +69,15 @@ public final class AdunaIterations {
      */
     public static <T, E extends Exception> Optional<T> singleResult(final CloseableIteration<T, E> theIter) throws E {
         if (theIter == null) {
-            return Optional.absent();
+            return Optional.empty();
         }
 
         try {
-            return theIter.hasNext() ? Optional.of(theIter.next()) : Optional.<T>absent();
+            return theIter.hasNext() ? Optional.of(theIter.next()) : Optional.<T>empty();
         }
         finally {
             theIter.close();
         }
-    }
-
-    /**
-     * Add all of the elements of the Iteration to the specified {@link Collection}.  The Iteration is closed when complete.
-     *
-     * @param theIter       the Iteration
-     * @param theCollection the collection to add the elements to
-     * @return              the Collection
-     * @throws E            if there is an error while iteration
-     */
-    public static <T, E extends Exception, C extends Collection<? super T>> C add(final CloseableIteration<T, E> theIter, final C theCollection) throws E {
-        theCollection.addAll(toList(theIter));
-        return theCollection;
     }
 
     /**

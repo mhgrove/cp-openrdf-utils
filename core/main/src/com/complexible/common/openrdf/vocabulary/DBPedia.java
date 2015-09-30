@@ -1,13 +1,13 @@
 package com.complexible.common.openrdf.vocabulary;
 
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 
 /**
  * <p>Vocabulary for the DBPedia schemas</p>
  *
- * @author Michael Grove
- * @version 0.3.1
- * @since 0.3.1
+ * @author  Michael Grove
+ * @since   0.3.1
+ * @version 4.0
  */
 public class DBPedia {
 
@@ -32,7 +32,7 @@ public class DBPedia {
 			super("http://dbpedia.org/property/");
 		}
 
-		public final URI countryCode = term("countryCode");
+		public final IRI countryCode = term("countryCode");
 	}
 
 	public static class Resource extends Vocabulary {
@@ -46,8 +46,8 @@ public class DBPedia {
 			super("http://dbpedia.org/ontology/");
 		}
 
-		public final URI Place = term("Place");
-		public final URI PopulatedPlace = term("PopulatedPlace");
-		public final URI Country = term("Country");
+		public final IRI Place = term("Place");
+		public final IRI PopulatedPlace = term("PopulatedPlace");
+		public final IRI Country = term("Country");
 	}
 }

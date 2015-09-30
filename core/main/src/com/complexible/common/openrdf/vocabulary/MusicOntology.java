@@ -15,7 +15,7 @@
 
 package com.complexible.common.openrdf.vocabulary;
 
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 
 /**
  * <p>Term constants for the DC music ontology</p>
@@ -24,12 +24,12 @@ import org.openrdf.model.URI;
  * @since 0.1
  */
 public class MusicOntology extends Vocabulary {
-    public static final String ONT_URI = "http://purl.org/ontology/mo/";
+    public static final String ONT_IRI = "http://purl.org/ontology/mo/";
 
     private static MusicOntology INSTANCE = null;
 
     private MusicOntology() {
-        super(ONT_URI);
+        super(ONT_IRI);
     }
 
     public static MusicOntology ontology() {
@@ -41,44 +41,44 @@ public class MusicOntology extends Vocabulary {
     }
 
     // properties
-    public final URI track = term("track");
-    public final URI release_type = term("release_type");
-    public final URI release_status = term("release_status");
-    public final URI track_number = term("track_number");
-    public final URI length = term("length");
-    public final URI made = term("made");
-    public final URI musicbrainz = term("musicbrainz");
-    public final URI olga = term("olga");
-    public final URI genre = term("genre");
-    public final URI sample_rate = term("sample_rate");
-    public final URI bitsPerSample = term("bitsPerSample");
+    public final IRI track = term("track");
+    public final IRI release_type = term("release_type");
+    public final IRI release_status = term("release_status");
+    public final IRI track_number = term("track_number");
+    public final IRI length = term("length");
+    public final IRI made = term("made");
+    public final IRI musicbrainz = term("musicbrainz");
+    public final IRI olga = term("olga");
+    public final IRI genre = term("genre");
+    public final IRI sample_rate = term("sample_rate");
+    public final IRI bitsPerSample = term("bitsPerSample");
 
     // cp properties
-    public final URI rating = term("rating");
-    public final URI albumRating = term("albumRating");
-    public final URI year = term("year");
-    public final URI location = term("location");
+    public final IRI rating = term("rating");
+    public final IRI albumRating = term("albumRating");
+    public final IRI year = term("year");
+    public final IRI location = term("location");
 
     // classes
-    public final URI Genre = term("Genre");
-    public final URI Record = term("Record");
-    public final URI Track = term("Track");
-    public final URI MusicArtist = term("MusicArtist");
-    public final URI MusicGroup = term("MusicGroup");
+    public final IRI Genre = term("Genre");
+    public final IRI Record = term("Record");
+    public final IRI Track = term("Track");
+    public final IRI MusicArtist = term("MusicArtist");
+    public final IRI MusicGroup = term("MusicGroup");
 
     // individuals
-    public final URI Metal = FACTORY.createURI(Genre.stringValue() + "/Metal");
-    public final URI Rock = FACTORY.createURI(Genre.stringValue() + "/Rock");
-    public final URI Alternative = FACTORY.createURI(Genre.stringValue() + "/Alternative");
-    public final URI Pop = FACTORY.createURI(Genre.stringValue() + "/Pop");
-    public final URI Punk = FACTORY.createURI(Genre.stringValue() + "/Punk");
-    public final URI Funk = FACTORY.createURI(Genre.stringValue() + "/Funk");
-    public final URI Soundtrack = FACTORY.createURI(Genre.stringValue() + "/Soundtrack");
-    public final URI Blues = FACTORY.createURI(Genre.stringValue() + "/Blues");
-    public final URI Jazz = FACTORY.createURI(Genre.stringValue() + "/Jazz");
-    public final URI Vocal = FACTORY.createURI(Genre.stringValue() + "/Vocal");
-	public final URI Country = FACTORY.createURI(Genre.stringValue() + "/Country");
+    public final IRI Metal = FACTORY.createIRI(Genre.stringValue() + "/Metal");
+    public final IRI Rock = FACTORY.createIRI(Genre.stringValue() + "/Rock");
+    public final IRI Alternative = FACTORY.createIRI(Genre.stringValue() + "/Alternative");
+    public final IRI Pop = FACTORY.createIRI(Genre.stringValue() + "/Pop");
+    public final IRI Punk = FACTORY.createIRI(Genre.stringValue() + "/Punk");
+    public final IRI Funk = FACTORY.createIRI(Genre.stringValue() + "/Funk");
+    public final IRI Soundtrack = FACTORY.createIRI(Genre.stringValue() + "/Soundtrack");
+    public final IRI Blues = FACTORY.createIRI(Genre.stringValue() + "/Blues");
+    public final IRI Jazz = FACTORY.createIRI(Genre.stringValue() + "/Jazz");
+    public final IRI Vocal = FACTORY.createIRI(Genre.stringValue() + "/Vocal");
+	public final IRI Country = FACTORY.createIRI(Genre.stringValue() + "/Country");
 
-    public final URI album = term("album");
-    public final URI official = term("official");
+    public final IRI album = term("album");
+    public final IRI official = term("official");
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2012 Clark & Parsia, LLC. <http://www.clarkparsia.com>
+ * Copyright (c) 2009-2015 Clark & Parsia, LLC. <http://www.clarkparsia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,25 @@ package com.complexible.common.openrdf.model;
 
 import java.util.Collection;
 
-import com.google.common.base.Predicate;
-
-import org.openrdf.model.Graph;
+import java.util.function.Predicate;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
+import org.openrdf.model.Model;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
 /**
- * <p>A {@link Graph} which has a {@link Predicate constraint} placed upon which statements can be added to the Graph.</p>
+ * <p>A {@link Model} which has a {@link Predicate constraint} placed upon which statements can be added to the Model.</p>
  *
  * @author Michael Grove
- * @since	0.8
- * @version	2.0.1
+ * @since	4.0
+ * @version	4.0
  */
-public final class ConstrainedGraph extends DelegatingGraph {
+public final class ConstrainedModel extends DelegatingModel {
 	private final Predicate<Statement> mConstraint;
 
-	ConstrainedGraph(final Graph theGraph, final Predicate<Statement> theConstraint) {
+	ConstrainedModel(final Model theGraph, final Predicate<Statement> theConstraint) {
 		super(theGraph);
 		mConstraint = theConstraint;
 	}
@@ -47,8 +46,8 @@ public final class ConstrainedGraph extends DelegatingGraph {
 	 * @param theConstraint	the constraint to enforce
 	 * @return				the new ConstrainedGraph
 	 */
-	public static ConstrainedGraph of(final Predicate<Statement> theConstraint) {
-		return of(new SetGraph(), theConstraint);
+	public static ConstrainedModel of(final Predicate<Statement> theConstraint) {
+		return of(Models2.newModel(), theConstraint);
 	}
 
 	/**
@@ -59,8 +58,8 @@ public final class ConstrainedGraph extends DelegatingGraph {
 	 * @param theConstraint		the constraint to enforce
 	 * @return					the new ConstrainedGraph
 	 */
-	public static ConstrainedGraph of(final Graph theGraph, final Predicate<Statement> theConstraint) {
-		return new ConstrainedGraph(theGraph, theConstraint);
+	public static ConstrainedModel of(final Model theGraph, final Predicate<Statement> theConstraint) {
+		return new ConstrainedModel(theGraph, theConstraint);
 	}
 
 	/**
@@ -69,34 +68,31 @@ public final class ConstrainedGraph extends DelegatingGraph {
 	 * @return	a Constraint to enforce valid literals
 	 */
 	public static Predicate<Statement> onlyValidLiterals() {
-		return new Predicate<Statement>() {
-			@Override
-			public boolean apply(final Statement theStatement) {
-				if (theStatement.getObject() instanceof Literal && !Statements.isLiteralValid((Literal) theStatement.getObject())) {
-					throw new StatementViolatedConstraintException(theStatement.getObject() + " is not a well-formed literal value.");
-				}
-
-				return true;
+		return theStatement -> {
+			if (theStatement.getObject() instanceof Literal && !Statements.isLiteralValid((Literal) theStatement.getObject())) {
+				throw new StatementViolatedConstraintException(theStatement.getObject() + " is not a well-formed literal value.");
 			}
+
+			return true;
 		};
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean add(final Statement e) {
-		mConstraint.apply(e);
+		mConstraint.test(e);
 
 		return super.add(e);
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean add(final Resource theResource, final URI theURI, final Value theValue, final Resource... theContexts) {
+	public boolean add(final Resource theResource, final IRI theURI, final Value theValue, final Resource... theContexts) {
 
 		if (theContexts == null || theContexts.length == 0) {
 			return add(getValueFactory().createStatement(theResource, theURI, theValue));
@@ -112,7 +108,7 @@ public final class ConstrainedGraph extends DelegatingGraph {
 	}
 
 	/**
-	 * @inheritDoc
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean addAll(final Collection<? extends Statement> c) {
@@ -123,7 +119,7 @@ public final class ConstrainedGraph extends DelegatingGraph {
 
 	private static <T> void all(final Iterable<? extends T> theObjects, final Predicate<T> theConstraint) {
 		for (T aObj : theObjects) {
-			theConstraint.apply(aObj);
+			theConstraint.test(aObj);
 		}
 	}
 
