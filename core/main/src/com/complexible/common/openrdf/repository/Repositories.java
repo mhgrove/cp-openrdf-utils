@@ -116,7 +116,7 @@ public final class Repositories {
 	}
 
 	public static void add(final Repository theRepo, final File theFile) throws RDFParseException, IOException {
-		add(theRepo, new FileInputStream(theFile), Rio.getParserFormatForFileName(theFile.getName()));
+		add(theRepo, new FileInputStream(theFile), Rio.getParserFormatForFileName(theFile.getName()).orElse(RDFFormat.TURTLE));
 	}
 
 	public static void add(final Repository theRepo, final InputStream theStream, final RDFFormat theFormat) throws RDFParseException, IOException {

@@ -65,7 +65,7 @@ public final class ModelIO {
 	 * @throws RDFParseException	if the RDF could not be parsed
 	 */
 	public static Model read(final Path theFile) throws IOException, RDFParseException {
-		return read(theFile, Rio.getParserFormatForFileName(theFile.getFileName().toString()));
+		return read(theFile, Rio.getParserFormatForFileName(theFile.getFileName().toString()).orElse(RDFFormat.TURTLE));
 	}
 
 	public static Model read(final Path theFile, final RDFFormat theFormat) throws IOException, RDFParseException {
