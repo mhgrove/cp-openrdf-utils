@@ -27,7 +27,6 @@ import com.google.common.io.Closeables;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author  Michael Grove
  * @since   2.0
- * @version 2.0
+ * @version 4.0
  */
 public final class RepositoryConnections {
 	/**
@@ -115,7 +114,7 @@ public final class RepositoryConnections {
 	}
 
 	public static void add(final RepositoryConnection theRepo, final File theFile) throws RDFParseException, IOException {
-		add(theRepo, new FileInputStream(theFile), Rio.getParserFormatForFileName(theFile.getName()));
+		add(theRepo, new FileInputStream(theFile), Rio.getParserFormatForFileName(theFile.getName()).orElse(RDFFormat.TURTLE));
 	}
 
 	public static void add(final RepositoryConnection theRepo, final InputStream theStream, final RDFFormat theFormat) throws RDFParseException, IOException {
