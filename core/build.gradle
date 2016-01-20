@@ -9,6 +9,7 @@ dependencies {
 
 	compile "org.openrdf.sesame:sesame-rio:$sesameVersion"
 	compile "org.openrdf.sesame:sesame-rio-turtle:$sesameVersion"
+	
 	compile "org.openrdf.sesame:sesame-model:$sesameVersion"
 	compile "org.openrdf.sesame:sesame-query:$sesameVersion"
 	compile "org.openrdf.sesame:sesame-queryalgebra-model:$sesameVersion"
