@@ -1,0 +1,6 @@
+com.complexible.common.openrdf.model
+com.complexible.common.openrdf.query
+com.complexible.common.openrdf.repository
+com.complexible.common.openrdf.sail
+com.complexible.common.openrdf.util
+com.complexible.common.openrdf.vocabulary
