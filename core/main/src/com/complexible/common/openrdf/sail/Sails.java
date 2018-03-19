@@ -15,13 +15,14 @@
 
 package com.complexible.common.openrdf.sail;
 
+import org.eclipse.rdf4j.common.iteration.CloseableIteration;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.sail.Sail;
+import org.eclipse.rdf4j.sail.SailConnection;
+import org.eclipse.rdf4j.sail.SailException;
+
 import com.complexible.common.openrdf.util.AdunaIterations;
-import info.aduna.iteration.CloseableIteration;
-import org.openrdf.model.Graph;
-import org.openrdf.model.Statement;
-import org.openrdf.sail.Sail;
-import org.openrdf.sail.SailConnection;
-import org.openrdf.sail.SailException;
 
 /**
  * <p></p>
@@ -46,7 +47,7 @@ public final class Sails {
 		}
 	}
 
-	public static void add(final Sail theSail, final Graph theGraph) throws SailException {
+	public static void add(final Sail theSail, final Model theGraph) throws SailException {
 		SailConnection aConn = theSail.getConnection();
 		try {
 			SailConnections.add(aConn, theGraph);
@@ -56,7 +57,7 @@ public final class Sails {
 		}
 	}
 
-	public static void remove(final Sail theSail, final Graph theGraph) throws SailException {
+	public static void remove(final Sail theSail, final Model theGraph) throws SailException {
 		SailConnection aConn = theSail.getConnection();
 		try {
 			SailConnections.remove(aConn, theGraph);

@@ -16,14 +16,15 @@
 package com.complexible.common.openrdf.model;
 
 import java.util.Collection;
-
 import java.util.function.Predicate;
-import org.openrdf.model.IRI;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Model;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.Value;
+
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 /**
  * <p>A {@link Model} which has a {@link Predicate constraint} placed upon which statements can be added to the Model.</p>
@@ -91,16 +92,15 @@ public final class ConstrainedModel extends DelegatingModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean add(final Resource theResource, final IRI theURI, final Value theValue, final Resource... theContexts) {
 
 		if (theContexts == null || theContexts.length == 0) {
-			return add(getValueFactory().createStatement(theResource, theURI, theValue));
+			return add(SimpleValueFactory.getInstance().createStatement(theResource, theURI, theValue));
 		}
 		else {
 			boolean aAdded = true;
 			for (Resource aCxt : theContexts) {
-				aAdded |= add(getValueFactory().createStatement(theResource, theURI, theValue, aCxt));
+				aAdded |= add(SimpleValueFactory.getInstance().createStatement(theResource, theURI, theValue, aCxt));
 			}
 
 			return aAdded;

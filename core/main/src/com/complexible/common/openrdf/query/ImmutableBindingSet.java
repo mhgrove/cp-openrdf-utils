@@ -20,8 +20,8 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
-import org.openrdf.query.Binding;
-import org.openrdf.query.BindingSet;
+import org.eclipse.rdf4j.query.Binding;
+import org.eclipse.rdf4j.query.BindingSet;
 
 /**
  * <p>An immutable {@link BindingSet}</p>

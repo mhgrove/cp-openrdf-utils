@@ -15,9 +15,9 @@
 
 package com.complexible.common.openrdf.vocabulary;
 
-import org.openrdf.model.IRI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.ValueFactoryImpl;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 /**
  * <p>Base class for creating a term factory for an ontology or schema.</p>

@@ -29,17 +29,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.openrdf.model.BNode;
-import org.openrdf.model.Literal;
-import org.openrdf.model.IRI;
-import org.openrdf.model.impl.SimpleValueFactory;
-import org.openrdf.query.QueryEvaluationException;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.query.QueryEvaluationException;
 
-import org.openrdf.query.algebra.QueryModelNode;
-import org.openrdf.query.algebra.Slice;
-import org.openrdf.query.algebra.helpers.AbstractQueryModelVisitor;
-import org.openrdf.query.impl.MapBindingSet;
-import org.openrdf.query.parser.ParsedQuery;
+import org.eclipse.rdf4j.query.algebra.QueryModelNode;
+import org.eclipse.rdf4j.query.algebra.Slice;
+import org.eclipse.rdf4j.query.algebra.helpers.AbstractQueryModelVisitor;
+import org.eclipse.rdf4j.query.impl.MapBindingSet;
+import org.eclipse.rdf4j.query.parser.ParsedQuery;
 
 /**
  * <p></p>

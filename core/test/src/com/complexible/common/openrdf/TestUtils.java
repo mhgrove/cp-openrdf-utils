@@ -17,18 +17,17 @@ package com.complexible.common.openrdf;
 
 import com.complexible.common.openrdf.model.Models2;
 import com.complexible.common.openrdf.repository.Repositories;
-import org.openrdf.model.IRI;
-import org.openrdf.model.Model;
-import org.openrdf.model.impl.SimpleStatement;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.model.Statement;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.SimpleValueFactory;
-import org.openrdf.query.parser.sparql.SPARQLParser;
-import org.openrdf.query.parser.ParsedQuery;
-import org.openrdf.query.MalformedQueryException;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.query.parser.sparql.SPARQLParser;
+import org.eclipse.rdf4j.query.parser.ParsedQuery;
+import org.eclipse.rdf4j.query.MalformedQueryException;
 
 import java.util.Random;
 

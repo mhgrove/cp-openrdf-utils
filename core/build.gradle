@@ -1,5 +1,5 @@
 group = "com.complexible.common"
-version = "4.0.1"
+version = "4.0.3"
 archivesBaseName = "cp-openrdf-utils"
 
 dependencies {
@@ -7,19 +7,18 @@ dependencies {
 		exclude group: "com.google.code.findbugs"
 	}
 
-	compile "org.openrdf.sesame:sesame-rio:${sesameVersion}@pom"
-	compile "org.openrdf.sesame:sesame-rio-turtle:$sesameVersion"
-	
-	compile "org.openrdf.sesame:sesame-model:$sesameVersion"
-	compile "org.openrdf.sesame:sesame-query:$sesameVersion"
-	compile "org.openrdf.sesame:sesame-queryalgebra-model:$sesameVersion"
-	compile "org.openrdf.sesame:sesame-queryparser-sparql:$sesameVersion"
-	compile "org.openrdf.sesame:sesame-queryresultio-api:$sesameVersion"
-	compile "org.openrdf.sesame:sesame-repository-api:$sesameVersion"
-	compile "org.openrdf.sesame:sesame-sail-api:$sesameVersion"
+	compile "org.eclipse.rdf4j:rdf4j-rio:${sesameRdf4jVersion}@pom"
+	compile "org.eclipse.rdf4j:rdf4j-rio-turtle:$sesameRdf4jVersion"
+	compile "org.eclipse.rdf4j:rdf4j-model:$sesameRdf4jVersion"
+	compile "org.eclipse.rdf4j:rdf4j-query:$sesameRdf4jVersion"
+	compile "org.eclipse.rdf4j:rdf4j-queryalgebra-model:$sesameRdf4jVersion"
+	compile "org.eclipse.rdf4j:rdf4j-queryparser-sparql:$sesameRdf4jVersion"
+	compile "org.eclipse.rdf4j:rdf4j-queryresultio-api:$sesameRdf4jVersion"
+	compile "org.eclipse.rdf4j:rdf4j-repository-api:$sesameRdf4jVersion"
+	compile "org.eclipse.rdf4j:rdf4j-sail-api:$sesameRdf4jVersion"
 
-	testCompile "org.openrdf.sesame:sesame-repository-sail:$sesameVersion"
-	testCompile "org.openrdf.sesame:sesame-sail-memory:$sesameVersion"
+	testCompile "org.eclipse.rdf4j:rdf4j-repository-sail:$sesameRdf4jVersion"
+	testCompile "org.eclipse.rdf4j:rdf4j-sail-memory:$sesameRdf4jVersion"
 }
 
 configurations {

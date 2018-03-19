@@ -21,7 +21,7 @@ allprojects {
 ext {
 	projectDescription	= "Complexible: OpenRdf Utility classes"
 	projectUrl			= "https://github.com/mhgrove/cp-openrdf-utils"
-	sesameVersion = "4.0.0"
+	sesameRdf4jVersion = "2.2.2"
 }
 
 subprojects {
@@ -84,9 +84,9 @@ task javadocs(type: Javadoc) {
 	configure(options) {
 		windowTitle "${core.archivesBaseName}-${core.version} API"
 		docTitle "${core.archivesBaseName}-${core.version}"
-		bottom "Copyright &#169; 2010-2016 Complexible. All Rights Reserved."
+		bottom "Copyright &#169; 2010-2018 Complexible. All Rights Reserved."
 		links "http://docs.oracle.com/javase/8/docs/api/",
 			  "http://docs.guava-libraries.googlecode.com/git-history/v18.0/javadoc/",
-			  "http://rdf4j.org/doc/4/apidocs/"
+			  "http://docs.rdf4j.org/javadoc/latest/"
 	}
 }

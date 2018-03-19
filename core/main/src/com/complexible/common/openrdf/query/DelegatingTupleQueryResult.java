@@ -17,9 +17,9 @@ package com.complexible.common.openrdf.query;
 
 import java.util.List;
 
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.BindingSet;
+import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.eclipse.rdf4j.query.BindingSet;
 
 /**
  * <p>Base class for creating a TupleQueryResult decorator which delegates all calls to its child TupleQueryResult</p>

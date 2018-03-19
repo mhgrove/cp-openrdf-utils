@@ -15,10 +15,10 @@
 
 package com.complexible.common.openrdf.query;
 
-import org.openrdf.query.QueryResult;
+import org.eclipse.rdf4j.query.QueryResult;
 
 /**
- * <p>An analog to {@link org.openrdf.query.TupleQueryResult} and {@link org.openrdf.query.GraphQueryResult},
+ * <p>An analog to {@link org.eclipse.rdf4j.query.TupleQueryResult} and {@link org.eclipse.rdf4j.query.GraphQueryResult},
  * this represents the result to a Boolean/Ask query.  Normally this has been represented as a single primitive
  * boolean result value.  Using a result based object here while inconvenient in some cases is preferable in
  * the cases where you want to treat all result types as the same, that is, now all queries return something

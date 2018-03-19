@@ -17,9 +17,9 @@ package com.complexible.common.openrdf.query;
 
 import java.util.Map;
 
-import org.openrdf.query.GraphQueryResult;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.model.Statement;
+import org.eclipse.rdf4j.query.GraphQueryResult;
+import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.eclipse.rdf4j.model.Statement;
 
 /**
  * <p>Base class for creating a GraphQueryResult decorator which delegates all calls to the child result.</p>

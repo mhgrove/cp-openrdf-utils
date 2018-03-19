@@ -1,6 +1,6 @@
 package com.complexible.common.openrdf.vocabulary;
 
-import org.openrdf.model.IRI;
+import org.eclipse.rdf4j.model.IRI;
 
 /**
  * <p>Vocabulary for the DBPedia schemas</p>

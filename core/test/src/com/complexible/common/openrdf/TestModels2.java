@@ -15,34 +15,32 @@
 
 package com.complexible.common.openrdf;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.nio.file.Path;
+import java.util.List;
+
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.query.impl.IteratingGraphQueryResult;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.junit.Test;
+
 import com.complexible.common.openrdf.model.ModelIO;
 import com.complexible.common.openrdf.model.Models2;
 import com.complexible.common.openrdf.model.Statements;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import org.openrdf.model.IRI;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Model;
-import org.openrdf.model.impl.SimpleValueFactory;
-import org.openrdf.model.util.Models;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.Statement;
-import org.openrdf.model.Resource;
-import org.openrdf.model.impl.SimpleValueFactory;
-import org.openrdf.query.impl.IteratingGraphQueryResult;
-import org.openrdf.rio.RDFFormat;
-
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Set;
 
 /**
  * <p>Tests for Models2</p>

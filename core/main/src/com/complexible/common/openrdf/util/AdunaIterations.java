@@ -20,11 +20,11 @@ import java.util.Optional;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import info.aduna.iteration.CloseableIteration;
-import info.aduna.iteration.Iterations;
+import org.eclipse.rdf4j.common.iteration.CloseableIteration;
+import org.eclipse.rdf4j.common.iteration.Iterations;
 
 /**
- * <p>Utility methods for Aduna {@link info.aduna.iteration.Iteration Iterations} not already present in {@link Iterations}</p>
+ * <p>Utility methods for Aduna {@link org.eclipse.rdf4j.common.iteration.Iteration Iterations} not already present in {@link Iterations}</p>
  *
  * @author  Michael Grove
  * @since   0.4
