@@ -18,9 +18,9 @@ package com.complexible.common.openrdf;
 import com.complexible.common.openrdf.model.ModelIO;
 import com.complexible.common.openrdf.model.Models2;
 import org.junit.Test;
-import org.openrdf.model.Model;
-import org.openrdf.model.impl.SimpleValueFactory;
-import org.openrdf.rio.RDFFormat;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.rio.RDFFormat;
 
 import static org.junit.Assert.assertEquals;
 

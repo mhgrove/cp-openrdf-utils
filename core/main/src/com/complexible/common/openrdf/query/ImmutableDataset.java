@@ -19,8 +19,8 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ObjectArrays;
-import org.openrdf.model.IRI;
-import org.openrdf.query.Dataset;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.query.Dataset;
 
 import java.util.Set;
 

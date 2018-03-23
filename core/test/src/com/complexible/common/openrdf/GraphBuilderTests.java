@@ -23,13 +23,12 @@ import javax.xml.datatype.DatatypeFactory;
 
 import com.complexible.common.openrdf.util.ModelBuilder;
 import org.junit.Test;
-import org.openrdf.model.IRI;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Model;
-import org.openrdf.model.Statement;
-import org.openrdf.model.impl.SimpleValueFactory;
-import org.openrdf.model.impl.ValueFactoryImpl;
-import org.openrdf.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
 import static org.junit.Assert.assertEquals;
 
@@ -48,7 +47,7 @@ public class GraphBuilderTests {
 
 		final Date aDate = Calendar.getInstance().getTime();
 
-		aBuilder.iri(aURI).addProperty(ValueFactoryImpl.getInstance().createIRI("urn:bar"), aDate);
+		aBuilder.iri(aURI).addProperty(SimpleValueFactory.getInstance().createIRI("urn:bar"), aDate);
 
 		Model aGraph = aBuilder.model();
 

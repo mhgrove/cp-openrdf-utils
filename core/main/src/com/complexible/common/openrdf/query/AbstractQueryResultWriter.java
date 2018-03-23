@@ -19,11 +19,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.openrdf.query.QueryResultHandlerException;
-import org.openrdf.query.resultio.QueryResultFormat;
-import org.openrdf.query.resultio.QueryResultWriter;
-import org.openrdf.rio.RioSetting;
-import org.openrdf.rio.WriterConfig;
+import org.eclipse.rdf4j.query.QueryResultHandlerException;
+import org.eclipse.rdf4j.query.resultio.QueryResultFormat;
+import org.eclipse.rdf4j.query.resultio.QueryResultWriter;
+import org.eclipse.rdf4j.rio.RioSetting;
+import org.eclipse.rdf4j.rio.WriterConfig;
 
 /**
  * <p>More useful base for creating custom {@link QueryResultWriter} implementations.

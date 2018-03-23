@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.google.common.io.ByteSource;
-import org.openrdf.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFFormat;
 
 /**
  * <p>A {@link ByteSource} whose contents is RDF serialized in {@link RDFFormat some format}.</p>

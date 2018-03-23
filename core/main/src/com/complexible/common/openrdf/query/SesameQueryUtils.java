@@ -15,25 +15,25 @@
 
 package com.complexible.common.openrdf.query;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.Value;
-import org.openrdf.model.IRI;
-import org.openrdf.model.BNode;
-import org.openrdf.model.Literal;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.Literal;
 
-import org.openrdf.model.util.Literals;
-import org.openrdf.query.BindingSet;
+import org.eclipse.rdf4j.model.util.Literals;
+import org.eclipse.rdf4j.query.BindingSet;
 
-import org.openrdf.query.algebra.Slice;
-import org.openrdf.query.algebra.TupleExpr;
+import org.eclipse.rdf4j.query.algebra.Slice;
+import org.eclipse.rdf4j.query.algebra.TupleExpr;
 
-import org.openrdf.query.algebra.helpers.AbstractQueryModelVisitor;
-import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
+import org.eclipse.rdf4j.query.algebra.helpers.AbstractQueryModelVisitor;
+import org.eclipse.rdf4j.query.algebra.helpers.QueryModelVisitorBase;
 
-import org.openrdf.query.algebra.ProjectionElem;
+import org.eclipse.rdf4j.query.algebra.ProjectionElem;
 
 import com.google.common.collect.Sets;
-import org.openrdf.query.parser.ParsedQuery;
+import org.eclipse.rdf4j.query.parser.ParsedQuery;
 
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -298,7 +298,7 @@ public final class SesameQueryUtils {
     }
 
 	/**
-     * Implementation of a {@link org.openrdf.query.algebra.QueryModelVisitor} which will set the limit or offset of a query
+     * Implementation of a {@link org.eclipse.rdf4j.query.algebra.QueryModelVisitor} which will set the limit or offset of a query
      * object to the provided value.  If there is no slice operator specified, {@link #limitWasSet} and {@link #offsetWasSet} will return false.
      */
     private static class SliceMutator extends QueryModelVisitorBase<Exception> {

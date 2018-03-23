@@ -16,10 +16,10 @@
 package com.complexible.common.openrdf.util;
 
 import com.complexible.common.openrdf.model.Models2;
-import org.openrdf.model.Model;
-import org.openrdf.rio.helpers.AbstractRDFHandler;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.model.Statement;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.rio.helpers.AbstractRDFHandler;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.model.Statement;
 
 /**
  * <p>Implementation of an RDFHandler which collects statements from the handler events and puts them into a Graph object.</p>

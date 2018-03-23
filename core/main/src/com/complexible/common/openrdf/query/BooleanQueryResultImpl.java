@@ -17,7 +17,7 @@ package com.complexible.common.openrdf.query;
 
 import java.util.NoSuchElementException;
 
-import org.openrdf.query.QueryEvaluationException;
+import org.eclipse.rdf4j.query.QueryEvaluationException;
 
 /**
  * <p>Default implementation of a {@link BooleanQueryResult}</p>

@@ -19,11 +19,11 @@ import java.util.function.Predicate;
 
 import com.complexible.common.openrdf.model.ConstrainedModel;
 import org.junit.Test;
-import org.openrdf.model.BNode;
-import org.openrdf.model.Model;
-import org.openrdf.model.Statement;
-import org.openrdf.model.impl.SimpleValueFactory;
-import org.openrdf.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 
 import static org.junit.Assert.fail;
 
@@ -52,7 +52,7 @@ public class ConstrainedModelTests {
 		aGraph.addAll(TestUtils.createRandomModel(5));
 
 		try {
-			aGraph.add(SimpleValueFactory.getInstance().createBNode(), RDF.TYPE, SimpleValueFactory.getInstance().createURI("urn:o"));
+			aGraph.add(SimpleValueFactory.getInstance().createBNode(), RDF.TYPE, SimpleValueFactory.getInstance().createIRI("urn:o"));
 			fail("should not allow an addition which violates a constraint");
 		}
 		catch (RuntimeException e) {
@@ -60,7 +60,7 @@ public class ConstrainedModelTests {
 		}
 
 		try {
-			aGraph.add(SimpleValueFactory.getInstance().createURI("urn:s"), RDF.TYPE, SimpleValueFactory.getInstance().createBNode());
+			aGraph.add(SimpleValueFactory.getInstance().createIRI("urn:s"), RDF.TYPE, SimpleValueFactory.getInstance().createBNode());
 			fail("should not allow an addition which violates a constraint");
 		}
 		catch (RuntimeException e) {

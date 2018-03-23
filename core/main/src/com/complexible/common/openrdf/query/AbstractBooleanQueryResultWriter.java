@@ -18,15 +18,15 @@ package com.complexible.common.openrdf.query;
 import java.io.IOException;
 import java.util.List;
 
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.QueryResultHandlerException;
-import org.openrdf.query.TupleQueryResultHandlerException;
-import org.openrdf.query.resultio.BooleanQueryResultFormat;
-import org.openrdf.query.resultio.BooleanQueryResultWriter;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.QueryResultHandlerException;
+import org.eclipse.rdf4j.query.TupleQueryResultHandlerException;
+import org.eclipse.rdf4j.query.resultio.BooleanQueryResultFormat;
+import org.eclipse.rdf4j.query.resultio.BooleanQueryResultWriter;
 
 /**
  * <p>{@link BooleanQueryResultWriter} base for creating custom writer implementations which throws {@link UnsupportedOperationException}
- * exceptions for the non-boolean result format methods which are incorrectly in the {@link org.openrdf.query.resultio.QueryResultWriter} interface.</p>
+ * exceptions for the non-boolean result format methods which are incorrectly in the {@link org.eclipse.rdf4j.query.resultio.QueryResultWriter} interface.</p>
  *
  * @author  Michael Grove
  * @since   1.0

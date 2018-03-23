@@ -15,9 +15,9 @@
 
 package com.complexible.common.openrdf.repository;
 
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 
 /**
  * <p>A {}@link RepositoryResult} which will close the {@link RepositoryConnection} which created it when it's closed.</p>
