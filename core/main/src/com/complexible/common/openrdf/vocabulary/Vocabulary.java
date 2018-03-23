@@ -32,7 +32,7 @@ public class Vocabulary {
     private String mURI;
 
     public Vocabulary(String theURI) {
-		this(theURI, ValueFactoryImpl.getInstance());
+		this(theURI, SimpleValueFactory.getInstance());
 	}
 
 	public Vocabulary(String theURI, final ValueFactory theValueFactory) {

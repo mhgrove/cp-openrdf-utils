@@ -15,21 +15,22 @@
 
 package com.complexible.common.openrdf;
 
-import com.complexible.common.openrdf.model.Models2;
-import com.complexible.common.openrdf.repository.Repositories;
+import java.util.Random;
+
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.query.parser.sparql.SPARQLParser;
-import org.eclipse.rdf4j.query.parser.ParsedQuery;
 import org.eclipse.rdf4j.query.MalformedQueryException;
+import org.eclipse.rdf4j.query.parser.ParsedQuery;
+import org.eclipse.rdf4j.query.parser.sparql.SPARQLParser;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
-import java.util.Random;
+import com.complexible.common.openrdf.model.Models2;
+import com.complexible.common.openrdf.repository.Repositories;
 
 /**
  * <p></p>
@@ -80,6 +81,6 @@ public final class TestUtils {
 						? SimpleValueFactory.getInstance().createIRI("urn:" + RANDOM.nextLong())
 						: SimpleValueFactory.getInstance().createLiteral(""+ RANDOM.nextLong());
 
-		return new SimpleStatement(aSubj, aPred, aObj);
+				return SimpleValueFactory.getInstance().createStatement(aSubj, aPred, aObj);
 	}
 }
